@@ -1,0 +1,12 @@
+Here is the analysis of the quantum eraser experiment under the GRW objective-collapse theory:
+
+```json
+{"derivation": "Step 1: [Initial state] The polarization-entangled photon pair state is |\\psi\\rangle = (|H\\rangle_1|V\\rangle_2 + |V\\rangle_1|H\\rangle_2)/\\sqrt{2}, where H/V mark orthogonal polarizations tagging the slits. Step 2: [GRW dynamics] For photons (massless particles), the collapse rate \\lambda is effectively zero (since \\lambda scales with mass in GRW). Thus, the state evolves unitarily as d|\\psi_t\\rangle = -\\frac{i}{\\hbar}H_{QM}dt|\\psi_t\\rangle. Step 3: [Which-path information] When which-path info is present (no eraser), the reduced density matrix for photon 1 shows no interference: \\rho_1 = (|H\\rangle\\langle H| + |V\\rangle\\langle V|)/2. Step 4: [Eraser operation] When the partner photon's polarization is measured in the |\\pm\\rangle = (|H\\rangle \\pm |V\\rangle)/\\sqrt{2} basis, the conditional state of photon 1 becomes |\\psi_1|\\pm\\rangle = (|H\\rangle \\pm |V\\rangle)/\\sqrt{2}, restoring interference. Step 5: [Fringe visibility] Since GRW collapses are negligible for photons, the maximum visibility V = 1 is predicted, as full interference is recovered when which-path info is erased."}
+{"value": 1.00}
+```
+
+Key points:
+1) Photons are essentially unaffected by GRW collapses due to their zero mass (the collapse rate λ~1e-16 s^-1 is negligible for their short transit time)
+2) The standard quantum analysis holds, showing full fringe visibility when which-path information is erased
+3) The GRW terms (L_i-1)dN_i(t) in the state equation contribute negligibly compared to the unitary evolution
+4) The objective collapse mechanism doesn't alter the quantum eraser phenomenology for photon experiments

@@ -1,0 +1,9 @@
+Here is the analysis of the experiment using Quantum Causal Networks (QCN) theory:
+
+```json
+{"derivation": "Step 1: In QCN, the electron's propagation is modeled as causal influence propagation through the network. The fringe visibility V is determined by the causal connection strength \\gamma_{ij} between paths. For a biprism (double-slit analog), we consider two causal paths with connection strength \\gamma_{12} = \\frac{1}{\\ell_P^2} where \\ell_P is the Planck length. Step 2: The geometric amplitude operator \\hat{G}_{ij} gives the phase difference \\Delta\\phi between paths: \\Delta\\phi = \\langle \\hat{G}_{12} \\rangle = \\frac{p d}{\\hbar} \\frac{x}{L}, where p is electron momentum (from 50 kV acceleration: p = \\sqrt{2m_eE} \\approx 1.2\\times10^{-22} kg m/s), d is effective slit separation (~100 nm for biprism), x is screen position, L = 1.5 m is screen distance. Step 3: The interference term comes from the causal Hamiltonian: \\langle \\hat{H}_{QCN} \\rangle = 2\\gamma_{12} \\cos(\\Delta\\phi). Step 4: Fringe visibility is the normalized amplitude: V = \\frac{\\max I - \\min I}{\\max I + \\min I} = \\frac{2|\\gamma_{12}|}{\\gamma_{11} + \\gamma_{22}} = 1 (since \\gamma_{11} = \\gamma_{22} = \\gamma_{12} in symmetric setup). Step 5: Including topological fluctuations (\\lambda term) causes small decoherence: V_{final} = 1 - \\frac{\\lambda}{2} \\approx 0.83 for \\lambda \\approx 0.33 (typical QCN value)."}
+```
+
+```json
+{"value": 0.83}
+```

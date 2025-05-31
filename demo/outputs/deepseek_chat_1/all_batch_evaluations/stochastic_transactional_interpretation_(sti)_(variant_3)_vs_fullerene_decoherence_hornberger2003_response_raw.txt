@@ -1,0 +1,17 @@
+Here is the analysis of the experiment using the Stochastic Transactional Interpretation (STI):
+
+```json
+{"derivation": "Step 1: Calculate de Broglie wavelength \\(\\lambda_{dB} = \\frac{h}{mv}\\) where m=840 amu=1.395e-24 kg, v=100 m/s. \\(\\lambda_{dB} = \\frac{6.626e-34}{1.395e-24 \\times 100} = 4.75e-12 m\\). Step 2: Determine thermal decoherence scale from environment (900K): \\(\\Lambda_{th} = \\frac{h}{\\sqrt{2\\pi mk_BT}} = 1.67e-12 m\\). Step 3: Compute effective decoherence parameter \\(\\Gamma = \\exp[-\\frac{(\\lambda_T + \\lambda_N)t}{\\tau}]\\), where t=L/v is traversal time (L=grating period=990 nm). Step 4: For STI, the fringe visibility V is given by \\(V = V_0\\sqrt{\\Gamma}\\exp[-\\frac{\\lambda_T L^2}{v^3\\tau}]\\), where \\(V_0\\) is ideal visibility. Step 5: Using \\(\\lambda_T = 0\\) and \\(\\lambda_N = 0\\) from parameters, we get \\(\\Gamma = 1\\) and final visibility \\(V = V_0\\). Step 6: For Talbot-Lau interferometer with \\(\\lambda_{dB}/d \\approx 0.005\\), maximum theoretical \\(V_0 \\approx 0.33\\)."}
+```
+
+```json
+{"value": 0.33}
+``` 
+
+The derivation shows that:
+1) The massive C70 molecule has extremely small de Broglie wavelength
+2) The STI parameters given (\\(\\lambda_T = \\lambda_N = 0\\)) imply no decoherence from either local or non-local mechanisms
+3) The fringe visibility is thus limited only by the interferometer's inherent resolution
+4) The final value matches typical Talbot-Lau visibility for such large molecules
+
+The STI interpretation suggests the interference pattern emerges from stable transactions between the grating's potential and the molecule's wavefunction, with no decoherence because the vacuum environment doesn't provide sufficient stochastic or transactional noise to disrupt the interference.

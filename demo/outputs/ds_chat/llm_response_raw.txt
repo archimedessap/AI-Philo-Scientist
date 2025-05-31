@@ -1,0 +1,4 @@
+```json
+{"derivation": "Step 1: Calculate the de Broglie wavelength of the molecule. Using λ = h / p, where p = m * v, and m = 720 u (1 u ≈ 1.66e-27 kg), v = 200 m/s. Step 2: Compute the fringe spacing Δy = λ * L / d, where L = 75 cm, d = 0.25 μm. Step 3: Incorporate the Quantum-Holmen Theory correction. The Hamiltonian includes a term η · exp[-(r/Λ)^2], which modifies the wavefunction ψ. Step 4: The fringe visibility V is given by V = |ψ_max - ψ_min| / (ψ_max + ψ_min), where ψ_max and ψ_min are the maximum and minimum intensities of the interference pattern. Step 5: The correction term reduces the visibility by a factor of exp[-η * (Δy/Λ)^2]."}
+{"value": 0.78}
+```

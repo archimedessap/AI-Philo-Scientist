@@ -1,0 +1,18 @@
+Here is the analysis of the electron double-slit experiment (Tonomura 1989) using the GRW objective-collapse theory:
+
+```json
+{"derivation": "Step 1: Calculate the electron's de Broglie wavelength \\(\\lambda_{dB}\\) using the acceleration voltage (50 kV). The relativistic formula is:\n\\[ \\lambda_{dB} = \\frac{h}{p} = \\frac{h}{\\sqrt{2m_e e V (1 + \\frac{eV}{2m_e c^2})}} \\]\nwhere \\(m_e\\) is electron mass, \\(e\\) is electron charge, and \\(V = 50\\,\\text{kV}\\).\n\nStep 2: Compute the expected interference fringe spacing \\(\\Delta x\\) in standard QM:\n\\[ \\Delta x = \\frac{\\lambda_{dB} D}{d} \\]\nwhere \\(D = 1.5\\,\\text{m}\\) is screen distance and \\(d\\) is effective slit separation (determined by biprism geometry).\n\nStep 3: GRW modifies the interference pattern through localization events. The collapse rate for one electron is \\(\\lambda = 10^{-16}\\,\\text{s}^{-1}\\). The time-of-flight \\(t\\) is:\n\\[ t \\approx D/v \\approx D/(\\sqrt{2eV/m_e}) \\]\n\nStep 4: The probability of at least one collapse during flight is:\n\\[ P_{\\text{collapse}} = 1 - e^{-\\lambda t} \\approx \\lambda t \\quad (\\text{since } \\lambda t \\ll 1) \\]\n\nStep 5: Each collapse localizes the electron's wavefunction with width \\(\\sigma = 10^{-7}\\,\\text{m}\\). If a collapse occurs, it reduces fringe visibility by a factor depending on \\(\\sigma/\\Delta x\\). The expected visibility reduction is:\n\\[ \\mathcal{V} \\approx 1 - P_{\\text{collapse}}(1 - e^{-(\\Delta x)^2/(8\\sigma^2)}) \\]\n\nStep 6: Numerically evaluating these steps:\n- \\(\\lambda_{dB} \\approx 5.36\\times10^{-12}\\,\\text{m}\\) (relativistic calculation)\n- For typical biprism setups, assume \\(d \\approx 1\\,\\mu\\text{m}\\) giving \\(\\Delta x \\approx 8\\,\\mu\\text{m}\\)\n- \\(t \\approx 2.5\\times10^{-8}\\,\\text{s}\\)\n- \\(P_{\\text{collapse}} \\approx 2.5\\times10^{-24}\\) (extremely small)\n- Visibility reduction is negligible since \\(P_{\\text{collapse}} \\approx 0\\)"}
+{"value": 1.00}
+```
+
+Key points from GRW perspective:
+1. The theory predicts essentially no observable collapse effects for single electrons in this experiment because:
+   - The collapse rate \\(\lambda\\) is extremely small for one particle
+   - The time-of-flight is too short for significant collapse probability
+   - Even if a collapse occurred, the localization width \\(\sigma\\) is large compared to atomic scales
+
+2. The fringe visibility remains ~1 because:
+   - The wavefunction maintains coherence throughout the experiment
+   - GRW collapses become important only for macroscopic objects (many particles)
+
+3. This matches the experimental observation of clear interference fringes, as GRW reduces to standard QM for microscopic systems.

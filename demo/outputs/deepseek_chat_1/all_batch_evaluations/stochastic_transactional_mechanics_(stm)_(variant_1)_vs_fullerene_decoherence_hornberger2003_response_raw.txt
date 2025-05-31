@@ -1,0 +1,8 @@
+Here is the analysis of the experiment using Stochastic Transactional Mechanics (STM):
+
+```json
+{"derivation": "Step 1: Calculate de Broglie wavelength \\(\\lambda_{dB} = \\frac{h}{mv} = \\frac{6.626\\times10^{-34}}{(840\\times1.66\\times10^{-27})(100)} = 4.76\\times10^{-12}\\) m. Step 2: Compute Talbot length \\(L_T = \\frac{d^2}{\\lambda_{dB}} = \\frac{(990\\times10^{-9})^2}{4.76\\times10^{-12}} = 0.206\\) m. Step 3: Determine thermal decoherence time \\(\\tau_{th} = \\frac{\\hbar^2}{2mk_BT\\sigma_x^2}\\) where \\(\\sigma_x = d/2\\pi\\). For T=900K and \\(\\sigma_x = 1.58\\times10^{-7}\\) m, \\(\\tau_{th} = 1.17\\times10^{-5}\\) s. Step 4: Calculate flight time \\(t_{flight} = L_T/v = 0.00206\\) s. Step 5: Apply STM decoherence factor \\(\\eta = \\exp(-t_{flight}/\\tau_{th}) = \\exp(-0.00206/1.17\\times10^{-5}) = 0.0\\) (complete decoherence). Step 6: Fringe visibility \\(V = V_0\\eta\\) where \\(V_0\\) is ideal visibility. Since \\(\\eta=0\\), \\(V=0\\). The stochastic field (\\(\\lambda_s=0\\)) doesn't contribute here as thermal decoherence dominates."}
+{"value": 0.00}
+``` 
+
+The derivation shows that in this high-temperature environment, thermal decoherence completely destroys interference before any transactional processes can establish stable interference patterns. The massive C70 molecules interact strongly with the thermal background, overwhelming the quantum coherence effects predicted by STM.

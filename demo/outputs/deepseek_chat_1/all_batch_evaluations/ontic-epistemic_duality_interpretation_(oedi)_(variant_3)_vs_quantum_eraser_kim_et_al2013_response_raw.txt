@@ -1,0 +1,9 @@
+Here is the analysis of the quantum eraser experiment using the Ontic-Epistemic Duality Interpretation (OEDI):
+
+```json
+{"derivation": "Step 1: Represent the entangled photon pair state in OEDI formalism. The ontic component is the physical entanglement: \\[\\Psi_{ontic} = \\frac{1}{\\sqrt{2}}(|H\\rangle_1|V\\rangle_2 + |V\\rangle_1|H\\rangle_2)\\] where |H⟩, |V⟩ represent polarization states. The epistemic component represents knowledge about which-slit information: \\[\\Psi_{epistemic} = \\frac{1}{\\sqrt{2}}(|L\\rangle|\\theta_L\\rangle + |R\\rangle|\\theta_R\\rangle)\\] where |L⟩,|R⟩ are slit states and |θ_L⟩,|θ_R⟩ are orthogonal polarization markers. Step 2: Calculate the interaction potential V(Ψ_ontic, Ψ_epistemic) when which-path information is present (no eraser): \\[V_{no\\,eraser} = -\\hbar_k^2\\nabla_k^2 + \\lambda_{OE}\\langle\\Psi_{ontic}|\\Psi_{epistemic}\\rangle = 0\\] since λ_OE=0 and the polarization markers make ⟨θ_L|θ_R⟩=0. This suppresses interference. Step 3: For the erased case (EOM measurement), the epistemic state becomes: \\[\\Psi'_{epistemic} = \\frac{1}{\\sqrt{2}}(|L\\rangle + |R\\rangle)(|\\theta_+\\rangle)\\] where |θ_+⟩ is the measured polarization basis. The interaction potential becomes: \\[V_{eraser} = \\lambda_{OE}\\hbar_k^2|\\langle\\Psi_{ontic}|\\Psi'_{epistemic}\\rangle|^2 = \\frac{\\lambda_{OE}\\hbar_k^2}{2}\\] Step 4: Compute fringe visibility using the generalized Born rule: \\[Visibility = \\frac{P_{max} - P_{min}}{P_{max} + P_{min}} = |\\langle\\Psi_{ontic}|\\Psi'_{epistemic}\\rangle|^2 = \\frac{1}{2}\\] where we used the measurement probability P = |⟨Ψ_ontic|Ψ_epistemic⟩|^2."}
+```
+
+```json
+{"value": 0.50}
+```

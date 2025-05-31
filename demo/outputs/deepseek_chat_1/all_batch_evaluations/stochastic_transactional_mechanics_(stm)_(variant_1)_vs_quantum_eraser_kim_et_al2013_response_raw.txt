@@ -1,0 +1,12 @@
+Here is the analysis of the quantum eraser experiment using Stochastic Transactional Mechanics (STM):
+
+```json
+{"derivation": "Step 1: Define the entangled photon state as |Ψ⟩ = (1/√2)(|H⟩₁|V⟩₂ + |V⟩₁|H⟩₂), where |H⟩ and |V⟩ represent orthogonal polarization states. The stochastic transactional potential is Φ(x,t) = ψ(x,t)ψ*(x',t')exp(−λ_s|x−x'|²), where ψ is the retarded wave and ψ* is the advanced wave. Step 2: For the 'which-path' case (no eraser), the polarization tagging creates decoherence via the stochastic coupling term λ_sξ(t)⊗𝟙_TI in the Hamiltonian. The which-path information localizes the transaction according to dP = |ψ|²exp(−λ_s|x−x₀|²)dx, destroying interference (fringe visibility → 0). Step 3: For the erased case, the delayed-choice measurement projects the partner photon onto |+⟩ = (1/√2)(|H⟩+|V⟩), creating the effective potential Φ_erased = (1/2)[ψ_H(x,t)ψ*_H(x',t') + ψ_V(x,t)ψ*_V(x',t')]exp(−λ_s|x−x'|²). The cross terms ψ_Hψ*_V and ψ_Vψ*_H now contribute. Step 4: The fringe visibility V is given by the modulus of the transactional correlation: V = |⟨ψ_H|ψ_V⟩| = |∫ψ*_H(x)ψ_V(x)exp(−λ_s|x−x₀|²)dx|. For orthogonal polarization tags, ⟨H|V⟩=0, but the eraser measurement makes them effectively parallel, giving V = 1 when λ_s→0 (pure transactional regime). Step 5: With given parameters (λ_s=0, τ=1s), we're in the pure TI regime where the stochastic localization vanishes, yielding perfect visibility."}
+{"value": 1.00}
+``` 
+
+Key points in the derivation:
+1) The stochastic coupling λ_s=0 means we have pure transactional behavior (no trajectory localization)
+2) The eraser measurement restores the transactional potential's phase coherence
+3) The time-symmetric waves ψ and ψ* maintain perfect interference when which-path info is erased
+4) The measurement rule reduces to standard Born rule when λ_s=0, giving V=1 for maximally entangled states

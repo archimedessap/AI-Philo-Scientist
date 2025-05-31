@@ -1,0 +1,14 @@
+Here is the analysis of the experiment using the given Quantum-Gravitational Decoherence (QGD) theory:
+
+```json
+{"derivation": "Step 1: Calculate gravitational self-energy difference $E_G$ between branches. For a Talbot-Lau interferometer with grating period $d = 990$ nm, the spatial separation between branches is $\\Delta x \\approx d/2 = 495$ nm. The gravitational self-energy difference for a mass $m = 840$ amu is $E_G = Gm^2/\\Delta x = (6.67\\times10^{-11} \\text{Nm}^2/\\text{kg}^2)(1.39\\times10^{-24} \\text{kg})^2/(4.95\\times10^{-7} \\text{m}) = 2.61\\times10^{-52} \\text{J}$. Step 2: Compute decoherence time $\\tau_G = \\hbar/E_G = (1.05\\times10^{-34} \\text{Js})/(2.61\\times10^{-52} \\text{J}) = 4.02\\times10^{17} \\text{s}$. Step 3: Determine interaction time $t_{int} = L/v$ where $L$ is interferometer length (~0.1 m) and $v = 100$ m/s, giving $t_{int} = 0.001$ s. Step 4: Calculate decoherence factor $\\Gamma = \\exp(-t_{int}/\\tau_G) = \\exp(-2.49\\times10^{-20}) \\approx 1 - 2.49\\times10^{-20}$. Step 5: Fringe visibility $V = V_0\\Gamma \\approx V_0(1 - 2.49\\times10^{-20})$, where $V_0$ is the initial visibility (typically ~1 for good interferometers). The gravitational decoherence effect is negligible compared to other decoherence sources at 900 K."}
+{"value": 1.00}
+``` 
+
+The calculation shows that for this experimental setup:
+1) The gravitational self-energy difference between branches is extremely small ($\\sim10^{-52}$ J)
+2) This leads to an astronomically long decoherence time ($\\sim10^{17}$ s)
+3) The resulting decoherence effect during the short interaction time is completely negligible
+4) The fringe visibility remains essentially perfect (1.00) under QGD predictions
+
+This demonstrates that for mesoscopic systems like fullerenes at these energy scales, quantum-gravitational decoherence effects are many orders of magnitude too small to be observable compared to environmental decoherence sources. The theory would predict observable effects only for much more massive systems or longer coherence times.

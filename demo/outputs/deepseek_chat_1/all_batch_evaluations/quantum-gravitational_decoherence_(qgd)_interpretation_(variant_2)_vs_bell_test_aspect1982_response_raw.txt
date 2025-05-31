@@ -1,0 +1,11 @@
+Here is the analysis of the Aspect (1982) Bell test experiment using the Quantum-Gravitational Decoherence (QGD) Interpretation:
+
+```json
+{"derivation": "Step 1: Identify the experimental parameters - The experiment uses polarization-entangled photon pairs (Ca atomic cascade) with analyzer angles (0°, 22.5°, 45°, 67.5°). The CHSH inequality is S = |E(a,b) - E(a,b') + E(a',b) + E(a',b')| ≤ 2 classically. Step 2: For entangled photons, quantum mechanics predicts E(θ₁,θ₂) = cos[2(θ₁-θ₂)]. Step 3: In QGD, we modify the correlation function due to gravitational decoherence: E(θ₁,θ₂) = cos[2(θ₁-θ₂)]exp(-Δt/τ_G), where τ_G = ℏ/E_G is the decoherence time. Step 4: For photons (E_G ≈ 0), τ_G → ∞, so the exponential factor → 1. Thus QGD predicts standard QM correlations. Step 5: Calculate S using optimal angles (a=0°, a'=45°, b=22.5°, b'=67.5°): E(0°,22.5°) = cos(45°) = 1/√2, E(0°,67.5°) = cos(135°) = -1/√2, E(45°,22.5°) = cos(45°) = 1/√2, E(45°,67.5°) = cos(45°) = 1/√2. Step 6: S = |1/√2 - (-1/√2) + 1/√2 + 1/√2| = 2√2 ≈ 2.828."}
+{"value": 2.828}
+``` 
+
+The key points are:
+1) Photons have negligible gravitational self-energy (E_G ≈ 0), so QGD reduces to standard QM predictions
+2) The derivation shows gravitational decoherence would only become relevant for massive systems
+3) The calculated S = 2√2 violates Bell's inequality maximally, matching QM predictions

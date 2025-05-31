@@ -1,0 +1,15 @@
+Here is the analysis of the Aspect (1982) Bell test experiment using Stochastic Transactional Mechanics (STM):
+
+```json
+{"derivation": "Step 1: Define the entangled photon state in STM framework. The calcium cascade produces polarization-entangled pairs described by: \n\\[|\\psi\\rangle = \\frac{1}{\\sqrt{2}}(|H\\rangle_A|V\\rangle_B - |V\\rangle_A|H\\rangle_B)\\]\nwhere $|H\\rangle$, $|V\\rangle$ are horizontal/vertical polarization states, and the stochastic field adds a perturbation term $\\lambda_s \\xi(t) \\otimes \\mathbb{1}_{TI}$ to the Hamiltonian.\n\nStep 2: Model the polarizer measurements as transactional processes. For analyzer angle $\\theta$, the measurement operator is:\n\\[\\hat{P}(\\theta) = \\cos^2\\theta|H\\rangle\\langle H| + \\sin^2\\theta|V\\rangle\\langle V| + \\sin\\theta\\cos\\theta(|H\\rangle\\langle V| + |V\\rangle\\langle H|)\\]\nThe transaction completion probability becomes modified by the stochastic field:\n\\[P(\\theta_A,\\theta_B) = |\\langle\\psi|\\hat{P}_A(\\theta_A)\\otimes\\hat{P}_B(\\theta_B)|\\psi\\rangle|^2 e^{-\\lambda_s|\\Delta x|^2}\\]\nwhere $\\Delta x$ is the spatial separation (6.5 m).\n\nStep 3: Calculate correlation function $E(\\theta_A,\\theta_B)$ for joint measurements. In STM, this becomes:\n\\[E(\\theta_A,\\theta_B) = \\frac{P_{++} + P_{--} - P_{+-} - P_{-+}}{P_{++} + P_{--} + P_{+-} + P_{-+}} = -\\cos[2(\\theta_A-\\theta_B)]e^{-\\lambda_s(6.5)^2}\\]\nwhere $P_{\\pm\\pm}$ are coincidence probabilities.\n\nStep 4: Compute CHSH parameter $S$ using standard angle settings (0°, 22.5°, 45°, 67.5°):\n\\[S = |E(a,b) - E(a,b') + E(a',b) + E(a',b')|\\]\nSubstituting the correlation function:\n\\[S = 2\\sqrt{2}e^{-\\lambda_s(6.5)^2}\\]\n\nStep 5: Apply given parameter $\\lambda_s = 0$ m⁻¹ (pure transactional regime):\n\\[S = 2\\sqrt{2} \\approx 2.828\\]"}
+```
+
+```json
+{"value": 2.828}
+```
+
+The derivation shows that:
+1. The stochastic field term vanishes in this configuration ($\lambda_s=0$)
+2. The transactional interpretation reproduces standard quantum correlations
+3. The spatial separation (6.5 m) becomes irrelevant in the pure TI limit
+4. The predicted CHSH violation matches conventional QM predictions (2√2)

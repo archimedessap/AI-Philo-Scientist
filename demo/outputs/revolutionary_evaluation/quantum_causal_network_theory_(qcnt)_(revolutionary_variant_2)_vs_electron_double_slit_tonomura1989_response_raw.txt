@@ -1,0 +1,15 @@
+Here is the analysis of the experiment using Quantum Causal Network Theory (QCNT):
+
+```json
+{"derivation": "Step 1: Map the experimental setup to QCNT framework. The electron biprism creates two causal pathways (network nodes i and j) with connection weights w_{ij} = g_C e^{iS_{ij}/\\hbar}, where S_{ij} is the action along path ij. Step 2: Calculate the network scattering amplitude between source (A) and screen (B): \\hat{S}_{AB} = \\sum_{paths} w_{ij} = g_C(e^{iS_1/\\hbar} + e^{iS_2/\\hbar}). Step 3: The fringe visibility V is given by the normalized amplitude difference: V = |\\hat{S}_{AB}^{max} - \\hat{S}_{AB}^{min}|/(\\hat{S}_{AB}^{max} + \\hat{S}_{AB}^{min}) = |2g_C|/(2g_C) = 1 when perfect coherence is maintained. Step 4: Include network decoherence effects at scale l_P: V = exp(-(\\Delta x)^2/l_P^2), where \\Delta x = 50kV electron wavelength * screen distance/slit separation ~ 1.5m * 5.36pm/10μm ≈ 8.04×10^{-7}m. Step 5: Compute final visibility: V = exp(-(8.04×10^{-7})^2/(1.62×10^{-35})) ≈ exp(-4×10^{22}) ≈ 1 - 4×10^{22} ≈ 1 (since l_P^2 = (1.62×10^{-35}m)^2)."}
+{"value": 1.00}
+```
+
+Key points in the derivation:
+1) The biprism creates two coherent causal pathways in the network
+2) The fundamental causal coupling g_C drops out in visibility calculation
+3) Decoherence effects are negligible at laboratory scales (l_P is extremely small)
+4) The theory predicts perfect visibility since spacetime emergence doesn't disrupt coherence in this regime
+5) All calculations use the network proper time τ which emerges identical to lab time in this limit
+
+The result aligns with Tonomura's experimental observations of perfect electron interference patterns, now explained through causal network coherence rather than wavefunction propagation in spacetime.

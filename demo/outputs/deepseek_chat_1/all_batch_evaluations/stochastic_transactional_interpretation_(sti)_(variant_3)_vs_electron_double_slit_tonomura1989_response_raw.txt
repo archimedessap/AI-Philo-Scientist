@@ -1,0 +1,8 @@
+Here is the analysis of the electron double-slit experiment using the Stochastic Transactional Interpretation (STI) variant 3:
+
+```json
+{"derivation": "Step 1: Calculate de Broglie wavelength \\(\\lambda_{dB} = \\frac{h}{p}\\) where \\(p = \\sqrt{2m_eE_k}\\) and \\(E_k = 50 keV\\). Using relativistic correction \\(p = \\sqrt{E_k^2/c^2 + 2m_eE_k}\\), we get \\(\\lambda_{dB} = 5.36 \\times 10^{-12} m\\). Step 2: The transactional potential field \\(\\psi\\) forms standing wave patterns between source and screen. The fringe spacing \\(\\Delta x = \\frac{\\lambda_{dB}D}{d}\\) where D=1.5m and effective slit separation d is determined by biprism geometry (estimated \\(d \\approx 1 \\mu m\\)). Step 3: The visibility \\(V = \\frac{I_{max}-I_{min}}{I_{max}+I_{min}}\\) is determined by the normalized overlap integral of offer/confirmation waves: \\(V = \\left|\\int \\psi^\\dagger(\\mathbf{r},t)\\psi(\\mathbf{r},t+\\tau)d^3\\mathbf{r}\\right|\\). Step 4: For pure transactional states (\\lambda_T=0), this reduces to standard quantum prediction \\(V=1\\). With the given parameters (\\lambda_N=0, \\lambda_T=0), we recover the ideal quantum result."}
+{"value": 1.00}
+``` 
+
+Note: The theory's parameters (\\(\lambda_N=0\\), \\(\lambda_T=0\\), \\(\tau=0\\)) default to standard quantum mechanics in this configuration, predicting perfect fringe visibility. Non-zero parameters would introduce decoherence effects reducing visibility, but the given experiment's parameters match the original Tonomura results showing full quantum interference.

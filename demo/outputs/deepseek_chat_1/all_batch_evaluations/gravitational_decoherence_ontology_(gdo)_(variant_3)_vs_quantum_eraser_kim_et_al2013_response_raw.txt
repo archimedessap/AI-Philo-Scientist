@@ -1,0 +1,13 @@
+Here is the analysis of the quantum eraser experiment using Gravitational Decoherence Ontology (GDO):
+
+```json
+{"derivation": "Step 1: Define the entangled photon state before decoherence. For polarization-entangled pairs, the initial state is |\\psi\\rangle = \\frac{1}{\\sqrt{2}}(|H\\rangle_1|V\\rangle_2 + |V\\rangle_1|H\\rangle_2), where |H\\rangle, |V\\rangle are orthogonal polarization states tagging the slits. Step 2: Apply the gravitational decoherence operator \\hat{L}_k = \\sqrt{\\frac{G}{\\Lambda_G c^4}}\\hat{\\rho}_k to the spatial part of the wavefunction. The which-path information creates a mass density difference \\Delta\\rho between paths, leading to decoherence rate \\Gamma_d = \\frac{G}{\\Lambda_G c^4}|\\Delta\\rho|^2. Step 3: Calculate the decohered density matrix \\rho_{dec} = \\frac{1}{2}(|H\\rangle_1|V\\rangle_2\\langle H|_1\\langle V|_2 + |V\\rangle_1|H\\rangle_2\\langle V|_1\\langle H|_2) when which-path information is present (no eraser). Step 4: For the erased case (interference restored), the EOM measurement projects the partner photon onto |\\pm\\rangle = \\frac{1}{\\sqrt{2}}(|H\\rangle \\pm |V\\rangle), canceling the gravitational decoherence effect. The fringe visibility V is then V = \\frac{I_{max} - I_{min}}{I_{max} + I_{min}} = \\exp(-\\Gamma_d t_d), where t_d is the delay time between photon detection and erasure operation. Step 5: For instantaneous erasure (t_d \\rightarrow 0) as in this experiment, V \\rightarrow 1 since \\Gamma_d t_d \\rightarrow 0. The gravitational term becomes negligible when which-path information is erased."}
+{"value": 1.00}
+``` 
+
+The derivation shows that:
+1) Without erasure, gravitational decoherence completely suppresses interference (V=0)
+2) With delayed-choice erasure, interference is fully restored (V=1) because:
+   - The EOM measurement removes the mass-density correlation that caused decoherence
+   - The instantaneous erasure (t_d≈0) makes the exponential suppression term vanish
+3) This aligns with GDO's view that measurement outcomes emerge from gravitationally-selected decoherent histories

@@ -1,0 +1,13 @@
+Here is the analysis of the quantum eraser experiment using the Ontic-Epistemic Dualism Interpretation (Variant 2):
+
+```json
+{"derivation": "Step 1: The ontic quantum field \\Psi describes the entangled photon pair state before measurement. For polarization-entangled photons, the ontic state is \\Psi = \\frac{1}{\\sqrt{2}}(|H\\rangle_1|V\\rangle_2 + |V\\rangle_1|H\\rangle_2), where |H\\rangle and |V\\rangle represent orthogonal polarizations tagging the slits. Step 2: The double-slit setup introduces which-path information through polarization tagging, making the ontic field decohere into epistemic states \\psi_{no\\,eraser} = \\frac{1}{\\sqrt{2}}(|H\\rangle_1\\langle H|_1 \\otimes |V\\rangle_2\\langle V|_2 + |V\\rangle_1\\langle V|_1 \\otimes |H\\rangle_2\\langle H|_2), as the system-observer information capacity I_max is exceeded by the which-path measurement. Step 3: When the eraser is applied (delayed-choice measurement of partner polarization), the projection operator \\mathcal{P}_{I_{max}} enforces information capacity constraints, restoring interference by projecting back to the ontic field \\Psi. The epistemic state becomes \\psi_{eraser} = \\frac{1}{\\sqrt{2}}(|H\\rangle_1|V\\rangle_2 + |V\\rangle_1|H\\rangle_2). Step 4: Fringe visibility V is given by the contrast between the interference pattern and its envelope: V = \\frac{I_{max} - I_{min}}{I_{max} + I_{min}}. For the eraser case, perfect visibility (V=1) is predicted since the ontic field's coherence is fully restored. For no eraser, V=0 as the which-path information destroys interference. Step 5: The thermodynamic parameter \\beta governs the cost of information acquisition, but in this ideal case with perfect polarizers and detectors, \\beta \\rightarrow \\infty (zero cost), so the eraser perfectly restores visibility."}
+{"value": 1.0}
+``` 
+
+The derivation shows how the theory explains the experiment:
+1) The ontic field maintains full entanglement until measurement
+2) Which-path information forces projection to mixed epistemic states (no interference)
+3) The eraser measurement lifts the information constraint, allowing the ontic coherence to reappear
+4) The final visibility depends solely on whether the information capacity limit is enforced (no eraser) or circumvented (eraser)
+5) In this ideal setup, perfect visibility is restored when erasing which-path information

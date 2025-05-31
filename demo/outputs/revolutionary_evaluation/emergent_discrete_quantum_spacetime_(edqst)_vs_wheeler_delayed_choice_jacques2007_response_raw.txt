@@ -1,0 +1,6 @@
+Here is the analysis of the Wheeler delayed-choice experiment using Emergent Discrete Quantum Spacetime (EDQST) theory:
+
+```json
+{"derivation": "Step 1: Represent the photon's path superposition in the network formalism. The initial state is a causal network excitation: $|\\psi_0\\rangle = \\frac{1}{\\sqrt{2}}(|L\\rangle + |R\\rangle)$, where $|L\\rangle, |R\\rangle$ correspond to left/right path subgraphs in the interferometer. Step 2: The unified Hamiltonian acts on this state: $H_{\\text{network}}|\\psi_0\\rangle = \\sum_{i<j}C_{ij}(I_i\\otimes I_j)|\\psi_0\\rangle + \\lambda\\sum_k T_k|\\psi_0\\rangle$. The causal adjacency operators $C_{ij}$ create phase relationships between paths. Step 3: The delayed choice is modeled as a topological constraint $T_{\\text{EOM}}$ applied after the photon enters: $\\partial_t\\rho_{\\text{network}} = -i[H_{\\text{network}}, \\rho_{\\text{network}}] + D(\\rho_{\\text{network}})\\delta(t-t_{\\text{EOM}})$. Step 4: For fringe visibility measurement, we calculate $V = \\frac{P_{\\text{max}} - P_{\\text{min}}}{P_{\\text{max}} + P_{\\text{min}}}$ where $P(a) = \\text{Tr}[\\Pi_a\\rho_{\\text{network}}(t_{\\text{final}})]$. The dissipative term $D(.)$ preserves coherence when the beam splitter is present, yielding maximal visibility."}
+{"value": 1.00}
+```

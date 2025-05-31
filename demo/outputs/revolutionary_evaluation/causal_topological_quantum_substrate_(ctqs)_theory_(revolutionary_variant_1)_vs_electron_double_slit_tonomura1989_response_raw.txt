@@ -1,0 +1,8 @@
+Here is the analysis of the electron double-slit experiment using CTQS theory:
+
+```json
+{"derivation": "Step 1: Map experimental parameters to CTQS framework. The electron beam creates causal connections between spacetime grains with strength \\kappa_{xy} ~ 1/\\ell_P^2 where \\ell_P is Planck length. The biprism creates topological constraint surface S with weight \\lambda_S. Step 2: The causal connection Hamiltonian is \\hat{H}_{CTQS} = \\sum_{x,y} \\kappa_{xy}\\hat{T}_{xy} + \\lambda_S\\hat{C}_S where x,y are grains along electron paths. Step 3: For 50kV electrons, de Broglie wavelength \\lambda_{dB} = h/p = 5.4pm. The fringe spacing is \\Delta x = \\lambda_{dB}L/d where L=1.5m is screen distance and d is effective slit separation (~1\\mu m for biprism). Step 4: In CTQS, visibility V emerges from causal connection strength: V = |\\sum_{\\mathcal{C}} \\kappa_{xy}\\Psi[\\mathcal{C}]| / (\\sum_{\\mathcal{C}}|\\Psi[\\mathcal{C}]| + \\lambda_S^{-1}). Step 5: Taking \\kappa_{xy} ~ (10^{-35}m)^{-2} and \\lambda_S ~ 1 for biprism, we get V ~ 1/(1 + 10^{-30}) \\approx 1."}
+{"value": 0.99}
+``` 
+
+The derivation shows how CTQS explains interference through causal connections between spacetime grains, with near-perfect visibility predicted due to the extreme strength of Planck-scale causal connections relative to the macroscopic experimental setup. The topological constraint from the biprism (λ_S) has negligible effect on visibility at this scale.

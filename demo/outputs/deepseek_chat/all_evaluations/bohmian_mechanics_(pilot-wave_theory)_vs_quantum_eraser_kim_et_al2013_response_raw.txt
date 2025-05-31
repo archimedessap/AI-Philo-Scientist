@@ -1,0 +1,16 @@
+Here is the analysis of the quantum eraser experiment using Bohmian mechanics:
+
+```json
+{"derivation": "Step 1: The entangled photon pair state is |Ψ⟩ = (1/√2)(|H⟩₁|V⟩₂ + |V⟩₁|H⟩₂), where |H⟩ and |V⟩ are orthogonal polarization states tagging the slits. The spatial wavefunction is ψ(x₁,x₂) = (1/√2)(ψ_H(x₁)ψ_V(x₂) + ψ_V(x₁)ψ_H(x₂)). Step 2: The guiding equation for particle positions is ẋ_k = (ħ/m_k)Im[∇_kψ/ψ]. For the double-slit, ψ_H and ψ_V are wavepackets emerging from each slit. Step 3: When which-path information is present (no eraser), the effective wavefunction for each photon collapses to either ψ_H or ψ_V depending on its detected polarization, leading to no interference (fringe visibility = 0). Step 4: When the eraser measures the partner photon in |+⟩ = (1/√2)(|H⟩ + |V⟩) basis, the conditional wavefunction becomes ψ_+(x) = (1/√2)(ψ_H(x) + ψ_V(x)), restoring interference. Step 5: The fringe visibility V = (I_max - I_min)/(I_max + I_min) where I(x) = |ψ_+(x)|² = (1/2)|ψ_H + ψ_V|² shows perfect interference (V = 1)."}
+```
+
+```json
+{"value": 1.00}
+```
+
+The key points in Bohmian mechanics:
+1) The particles always have definite positions but are guided by the wavefunction
+2) The "collapse" comes from effective decoherence of the conditional wavefunction
+3) When which-path info is erased, the guiding wave becomes a superposition of both slits
+4) The trajectories will then show interference since ẋ depends on the phase of ψ_H + ψ_V
+5) Quantum equilibrium ensures the statistical distribution matches |ψ|², giving perfect fringe visibility when interference is restored

@@ -1,0 +1,18 @@
+Here is the analysis of the experiment using the Ontic-Epistemic Dualism Interpretation (Variant 2):
+
+```json
+{"derivation": "Step 1: Calculate the de Broglie wavelength of C70 fullerene. Formula: \\lambda_{dB} = \\frac{h}{mv} where h = 6.626 \\times 10^{-34} Js, m = 840 amu = 1.395 \\times 10^{-24} kg, v = 100 m/s. Result: \\lambda_{dB} = \\frac{6.626 \\times 10^{-34}}{1.395 \\times 10^{-24} \\times 100} = 4.75 \\times 10^{-12} m. Step 2: Determine the Talbot length (self-imaging distance) for the grating. Formula: L_T = \\frac{d^2}{\\lambda_{dB}} where d = 990 nm. Result: L_T = \\frac{(990 \\times 10^{-9})^2}{4.75 \\times 10^{-12}} = 0.206 m. Step 3: Calculate the thermal decoherence time. Formula: \\tau_D = \\frac{\\hbar^2}{2mk_BT\\Lambda^2} where T = 900 K, \\Lambda = grating period = 990 nm. Result: \\tau_D = \\frac{(1.055 \\times 10^{-34})^2}{2 \\times 1.395 \\times 10^{-24} \\times 1.381 \\times 10^{-23} \\times 900 \\times (990 \\times 10^{-9})^2} = 3.27 \\times 10^{-5} s. Step 4: Compute the system-observer information capacity I_max. From the theory's parameters, I_max = 0 bits implies perfect decoherence (complete information saturation). Step 5: Calculate fringe visibility using epistemic projection. Formula: V = e^{-t/\\tau_D} where t = L_T/v = 0.206/100 = 0.00206 s. Result: V = e^{-0.00206/3.27 \\times 10^{-5}} = e^{-63} \\approx 0. The ontic field Ψ undergoes complete projection to epistemic ψ states due to information saturation (I_max = 0), resulting in total loss of interference."}
+```
+
+```json
+{"value": 0.00}
+```
+
+The derivation shows:
+1) The massive C70 molecule has an extremely small de Broglie wavelength (~4.75 pm)
+2) The Talbot-Lau interferometer setup creates interference at ~20.6 cm distance
+3) The high temperature (900 K) environment causes rapid decoherence (~32.7 μs)
+4) With I_max = 0 bits in the theory's parameters, the system immediately decoheres upon observation
+5) The fringe visibility vanishes completely due to thermodynamic information constraints projecting the ontic Ψ field into fully decohered epistemic ψ states
+
+This aligns with the interpretation's core premise that measurement is fundamentally limited by information thermodynamics, and massive objects in warm environments rapidly decohere into classical epistemic states.

@@ -1,0 +1,12 @@
+Here is the step-by-step analysis and calculation using GRW theory:
+
+```json
+{"derivation": "Step 1: Calculate the time-of-flight through interferometer (Δt)\nΔt = grating_period / velocity = (990e-9 m)/(100 m/s) = 9.9e-9 s\n\nStep 2: Compute expected number of GRW hits during Δt\nFor C70 (840 amu), total nucleons N = 840\nTotal collapse rate Λ = N*λ = 840*(1e-16 s^-1) = 8.4e-14 s^-1\nExpected hits = Λ*Δt = 8.4e-14 * 9.9e-9 ≈ 8.316e-22\n\nStep 3: Decoherence factor from GRW hits\nFor each hit, localization operator L_i causes position decoherence:\nD(q) = exp[-(q^2)/(4σ^2)] where q = grating period = 990 nm\nD(990 nm) = exp[-(990e-9)^2/(4*(1e-7)^2)] ≈ exp[-24.5025] ≈ 2.2e-11\n\nStep 4: Overall decoherence\nSince expected hits ≪ 1, probability of any hit ≈ 8.316e-22\nFringe visibility ≈ 1 - P(hit)*(1-D) ≈ 1 - (8.316e-22)*(1-2.2e-11) ≈ 1 - 8.316e-22\n\nStep 5: Final visibility prediction\nV = 1 - O(10^-22) ≈ 1.000 (to machine precision)\n\nPhysical interpretation:\n- The enormous mass (840 amu) is offset by extremely low GRW rate (λ=1e-16)\n- Localization width σ=100 nm comparable to grating period, but hit probability negligible\n- GRW predicts essentially perfect coherence for this experiment"}
+{"value": 1.000}
+``` 
+
+The calculation shows that GRW theory predicts no measurable decoherence in this experiment because:
+1) The total collapse rate Λ = Nλ is extremely small (8.4e-14 s^-1)
+2) The time-of-flight is too short for significant hit probability
+3) Even if a hit occurred, the 100 nm localization width would only partially decohere the 990 nm fringe pattern
+4) The final visibility reduction is of order 10^-22 - completely negligible

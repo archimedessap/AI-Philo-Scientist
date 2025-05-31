@@ -1,0 +1,14 @@
+Here is the analysis of the electron double-slit experiment using Quantum-Holmen Theory:
+
+```json
+{"derivation": "Step 1: Calculate de Broglie wavelength \\(\\lambda_{dB} = h/p\\) where \\(p = \\sqrt{2m_e e V}\\) is the electron momentum. For \\(V = 50\\,\\text{kV}\\), we get \\(\\lambda_{dB} \\approx 5.4\\times10^{-12}\\,\\text{m}\\). Step 2: The interference fringe spacing is \\(\\Delta x = \\lambda_{dB} D/d\\) where \\(D = 1.5\\,\\text{m}\\) is screen distance and \\(d\\) is effective slit separation. Step 3: In Quantum-Holmen theory, the visibility decays as \\(V(t) = \\exp(-\\Gamma t)\\) where \\(\\Gamma = N\\lambda(1 - e^{-a^2/4\\sigma^2})\\), with \\(N=1\\) electron, \\(\\lambda = 10^{-16}\\,\\text{s}^{-1}\\), and \\(a\\) being the wavepacket separation. Step 4: The travel time \\(t = D/v \\approx 25\\,\\text{ns}\\) for 50 keV electrons. Step 5: For \\(\\sigma = 10^{-7}\\,\\text{m}\\) and typical \\(a \\sim 10^{-6}\\,\\text{m}\\), the exponent \\(a^2/4\\sigma^2 \\approx 2.5\\times10^{-12}\\) is negligible, so \\(\\Gamma t \\approx 2.5\\times10^{-6}\\). Step 6: Thus fringe visibility \\(V \\approx 1 - \\Gamma t \\approx 0.9999975\\)."}
+{"value": 0.9999975}
+```
+
+The derivation shows:
+1) Standard calculation of interference pattern
+2) The extremely small collapse rate (\\(\lambda = 10^{-16}\\,\\text{s}^{-1}\\)) and large localization width (\\(\sigma = 10^{-7}\\,\\text{m}\\)) mean the stochastic collapses have negligible effect on fringe visibility
+3) The result is effectively identical to standard quantum mechanics predictions for this experiment
+4) The Bohmian guidance ensures particles follow trajectories that maintain the interference pattern between rare collapse events
+
+The theory predicts essentially perfect fringe visibility (0.9999975) for this experiment, as the parameters make collapse effects undetectable at this scale.

@@ -1,0 +1,70 @@
+# 环境变量和密钥文件
+.env
+.env.*
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+env/
+ENV/
+.venv/
+
+# IDE 文件
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# 日志和缓存
+logs/
+*.log
+.cache/
+.pytest_cache/
+
+# 临时文件
+tmp/
+temp/
+
+# 数据文件（不包括项目示例数据）
+data/*
+!data/examples/
+*.csv
+*.xlsx
+*.json
+!requirements.txt
+!README.md
+!config/*.yaml
+
+# 输出文件
+output/
+results/
+*.png
+*.jpg
+*.pdf
+*.svg
+
+# 局部特有的忽略文件，每个开发者可以自定义
+.gitignore.local 

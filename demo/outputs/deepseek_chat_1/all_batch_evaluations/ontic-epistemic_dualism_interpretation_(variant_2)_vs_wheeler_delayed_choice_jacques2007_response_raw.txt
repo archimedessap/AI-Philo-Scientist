@@ -1,0 +1,18 @@
+Here is the analysis of the Wheeler delayed-choice experiment using the Ontic-Epistemic Dualism Interpretation (Variant 2):
+
+```json
+{"derivation": "Step 1: The ontic quantum field $\\Psi$ enters the Mach-Zehnder interferometer unitarily. The Hamiltonian for the photon in the interferometer is $\\hat{H}_{ontic} = \\hbar \\omega (\\hat{a}_1^\\dagger \\hat{a}_1 + \\hat{a}_2^\\dagger \\hat{a}_2)$, where $\\hat{a}_1, \\hat{a}_2$ are annihilation operators for the two paths. Step 2: The quantum RNG choice occurs after the photon enters, creating a superposition of interferometer configurations. This is represented by the information interaction term $\\hat{I}_{sys-obs} = -i\\hbar \\ln(\\hat{U}_{EOM})$, where $\\hat{U}_{EOM}$ is the modulator's unitary operation. Step 3: The total Hamiltonian becomes $\\hat{H}_{total} = \\hat{H}_{ontic} + \\beta^{-1}\\hat{I}_{sys-obs}$. Step 4: The projection to epistemic states occurs when the which-path information exceeds $I_{max}$. For $I_{max}=0$ (given), this happens immediately, projecting to $\\psi = \\mathcal{P}_{0}\\Psi$. Step 5: The fringe visibility $V$ is given by the coherence term in $\\psi$: $V = |\\langle \\psi_1|\\psi_2 \\rangle| = e^{-\\beta E_{info}}$, where $E_{info}$ is the energy cost of the which-path information. For $\\beta=0$ (given), this reduces to $V = 1$."}
+{"value": 1.00}
+``` 
+
+The derivation shows that:
+1) The ontic field evolves unitarily until measurement
+2) The delayed choice creates superposition of interferometer configurations
+3) With I_max=0, projection to epistemic states happens immediately
+4) The fringe visibility remains maximal (V=1) because β=0 implies no thermodynamic cost to information, preserving full coherence
+5) This matches the experimental observation of full interference even with delayed choice
+
+The key points are:
+- The delayed choice doesn't affect the outcome because the ontic field maintains coherence
+- The epistemic projection preserves interference since no which-path information is actually extracted (I_max=0)
+- The thermodynamic parameter β=0 means information acquisition has no energy cost, so no decoherence occurs

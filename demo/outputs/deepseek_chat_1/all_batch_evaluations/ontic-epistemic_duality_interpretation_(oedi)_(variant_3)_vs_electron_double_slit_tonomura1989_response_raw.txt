@@ -1,0 +1,12 @@
+Here is the analysis of the electron double-slit experiment using the Ontic-Epistemic Duality Interpretation (OEDI):
+
+```json
+{"derivation": "Step 1: Calculate the de Broglie wavelength of electrons. Using the relativistic formula for 50 keV electrons: \\[ \\lambda_{dB} = \\frac{h}{p} = \\frac{h}{\\sqrt{2m_e e V(1 + \\frac{eV}{2m_e c^2})}} \\approx 5.36 \\times 10^{-12}\\,m \\] where $V = 50\\,kV$, $m_e$ is electron mass, and $e$ is electron charge. Step 2: Determine the interference pattern spacing. For a biprism setup (analogous to double-slit with separation $d$), the fringe spacing is: \\[ \\Delta x = \\frac{\\lambda_{dB} L}{d} \\] where $L = 1.5\\,m$ is screen distance. Step 3: Compute fringe visibility in OEDI framework. The generalized visibility is: \\[ V = |\\langle \\psi_{ontic}|\\psi_{epistemic} \\rangle|^2 \\cdot \\sqrt{1 - e^{-D/\\lambda_{OE}}} \\] where $D$ is decoherence factor and $\\lambda_{OE}$ is the ontic-epistemic coupling length. For this pristine experiment (no decoherence), $D \\approx 0$ and $\\lambda_{OE} \\rightarrow \\infty$ (since $\\lambda_{OE} = 0$ in parameters), giving maximum visibility. Step 4: The pure quantum interference pattern gives visibility: \\[ V = \\left| \\int \\psi_{ontic}^*(x)\\psi_{epistemic}(x)dx \\right|^2 = 1 \\] as the ontic and epistemic wavefunctions perfectly overlap in this ideal case."}
+{"value": 1.00}
+``` 
+
+The derivation shows:
+1) Standard calculation of electron wavelength
+2) Interference pattern geometry
+3) Application of OEDI's generalized visibility formula 
+4) Perfect visibility results from complete overlap between ontic quantum potential and epistemic knowledge states in this idealized setup, with zero decoherence and maximal coupling ($\lambda_{OE}=0$ allows perfect information transfer). The theory predicts the same perfect visibility as standard QM but through its dual-aspect mechanism.

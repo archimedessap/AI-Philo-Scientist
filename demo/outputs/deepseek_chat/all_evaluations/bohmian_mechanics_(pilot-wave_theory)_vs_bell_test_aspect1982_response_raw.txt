@@ -1,0 +1,8 @@
+Here is the analysis of the Aspect (1982) Bell test experiment using Bohmian mechanics:
+
+```json
+{"derivation": "Step 1: The experiment uses polarization-entangled photon pairs in the state |ψ⟩ = (|H⟩_A|V⟩_B - |V⟩_A|H⟩_B)/√2. In Bohmian mechanics, this wavefunction guides the particles' trajectories via the guiding equation. Step 2: For photon polarization measurements at angles a and b, the correlation function is E(a,b) = -cos[2(a-b)], derived from the wavefunction's phase gradients. Step 3: The CHSH S-value combines correlations at four angle settings (0°, 22.5°, 45°, 67.5°): S = |E(a,b) - E(a,b') + E(a',b) + E(a',b')|. Step 4: Calculating each term: E(0°,22.5°) = -cos(45°) = -1/√2, E(0°,67.5°) = -cos(135°) = 1/√2, E(45°,22.5°) = -cos(45°) = -1/√2, E(45°,67.5°) = -cos(-45°) = -1/√2. Step 5: Combining: S = |-1/√2 - 1/√2 + (-1/√2) + (-1/√2)| = | -2√2 | = 2√2."}
+{"value": 2.8284271247461903}
+``` 
+
+The derivation shows that Bohmian mechanics predicts the same maximal violation of Bell's inequality (S = 2√2 ≈ 2.828) as standard quantum mechanics, since both theories share the same wavefunction dynamics and correlation predictions. The non-local guidance equation ensures the perfect correlations required for the violation, while maintaining determinism through well-defined particle trajectories.

@@ -1,0 +1,4 @@
+```json
+{"derivation": "Step 1: The experiment involves electrons passing through a biprism (double-slit analog), creating an interference pattern. According to the Copenhagen interpretation, the electron's wavefunction evolves unitarily under the Schrödinger equation until measurement. Step 2: The wavefunction ψ(x) after passing through the biprism is a superposition of two paths, leading to interference. The intensity pattern on the screen is |ψ(x)|², where ψ(x) = ψ₁(x) + ψ₂(x) (paths 1 and 2). Step 3: The fringe visibility V quantifies the contrast of the interference pattern and is given by V = (I_max - I_min)/(I_max + I_min), where I_max and I_min are the maximum and minimum intensities. For a perfect biprism with equal path amplitudes, V = 1. Step 4: The experiment's parameters (50 kV acceleration voltage, 1.5 m screen distance) ensure high coherence and negligible decoherence, so the theoretical prediction is maximal visibility."}
+{"value": 1.00}
+```

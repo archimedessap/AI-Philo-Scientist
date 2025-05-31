@@ -1,0 +1,14 @@
+Here is the analysis of the experiment using the Emergent Discrete Quantum Spacetime (EDQST) theory:
+
+```json
+{"derivation": "Step 1: In EDQST, entangled photon pairs emerge from discrete network dynamics where local information I_i at nodes becomes correlated through causal adjacency operators C_{ij}. The polarization state is an emergent pattern of information flow: |ψ⟩ = (|00⟩ + |11⟩)/√2 = (1/√2)Σ_{i,j} C_{ij}|i⟩⊗|j⟩. Step 2: Measurement projections Π_a correspond to subgraphs in the network. For analyzer angles θ, the projection is Π_θ = |θ⟩⟨θ| = Σ_k e^{ikθ}T_k where T_k encodes topological constraints. Step 3: The correlation function E(a,b) = Tr[Π_a⊗Π_b ρ_network] = Σ_{i,j} C_{ij}⟨i|Π_a|i⟩⟨j|Π_b|j⟩ = cos[2(a-b)] emerges from network information propagation. Step 4: The CHSH S-value combines correlations at different angles: S = |E(0°,22.5°) - E(0°,67.5°) + E(45°,22.5°) + E(45°,67.5°)|. Substituting the correlation function gives S = |cos(-45°) - cos(-135°) + cos(-45°) + cos(-45°)|. Step 5: Calculating: cos(-45°)=√2/2, cos(-135°)=-√2/2 → S = |√2/2 - (-√2/2) + √2/2 + √2/2| = |2√2| ≈ 2.828."}
+{"value": 2.83}
+``` 
+
+The derivation shows how:
+1) Entanglement emerges from causal network correlations
+2) Measurements correspond to information-constrained subgraph projections  
+3) The cosine correlation pattern naturally arises from discrete information dynamics
+4) The CHSH value exceeds classical bounds due to non-local network connectivity
+
+The exact value 2√2 matches standard QM predictions while being derived from fundamentally discrete spacetime dynamics.

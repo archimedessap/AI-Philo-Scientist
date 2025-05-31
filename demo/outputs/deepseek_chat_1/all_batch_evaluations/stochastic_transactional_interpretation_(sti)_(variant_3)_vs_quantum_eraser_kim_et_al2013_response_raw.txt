@@ -1,0 +1,9 @@
+Here is the analysis of the quantum eraser experiment using the Stochastic Transactional Interpretation (STI) variant 3:
+
+```json
+{"derivation": "Step 1: Represent the polarization-entangled photon pair state as a transactional potential field: \n\\[\\psi = \\frac{1}{\\sqrt{2}}(|H\\rangle_1|V\\rangle_2 + |V\\rangle_1|H\\rangle_2)\\]\nwhere $|H\\rangle$ and $|V\\rangle$ are orthogonal polarization states tagging the slits. Step 2: The double-slit setup modifies the transactional potential with path information:\n\\[\\psi_{no\\ eraser} = \\frac{1}{\\sqrt{2}}(\\psi_H|H\\rangle_1|V\\rangle_2 + \\psi_V|V\\rangle_1|H\\rangle_2)\\]\nwhere $\\psi_H$ and $\\psi_V$ are spatial wavefunctions for each slit. The local stochastic field ($\\lambda_N$) destroys interference. Step 3: For the eraser case, the EOM measurement on photon 2 projects the state to:\n\\[\\psi_{eraser} = \\frac{1}{\\sqrt{2}}(\\psi_H + e^{i\\phi}\\psi_V)|D\\rangle_1|D\\rangle_2\\]\nwhere $|D\\rangle$ is a diagonal polarization state. The non-local transactional noise ($\\lambda_T$) now enables interference. Step 4: Calculate fringe visibility from the transactional probability amplitude:\n\\[V = \\frac{P_{max} - P_{min}}{P_{max} + P_{min}} = \\frac{|\\langle \\psi_{eraser}|\\psi_{offer}\\rangle|^2 - |\\langle \\psi_{no\\ eraser}|\\psi_{offer}\\rangle|^2}{|\\langle \\psi_{eraser}|\\psi_{offer}\\rangle|^2 + |\\langle \\psi_{no\\ eraser}|\\psi_{offer}\\rangle|^2}\\]\nStep 5: With perfect polarization entanglement and erasure, the transactional overlap gives:\n\\[V = \\frac{1 - 0}{1 + 0} = 1\\]\nThe theory predicts maximum visibility when non-local transactions are allowed to complete through the eraser measurement."}
+```
+
+```json
+{"value": 1.00}
+```

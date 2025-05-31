@@ -1,0 +1,8 @@
+Here is the analysis of the Wheeler delayed-choice experiment using the Ontic-Epistemic Dualism (OED) interpretation:
+
+```json
+{"derivation": "Step 1: Initialize the dual-layered state for a single photon entering the Mach-Zehnder interferometer. The ontic state is a superposition of paths: |Ψ_ont⟩ = (|A⟩ + |B⟩)/√2, where |A⟩ and |B⟩ represent the two interferometer arms. The epistemic state is initially maximal ignorance: |Ψ_epi⟩ = (|A⟩ + |B⟩)/√2 (κ=1). Step 2: The total Hamiltonian for the system is H_total = H_ontic ⊗ I_epi + I_ont ⊗ H_epi + Γ(Ō_ont ⊗ K̂_epi). For the interferometer, H_ontic describes the beam splitter transformations: H_ontic = (ℏω/2)(|A⟩⟨B| + |B⟩⟨A|). Step 3: The delayed choice is modeled by the measurement operator M̂ which couples the ontic and epistemic layers. When the quantum RNG activates the electro-optic modulator: M̂ = |A⟩⟨A| - |B⟩⟨B| (path measurement). Step 4: The state evolution follows the coupled equations: iℏ∂/∂t|Ψ_ont⟩ = H_ontic|Ψ_ont⟩ + ΓM̂|Ψ_epi⟩ and iℏ∂/∂t|Ψ_epi⟩ = H_epi|Ψ_epi⟩ + ΓM̂†|Ψ_ont⟩. Step 5: For fringe visibility measurement, we calculate the interference term from the probability rule: P(interference) = κ|⟨A|Ψ_epi⟩ + ⟨B|Ψ_epi⟩|² + (1-κ)|⟨A|Ψ_ont⟩ + ⟨B|Ψ_ont⟩|². With κ=1 and Γ=0 (no decoherence), this gives perfect visibility: V = |⟨A|Ψ_epi⟩ + ⟨B|Ψ_epi⟩|² = 1."}
+{"value": 1.00}
+``` 
+
+The derivation shows that in this OED framework with maximal knowledge (κ=1) and no reality coherence effects (Γ=0), the delayed choice doesn't affect the fringe visibility - we recover standard quantum mechanical prediction of perfect interference. The epistemic and ontic states remain synchronized throughout the experiment, maintaining full wave-like behavior.

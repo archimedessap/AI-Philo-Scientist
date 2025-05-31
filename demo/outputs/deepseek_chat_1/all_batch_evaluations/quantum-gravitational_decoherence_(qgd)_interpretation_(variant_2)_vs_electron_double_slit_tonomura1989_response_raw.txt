@@ -1,0 +1,13 @@
+Here is the analysis of the experiment using the Quantum-Gravitational Decoherence (QGD) Interpretation:
+
+```json
+{"derivation": "Step 1: Calculate the electron's de Broglie wavelength \\lambda_{dB} = h/p, where p = \\sqrt{2m_e e V} (non-relativistic approximation for 50 kV acceleration). Using m_e = 9.11\\times10^{-31} kg, e = 1.6\\times10^{-19} C, V = 50\\times10^3 V: \\lambda_{dB} = \\frac{h}{\\sqrt{2m_e e V}} = \\frac{6.63\\times10^{-34}}{\\sqrt{2\\times9.11\\times10^{-31}\\times1.6\\times10^{-19}\\times50\\times10^3}} = 5.49\\times10^{-12} m. Step 2: Estimate gravitational self-energy difference E_G between paths. For electron paths separated by distance d \\approx 1\\mu m (typical biprism separation), E_G \\approx G m_e^2/d = 6.67\\times10^{-11}\\times(9.11\\times10^{-31})^2/10^{-6} = 5.53\\times10^{-65} J. Step 3: Compute decoherence time \\tau_G = \\hbar/E_G = 1.05\\times10^{-34}/5.53\\times10^{-65} = 1.90\\times10^{30} s. Step 4: Compare to experimental timescale t_exp \\approx screen_distance/v_z \\approx 1.5/(\\sqrt{2e V/m_e}) = 1.5/1.33\\times10^8 = 1.13\\times10^{-8} s. Since t_exp/\\tau_G \\approx 10^{-38} \\ll 1, decoherence is negligible. Step 5: Fringe visibility V = exp(-t_exp/\\tau_G) \\approx 1 - (t_exp/\\tau_G) \\approx 1 (full quantum interference). The gravitational self-energy difference is too small to cause measurable decoherence in this setup."}
+{"value": 0.9999999999999999}
+``` 
+
+The derivation shows that:
+1) The electron's quantum wavelength dominates the interference pattern
+2) The gravitational self-energy difference between paths is astronomically small (~10^-65 J)
+3) The resulting decoherence time (~10^30 s) is vastly longer than the experimental timescale
+4) Thus, fringe visibility remains essentially perfect (V≈1) as observed in Tonomura's experiment
+5) This aligns with the theory's prediction that gravitational decoherence only becomes significant for much more massive systems
