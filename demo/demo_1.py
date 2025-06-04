@@ -15,20 +15,21 @@ python demo/demo_1.py --model_source deepseek --model_name deepseek-chat --theor
 python demo/demo_1.py --model_source deepseek --model_name deepseek-chat --theories_json_file data/synthesized_theories/synthesis_20250520_152448/all_synthesized_theories.json --setup_file demo/experiments/c60_double_slit_setup.json --measured_file demo/experiments/c60_double_slit_measured.json --output_dir demo/outputs/deepseek_chat/theories_batch
 
 # 评估单个理论对目录中的所有实验
-python demo/demo_1.py --model_source deepseek --model_name deepseek-chat --theory_file demo/theories/theories_more/copenhagen.json --experiment_dir demo/experiments --output_dir demo/outputs/deepseek_chat/experiments
+python demo/demo_1.py --model_source openai --model_name gpt-4o-mini --theory_file demo/theories/theories_more/copenhagen.json --experiment_dir demo/experiments --output_dir demo/outputs/gpt_4o_mini/experiments --use_instrument_correction
 
 # 评估目录中的所有理论对所有实验
-python demo/demo_1.py --model_source deepseek --model_name deepseek-chat --theory_dir demo/theories/theories_more --experiment_dir demo/experiments --output_dir demo/outputs/deepseek_chat/all_evaluations
+python demo/demo_1.py --model_source deepseek --model_name deepseek-reasoner --theory_dir demo/theories/theories_more --experiment_dir demo/experiments --output_dir demo/outputs/deepseek_reasoner/all_evaluations --use_instrument_correction
 
 # 评估包含多个理论的JSON文件中的所有理论对所有实验
-python demo/demo_1.py --model_source deepseek --model_name deepseek-chat --theories_json_file data/synthesized_theories/synthesis_20250520_152448/all_synthesized_theories.json --experiment_dir demo/experiments --output_dir demo/outputs/deepseek_chat/all_batch_evaluations
+python demo/demo_1.py --model_source deepseek --model_name deepseek-reasoner --theories_json_file data/synthesized_theories/synthesis_20250603_151008/all_synthesized_theories.json --experiment_dir demo/experiments --output_dir demo/outputs/deepseek_reasoner/all_batch_evaluations --use_instrument_correction
 """
 import sys, os, json, asyncio, argparse, glob, re
 from pathlib import Path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from theory_generation.llm_interface import LLMInterface
+from demo.instrument_correction import InstrumentCorrector
 
-async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args, output_prefix=None):
+async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args, output_prefix=None, corrected_setup_exp=None):
     """评估单个理论对单个实验的预测能力"""
     # 获取实验ID
     exp_id = setup_exp["id"]
@@ -154,38 +155,81 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
     
     # 计算与实验值的偏差（使用合并后的完整实验数据）
     chi2 = None
+    chi2_corrected = None
     success = None  # 新增：预测成功标志
+    success_corrected = None  # 仪器修正后的成功标志
     chi2_threshold = args.chi2_threshold if hasattr(args, 'chi2_threshold') else 4.0  # 默认χ²阈值为4
+    
+    # 初始化仪器修正器（如果启用）
+    corrector = None
+    correction_result = None
+    if getattr(args, 'use_instrument_correction', False):
+        corrector = InstrumentCorrector()
     
     if value is not None:
         measured = complete_exp.get("measured", {}).get("value")
         sigma = complete_exp.get("measured", {}).get("sigma")
         if measured is not None and sigma is not None:
+            # 原始χ²计算（无仪器修正）
             chi2 = ((value - measured) / sigma) ** 2
-            # 判断预测是否成功（χ²小于阈值）
             success = chi2 < chi2_threshold
             
-            print(f"χ²值: {chi2:.4f}")
-            print(f"与实验值 {measured} 的偏差: {abs(value - measured):.4f}")
-            print(f"预测结果: {'成功' if success else '失败'} (χ²阈值={chi2_threshold})")
+            # 仪器修正评估（如果启用）
+            if corrector is not None and corrected_setup_exp is not None:
+                # 使用corrected_setup_exp中的仪器参数进行修正
+                correction_result = corrector.evaluate_with_correction(
+                    value, corrected_setup_exp, {"value": measured, "sigma": sigma}
+                )
+                chi2_corrected = correction_result["chi2_corrected"]
+                success_corrected = chi2_corrected < chi2_threshold
+                
+                print(f"原始χ²值: {chi2:.4f}")
+                print(f"修正后χ²值: {chi2_corrected:.4f}")
+                print(f"理论预测值: {value:.4f}")
+                print(f"仪器修正后预测值: {correction_result['corrected_prediction']:.4f}")
+                print(f"实验测量值: {measured:.4f}")
+                print(f"原始偏差: {abs(value - measured):.4f}")
+                print(f"修正后偏差: {abs(correction_result['corrected_prediction'] - measured):.4f}")
+                print(f"原始预测结果: {'成功' if success else '失败'} (χ²阈值={chi2_threshold})")
+                print(f"修正后预测结果: {'成功' if success_corrected else '失败'} (χ²阈值={chi2_threshold})")
+                
+                # 显示仪器参数
+                if "instrument_corrections" in corrected_setup_exp:
+                    inst_params = correction_result["instrument_params"]
+                    print(f"仪器参数: η={inst_params['detection_efficiency']:.3f}, B={inst_params['background_noise']:.3f}, sys={inst_params['systematic_bias']:.3f}")
+            else:
+                # 传统模式输出
+                print(f"χ²值: {chi2:.4f}")
+                print(f"与实验值 {measured} 的偏差: {abs(value - measured):.4f}")
+                print(f"预测结果: {'成功' if success else '失败'} (χ²阈值={chi2_threshold})")
     
     # 创建包含推导和结果的结构化输出
     structured_output = {
         "theory_name": theory_name,
         "experiment_id": exp_id,
         "derivation": derivation,
-        "predicted_value": value,
-        "measured_value": measured_data[exp_id]["value"],
-        "sigma": measured_data[exp_id]["sigma"],
-        "chi2": chi2,
-        "success": success,  # 新增：添加预测成功标志
-        "chi2_threshold": chi2_threshold,  # 新增：记录使用的χ²阈值
+        "predicted_value": float(value),  # 确保是Python原生float
+        "measured_value": float(measured_data[exp_id]["value"]),
+        "sigma": float(measured_data[exp_id]["sigma"]),
+        "chi2": float(chi2),
+        "success": bool(success),  # 确保是Python原生bool
+        "chi2_threshold": float(chi2_threshold),
         "model_info": {
             "source": args.model_source,
             "name": args.model_name,
-            "temperature": args.temperature
+            "temperature": float(args.temperature)
         }
     }
+    
+    # 如果使用了仪器修正，添加相关信息
+    if correction_result is not None:
+        structured_output.update({
+            "corrected_predicted_value": float(correction_result["corrected_prediction"]),
+            "total_sigma": float(correction_result["total_sigma"]),
+            "chi2_corrected": float(chi2_corrected),
+            "success_corrected": bool(success_corrected),  # 确保是Python原生bool
+            "instrument_correction": correction_result["instrument_params"]
+        })
     
     # 保存结构化输出
     output_dir = os.path.dirname(output_file)
@@ -199,7 +243,7 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
     
     return structured_output
 
-def load_experiments_from_directory(experiment_dir):
+def load_experiments_from_directory(experiment_dir, use_instrument_correction=False):
     """从目录中加载所有实验文件，匹配设置和测量数据"""
     print(f"[INFO] 正在从目录 {experiment_dir} 加载实验...")
     
@@ -208,51 +252,83 @@ def load_experiments_from_directory(experiment_dir):
     
     # 分离设置和测量文件
     setup_files = {}
+    setup_corrected_files = {}  # 新增：存储修正版本的文件
     measured_files = {}
     
     for file_path in experiment_files:
         filename = os.path.basename(file_path)
         # 通过文件名判断类型
-        if "setup" in filename:
-            # 提取实验ID（假设格式为 {id}_setup.json）
+        if "setup_corrected" in filename:
+            # setup_corrected.json 文件
+            match = re.match(r"(.+?)_setup_corrected\.json", filename)
+            if match:
+                exp_id = match.group(1)
+                setup_corrected_files[exp_id] = file_path
+        elif "setup" in filename and filename.endswith("_setup.json"):
+            # 原始 setup.json 文件
             match = re.match(r"(.+?)_setup\.json", filename)
             if match:
                 exp_id = match.group(1)
                 setup_files[exp_id] = file_path
         elif "measured" in filename:
-            # 提取实验ID（假设格式为 {id}_measured.json）
+            # 测量数据文件
             match = re.match(r"(.+?)_measured\.json", filename)
             if match:
                 exp_id = match.group(1)
                 measured_files[exp_id] = file_path
     
-    # 找出既有设置又有测量数据的实验ID
-    common_exp_ids = set(setup_files.keys()) & set(measured_files.keys())
-    print(f"[INFO] 找到 {len(common_exp_ids)} 个完整实验数据集")
+    # 根据是否使用仪器修正选择加载策略
+    if use_instrument_correction:
+        # 仪器修正模式：需要同时有原始setup文件和corrected文件
+        common_exp_ids = set(setup_files.keys()) & set(setup_corrected_files.keys()) & set(measured_files.keys())
+        print(f"[INFO] 仪器修正模式：找到 {len(common_exp_ids)} 个完整实验数据集")
+    else:
+        # 非修正模式：优先使用corrected文件（让LLM自己处理），回退到原始文件
+        available_setup_ids = set(setup_corrected_files.keys()) | set(setup_files.keys())
+        common_exp_ids = available_setup_ids & set(measured_files.keys())
+        print(f"[INFO] 标准模式：找到 {len(common_exp_ids)} 个完整实验数据集")
     
     # 加载实验数据
     experiments = {}
+    experiments_corrected = {}  # 新增：存储修正版本的实验设置
     measured_db = {}
     
     for exp_id in common_exp_ids:
         try:
-            # 加载设置
-            with open(setup_files[exp_id], 'r') as f:
-                setup_data = json.load(f)
-            
             # 加载测量数据
             with open(measured_files[exp_id], 'r') as f:
                 measured_data = json.load(f)
-            
-            # 存储数据
-            experiments[exp_id] = setup_data
             measured_db[exp_id] = measured_data
             
-            print(f"[INFO] 已加载实验: {exp_id}")
+            if use_instrument_correction:
+                # 仪器修正模式：分别加载原始和修正版本
+                with open(setup_files[exp_id], 'r') as f:
+                    setup_data = json.load(f)
+                with open(setup_corrected_files[exp_id], 'r') as f:
+                    setup_corrected_data = json.load(f)
+                
+                experiments[exp_id] = setup_data  # 用于LLM纯理论预测
+                experiments_corrected[exp_id] = setup_corrected_data  # 用于仪器修正
+                
+                print(f"[INFO] 已加载实验: {exp_id} (原始+修正设置)")
+            else:
+                # 非修正模式：优先使用corrected，回退到原始
+                if exp_id in setup_corrected_files:
+                    with open(setup_corrected_files[exp_id], 'r') as f:
+                        setup_data = json.load(f)
+                    file_type = "corrected"
+                else:
+                    with open(setup_files[exp_id], 'r') as f:
+                        setup_data = json.load(f)
+                    file_type = "original"
+                
+                experiments[exp_id] = setup_data
+                print(f"[INFO] 已加载实验: {exp_id} (使用{file_type}设置)")
+                
         except Exception as e:
             print(f"[ERROR] 加载实验 {exp_id} 时出错: {str(e)}")
     
-    return experiments, measured_db
+    return experiments, experiments_corrected, measured_db
 
 async def main():
     # 命令行参数解析
@@ -286,6 +362,10 @@ async def main():
                       help="LLM温度参数")
     parser.add_argument("--chi2_threshold", type=float, default=10.0,
                       help="理论预测成功的χ²阈值")
+    parser.add_argument("--use_instrument_correction", action="store_true",
+                      help="是否使用仪器修正（默认关闭，兼容旧版本）")
+    parser.add_argument("--correction_mode", choices=["raw", "corrected", "both"], default="both",
+                      help="评估模式：raw(仅原始)，corrected(仅修正)，both(两者)")
     
     # 输出相关参数
     output_group = parser.add_mutually_exclusive_group(required=True)
@@ -313,7 +393,7 @@ async def main():
     # 加载实验数据
     if args.experiment_dir:
         # 从目录加载多个实验
-        experiments, measured_db = load_experiments_from_directory(args.experiment_dir)
+        experiments, experiments_corrected, measured_db = load_experiments_from_directory(args.experiment_dir, args.use_instrument_correction)
         if not experiments:
             parser.error(f"在目录 {args.experiment_dir} 中未找到有效的实验数据")
     else:
@@ -331,6 +411,7 @@ async def main():
             measured_db = {measured_data["id"]: measured_data}
         
         experiments = {setup_exp["id"]: setup_exp}
+        experiments_corrected = {}  # 单个实验模式下不支持仪器修正
     
     # 加载理论
     if args.theory_dir:
@@ -385,7 +466,7 @@ async def main():
                 
                 # 评估单个理论对单个实验
                 result = await evaluate_theory_experiment(
-                    theory, setup_exp, measured_db, llm, args, output_prefix
+                    theory, setup_exp, measured_db, llm, args, output_prefix, experiments_corrected.get(exp_id)
                 )
                 
                 if result:
@@ -445,6 +526,11 @@ async def main():
             chi2 = result.get("chi2")
             success = result.get("success")
             
+            # 当使用仪器修正时，优先使用修正后的结果
+            if args.use_instrument_correction and "success_corrected" in result:
+                chi2 = result.get("chi2_corrected", chi2)
+                success = result.get("success_corrected", success)
+            
             # 记录χ²得分
             if chi2 is not None:
                 if theory_name not in theory_scores:
@@ -496,6 +582,126 @@ async def main():
         for rank in theory_rankings:
             print(f"{rank['theory_name']:<30} {rank['success_rate']*100:.1f}% {rank['average_chi2']:<10.4f} {rank['experiments_count']:<10}")
         print("-" * 80)
+        
+        # 自动角色评估：对成功率>=80%的理论进行多角色评估
+        high_success_theories = [
+            rank for rank in theory_rankings 
+            if rank['success_rate'] >= 0.8  # 80%成功率阈值
+        ]
+        
+        if high_success_theories:
+            print(f"\n[INFO] 发现 {len(high_success_theories)} 个成功率≥80%的理论，开始角色评估...")
+            
+            # 导入角色评估模块
+            try:
+                import sys
+                sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+                from theory_validation.agent_validation.theory_evaluator import TheoryEvaluator
+                
+                # 初始化角色评估器
+                role_evaluator = TheoryEvaluator(llm)
+                
+                # 创建角色评估输出目录
+                role_output_dir = os.path.join(args.output_dir, "role_evaluations")
+                os.makedirs(role_output_dir, exist_ok=True)
+                
+                role_results = []
+                
+                for rank in high_success_theories:
+                    theory_name = rank['theory_name']
+                    theory_data = theories[theory_name]
+                    
+                    print(f"[INFO] 正在对理论 '{theory_name}' 进行角色评估...")
+                    
+                    try:
+                        # 执行角色评估
+                        role_result = await role_evaluator.evaluate_theory(theory_data, predictor_module=None)
+                        role_result['experiment_success_rate'] = rank['success_rate']
+                        role_result['average_chi2'] = rank['average_chi2']
+                        role_results.append(role_result)
+                        
+                        # 保存单个理论的角色评估结果
+                        theory_role_file = os.path.join(
+                            role_output_dir,
+                            f"{theory_name.replace(' ', '_').lower()}_role_evaluation.json"
+                        )
+                        with open(theory_role_file, "w", encoding="utf-8") as f:
+                            json.dump(role_result, f, ensure_ascii=False, indent=2)
+                        
+                        print(f"[INFO] 理论 '{theory_name}' 的角色评估结果已保存到: {theory_role_file}")
+                        
+                    except Exception as e:
+                        print(f"[ERROR] 评估理论 '{theory_name}' 的角色时出错: {str(e)}")
+                
+                # 保存综合角色评估结果
+                if role_results:
+                    role_summary_file = os.path.join(role_output_dir, "role_evaluation_summary.json")
+                    with open(role_summary_file, "w", encoding="utf-8") as f:
+                        json.dump(role_results, f, ensure_ascii=False, indent=2)
+                    
+                    # 计算综合排名（实验成功率 + 角色评估）
+                    combined_rankings = []
+                    for role_result in role_results:
+                        theory_name = role_result['theory']['name']
+                        
+                        # 计算角色评估平均分
+                        role_scores = [
+                            eval_result['overall_score'] 
+                            for eval_result in role_result['evaluations']
+                            if 'overall_score' in eval_result and eval_result['overall_score'] is not None
+                        ]
+                        avg_role_score = sum(role_scores) / len(role_scores) if role_scores else 0
+                        
+                        # 综合评分 = 实验成功率 * 0.6 + 角色评估分 * 0.4
+                        combined_score = (
+                            role_result['experiment_success_rate'] * 0.6 + 
+                            avg_role_score / 10.0 * 0.4  # 角色评估分通常是1-10分，归一化到0-1
+                        )
+                        
+                        combined_rankings.append({
+                            'theory_name': theory_name,
+                            'experiment_success_rate': role_result['experiment_success_rate'],
+                            'average_chi2': role_result['average_chi2'],
+                            'average_role_score': avg_role_score,
+                            'combined_score': combined_score,
+                            'role_details': {
+                                eval_result['role']: eval_result.get('overall_score', 0)
+                                for eval_result in role_result['evaluations']
+                            }
+                        })
+                    
+                    # 按综合评分排序
+                    combined_rankings.sort(key=lambda x: -x['combined_score'])
+                    
+                    # 保存综合排名
+                    combined_ranking_file = os.path.join(role_output_dir, "combined_rankings.json")
+                    with open(combined_ranking_file, "w", encoding="utf-8") as f:
+                        json.dump(combined_rankings, f, ensure_ascii=False, indent=2)
+                    
+                    print(f"[INFO] 角色评估汇总已保存到: {role_summary_file}")
+                    print(f"[INFO] 综合排名已保存到: {combined_ranking_file}")
+                    
+                    # 打印综合排名
+                    print("\n🏆 综合排名（实验 60% + 角色评估 40%）:")
+                    print("-" * 100)
+                    print(f"{'理论名称':<30} {'实验成功率':<12} {'角色平均分':<12} {'综合评分':<12} {'详细评分'}")
+                    print("-" * 100)
+                    for rank in combined_rankings:
+                        role_detail = ", ".join([f"{role}:{score:.1f}" for role, score in rank['role_details'].items()])
+                        print(f"{rank['theory_name']:<30} {rank['experiment_success_rate']*100:>8.1f}% "
+                              f"{rank['average_role_score']:>10.1f} {rank['combined_score']:>10.3f} {role_detail}")
+                    print("-" * 100)
+                    
+                else:
+                    print("[WARNING] 没有成功完成的角色评估结果")
+                    
+            except ImportError as e:
+                print(f"[ERROR] 无法导入角色评估模块: {str(e)}")
+                print("[INFO] 跳过角色评估步骤")
+            except Exception as e:
+                print(f"[ERROR] 角色评估过程中出错: {str(e)}")
+        else:
+            print("\n[INFO] 没有理论达到80%成功率阈值，跳过角色评估")
 
 if __name__ == "__main__":
     asyncio.run(main())
