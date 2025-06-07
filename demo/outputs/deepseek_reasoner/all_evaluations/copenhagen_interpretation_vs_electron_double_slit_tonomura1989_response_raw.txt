@@ -1,0 +1,90 @@
+### Analysis of the Electron Double-Slit Experiment (Tonomura, 1989) using the Copenhagen Interpretation
+
+The Copenhagen interpretation describes quantum systems via a wavefunction \(\psi\) that evolves unitarily under the Schrödinger equation until measurement, where non-unitary collapse occurs. For the double-slit experiment with electrons:
+- The wavefunction encodes superposition ("potentialities") of the electron passing through both slits simultaneously.
+- Upon measurement (detection at the screen), the wavefunction collapses probabilistically via the Born rule, yielding an interference pattern.
+
+**Key parameters from the experiment**:
+- Particle: Electron (rest mass \(m_e = 9.109 \times 10^{-31}~\text{kg}\)).
+- Acceleration voltage: \(V = 50~\text{kV} = 50,000~\text{V}\).
+- Screen distance: \(L = 1.5~\text{m}\).
+- Observable: Fringe visibility \(V = \frac{I_{\max} - I_{\min}}{I_{\max} + I_{\min}}\).
+
+---
+
+### Step-by-Step Derivation
+
+**Step 1: Relativistic energy-momentum calculation**  
+The electron's kinetic energy \(K = eV\) (where \(e = 1.602 \times 10^{-19}~\text{C}\)). Total energy \(E\) is:  
+\[
+E = K + m_e c^2 = eV + m_e c^2
+\]  
+with \(c = 2.998 \times 10^8~\text{m/s}\). Relativistic momentum \(p\) is:  
+\[
+p = \frac{\sqrt{E^2 - (m_e c^2)^2}}{c}
+\]  
+- **Physical meaning**: \(E\) includes rest energy; \(p\) determines the de Broglie wavelength.
+
+**Step 2: Compute de Broglie wavelength \(\lambda\)**  
+\[
+\lambda = \frac{h}{p} = \frac{h c}{\sqrt{E^2 - (m_e c^2)^2}}
+\]  
+where \(h = 6.626 \times 10^{-34}~\text{J·s}\) is Planck's constant.  
+- **Physical meaning**: \(\lambda\) defines the electron's wave nature, critical for interference.
+
+**Step 3: Calculate numerical values**  
+- \(K = eV = (1.602 \times 10^{-19})(50,000) = 8.010 \times 10^{-15}~\text{J}\)  
+- Rest energy: \(m_e c^2 = (9.109 \times 10^{-31})(2.998 \times 10^8)^2 = 8.187 \times 10^{-14}~\text{J}\)  
+- \(E = 8.010 \times 10^{-15} + 8.187 \times 10^{-14} = 8.988 \times 10^{-14}~\text{J}\)  
+- \(E^2 = (8.988 \times 10^{-14})^2 = 8.079 \times 10^{-27}~\text{J}^2\)  
+- \((m_e c^2)^2 = (8.187 \times 10^{-14})^2 = 6.702 \times 10^{-27}~\text{J}^2\)  
+- \(p = \frac{\sqrt{8.079 \times 10^{-27} - 6.702 \times 10^{-27}}}{2.998 \times 10^8} = \frac{\sqrt{1.377 \times 10^{-27}}}{2.998 \times 10^8} = \frac{3.711 \times 10^{-14}}{2.998 \times 10^8} = 1.238 \times 10^{-22}~\text{kg·m/s}\)  
+- \(\lambda = \frac{6.626 \times 10^{-34}}{1.238 \times 10^{-22}} = 5.352 \times 10^{-12}~\text{m}\)  
+
+**Step 4: Wavefunction evolution**  
+The electron wavefunction \(\psi(y,t)\) evolves under the free-particle Hamiltonian:  
+\[
+\hat{H} = \frac{\hat{p}^2}{2m_e}, \quad i\hbar \frac{\partial \psi}{\partial t} = \hat{H} \psi
+\]  
+After passing through the biprism (double-slit analog), \(\psi\) splits into a superposition:  
+\[
+\psi(y) = \psi_1(y) + \psi_2(y)
+\]  
+where \(\psi_1\) and \(\psi_2\) represent paths from the two virtual slits.  
+- **Physical meaning**: Unitary evolution creates coherent superposition, enabling interference.
+
+**Step 5: Intensity and interference pattern**  
+The screen intensity \(I(y)\) is proportional to \(|\psi(y)|^2\):  
+\[
+I(y) \propto |\psi_1 + \psi_2|^2 = |\psi_1|^2 + |\psi_2|^2 + 2 \text{Re}(\psi_1^* \psi_2)
+\]  
+For identical slits with separation \(d\) (unknown), the phase difference \(\delta = \frac{2\pi d \sin\theta}{\lambda} \approx \frac{2\pi d y}{\lambda L}\) (small-angle approximation). Thus:  
+\[
+I(y) = I_0 \left[ 1 + \cos\left(\frac{2\pi d y}{\lambda L}\right) \right]
+\]  
+- **Physical meaning**: The \(\cos\) term arises from quantum interference; \(I_0\) is baseline intensity.
+
+**Step 6: Fringe visibility**  
+From \(I(y)\):  
+- Maximum intensity: \(I_{\max} = 2I_0\) (at \(\cos = 1\))  
+- Minimum intensity: \(I_{\min} = 0\) (at \(\cos = -1\))  
+Fringe visibility is:  
+\[
+V = \frac{I_{\max} - I_{\min}}{I_{\max} + I_{\min}} = \frac{2I_0 - 0}{2I_0 + 0} = 1
+\]  
+- **Physical meaning**: Ideal visibility \(V=1\) requires perfect coherence, equal amplitudes, and no decoherence—consistent with Copenhagen's unitary evolution before measurement.
+
+**Why \(d\) and \(L\) do not affect \(V\)**:  
+Visibility depends only on wavefunction coherence (amplitude balance and phase stability), not geometric parameters like \(d\) or \(L\). The biprism ensures symmetric paths, so \(V=1\) under ideal conditions.
+
+---
+
+### Conclusion
+Under the Copenhagen interpretation:
+- The wavefunction evolves unitarily, forming a coherent superposition.
+- Measurement collapse creates an interference pattern with ideal visibility \(V=1\), as decoherence is absent in the formalism.
+
+```json
+{"derivation": "Step 1: Calculate the electron's relativistic energy: $E = eV + m_e c^2$ (kinetic + rest energy). Step 2: Compute momentum: $p = \\frac{\\sqrt{E^2 - (m_e c^2)^2}}{c}$. Step 3: Determine de Broglie wavelength: $\\lambda = \\frac{h}{p} = 5.352 \\times 10^{-12}~\\text{m}$. Step 4: Wavefunction $\\psi$ evolves via Schr\u00f6dinger equation $i\\hbar \\partial_t \\psi = \\hat{H} \\psi$; after the biprism, $\\psi = \\psi_1 + \\psi_2$ (superposition). Step 5: Intensity $I(y) \\propto |\\psi_1 + \\psi_2|^2 = I_0 \\left[1 + \\cos\\left(\\frac{2\\pi d y}{\\lambda L}\\right)\\right]$. Step 6: Fringe visibility $V = \\frac{I_{\\max} - I_{\\min}}{I_{\\max} + I_{\\min}} = \\frac{2I_0 - 0}{2I_0 + 0} = 1$ (ideal coherence)."}
+{"value": 1.00}
+```

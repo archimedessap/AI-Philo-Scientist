@@ -1,0 +1,67 @@
+### Analysis using the Copenhagen Interpretation
+
+The Copenhagen Interpretation describes quantum systems via a wavefunction that evolves unitarily under the Schrödinger equation until measurement, at which point non-unitary collapse occurs. For the electron biprism experiment (a double-slit analog), the electron wavefunction propagates through both paths simultaneously, interferes, and the resulting pattern reflects the squared modulus of the wavefunction at the screen.
+
+#### Derivation of Fringe Visibility
+
+**Step 1: Define the wavefunction after the biprism**  
+After passing through the biprism, the electron wavefunction splits into two coherent paths (analogous to double slits). The total wavefunction at the screen is a superposition:  
+\[
+\psi(x) = \psi_1(x) + \psi_2(x)
+\]  
+where \(\psi_1(x)\) and \(\psi_2(x)\) are wavefunctions from the two virtual sources, \(x\) is the position on the screen, and both components have identical amplitudes due to symmetry.
+
+**Step 2: Express wavefunctions with path-dependent phases**  
+Assuming plane-wave propagation (valid for large screen distance \(D = 1.5  \text{m}\)), the wavefunctions are:  
+\[
+\psi_1(x) = \frac{A}{\sqrt{r}} e^{i k r_1}, \quad \psi_2(x) = \frac{A}{\sqrt{r}} e^{i k r_2}
+\]  
+where \(A\) is the amplitude, \(k = 2\pi / \lambda\) is the wavenumber, \(\lambda\) is the de Broglie wavelength, \(r_1\) and \(r_2\) are distances from the virtual sources to \(x\), and \(r \approx D\) for \(D \gg\) source separation. The factor \(1/\sqrt{r}\) ensures normalization but does not affect fringe visibility.
+
+**Step 3: Compute the intensity pattern**  
+The probability density (intensity) at \(x\) is:  
+\[
+I(x) = |\psi(x)|^2 = |\psi_1(x) + \psi_2(x)|^2.
+\]  
+Substituting \(\psi_1\) and \(\psi_2\):  
+\[
+I(x) = \left| \frac{A}{\sqrt{D}} \right|^2 \left| e^{i k r_1} + e^{i k r_2} \right|^2 = \frac{|A|^2}{D} \left( 2 + e^{i k (r_1 - r_2)} + e^{-i k (r_1 - r_2)} \right).
+\]  
+Using \(\cos \theta = \frac{e^{i\theta} + e^{-i\theta}}{2}\):  
+\[
+I(x) = \frac{2|A|^2}{D} \left( 1 + \cos[k \Delta r(x)] \right) = I_0 \left( 1 + \cos \delta \right),
+\]  
+where \(\Delta r(x) = r_1 - r_2\) is the path difference, \(\delta = k \Delta r(x)\) is the phase difference, and \(I_0 = \frac{2|A|^2}{D}\) is the baseline intensity.
+
+**Step 4: Determine maximum and minimum intensity**  
+- Maximum intensity \(I_{\text{max}}\) occurs when \(\cos \delta = 1\):  
+  \[
+  I_{\text{max}} = I_0 (1 + 1) = 2I_0.
+  \]  
+- Minimum intensity \(I_{\text{min}}\) occurs when \(\cos \delta = -1\):  
+  \[
+  I_{\text{min}} = I_0 (1 - 1) = 0.
+  \]  
+
+**Step 5: Calculate fringe visibility**  
+Fringe visibility \(V\) is defined as:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}}.
+\]  
+Substituting values:  
+\[
+V = \frac{2I_0 - 0}{2I_0 + 0} = \frac{2I_0}{2I_0} = 1.
+\]
+
+#### Interpretation
+- **Philosophical aspect**: The wavefunction \(\psi\) encodes potential paths. Measurement collapses \(\psi\) to a position eigenstate, but the statistical distribution (interference) arises from unitary evolution prior to measurement.
+- **Mathematical aspect**: The superposition \(\psi_1 + \psi_2\) and the resulting \(\cos \delta\) term embody interference. Equal amplitudes (\(|\psi_1| = |\psi_2|\)) ensure perfect destructive interference (\(I_{\text{min}} = 0\)), maximizing visibility.
+- **Experimental parameters**: The result \(V = 1\) is independent of \(\lambda\), \(D\), or voltage, as biprism symmetry and coherence preserve full visibility. No decoherence or path information is introduced.
+
+#### Numerical Value
+The fringe visibility is exactly \(1.00\).
+
+### JSON Output
+
+{"derivation": "Step 1: After the biprism, the electron wavefunction is a superposition $\\psi(x) = \\psi_1(x) + \\psi_2(x)$. Step 2: Express wavefunctions as $\\psi_1(x) = \\frac{A}{\\sqrt{r}} e^{i k r_1}$, $\\psi_2(x) = \\frac{A}{\\sqrt{r}} e^{i k r_2}$, with $r \\approx D = 1.5\\ \\text{m}$. Step 3: Intensity $I(x) = |\\psi(x)|^2 = \\frac{2|A|^2}{D} \\left(1 + \\cos[k \\Delta r(x)]\\right) = I_0 (1 + \\cos \\delta)$. Step 4: $I_{\\text{max}} = 2I_0$ at $\\cos \\delta = 1$, $I_{\\text{min}} = 0$ at $\\cos \\delta = -1$. Step 5: Fringe visibility $V = \\frac{I_{\\text{max}} - I_{\\text{min}}}{I_{\\text{max}} + I_{\\text{min}}} = \\frac{2I_0 - 0}{2I_0 + 0} = 1$."}
+{"value": 1.00}

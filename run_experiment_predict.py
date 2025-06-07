@@ -10,7 +10,7 @@ python run_experiment_predict.py --theory_file data/high_quality_theories
 import os
 import argparse
 import json
-from theory_validation.experimetal_validation.experiment_evaluator import ExperimentEvaluator
+from theory_experiment.experiment_evaluator import ExperimentEvaluator
 import glob
 
 def ensure_directory_exists(directory):
@@ -48,7 +48,7 @@ def main():
     
     # 使用try/except包装导入，提供更好的错误信息
     try:
-        from theory_validation.experimetal_validation.experiment_evaluator import ExperimentEvaluator
+        from theory_experiment.experiment_evaluator import ExperimentEvaluator
         # 尝试初始化评估器验证它是否正常工作
         evaluator = ExperimentEvaluator()
         print("[INFO] 成功导入实验评估器")

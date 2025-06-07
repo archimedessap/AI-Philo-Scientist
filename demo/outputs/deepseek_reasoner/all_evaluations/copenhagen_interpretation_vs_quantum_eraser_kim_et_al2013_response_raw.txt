@@ -1,0 +1,86 @@
+### Analysis of the Quantum Eraser Experiment Using the Copenhagen Interpretation
+
+The experiment involves polarization-entangled photon pairs passing through a double slit where orthogonal polarizations tag each slit. The fringe visibility depends on whether which-path information is present (no eraser) or erased (via delayed-choice measurement of the partner photon's polarization). The Copenhagen Interpretation describes the system via unitary evolution and projective collapse upon measurement.
+
+#### Derivation:
+
+**Step 1: Initial Entangled State**  
+The polarization-entangled photon pair (signal and idler) is in the Bell state:  
+\[
+|\Psi\rangle = \frac{1}{\sqrt{2}} \left( |H\rangle_s |V\rangle_i - |V\rangle_s |H\rangle_i \right)
+\]  
+- \( |H\rangle \), \( |V\rangle \): Horizontal and vertical polarization states.  
+- Subscripts \( s \) (signal) and \( i \) (idler).  
+
+**Step 2: Double-Slit Passage and Path Tagging**  
+Slit A imparts \( |H\rangle \) to the signal photon, slit B imparts \( |V\rangle \). Path superposition entangles with polarization:  
+\[
+|\Psi\rangle = \frac{1}{\sqrt{2}} \left( |A\rangle |H\rangle_s |V\rangle_i - |B\rangle |V\rangle_s |H\rangle_i \right)
+\]  
+Since polarization is fixed by the path (\( |A\rangle \equiv |H\rangle_s \), \( |B\rangle \equiv |V\rangle_s \)), this simplifies to:  
+\[
+|\Psi\rangle = \frac{1}{\sqrt{2}} \left( |A\rangle |V\rangle_i - |B\rangle |H\rangle_i \right)
+\]  
+- \( |A\rangle \), \( |B\rangle \): Path states of the signal photon.  
+
+**Step 3: Which-Path Information Present (No Eraser)**  
+The idler is not measured. The signal photon's reduced density matrix (tracing over idler) is:  
+\[
+\rho_s = \text{Tr}_i \left( |\Psi\rangle \langle\Psi| \right) = \frac{1}{2} \left( |A\rangle \langle A| + |B\rangle \langle B| \right)
+\]  
+- Off-diagonal terms vanish due to orthogonality of \( |H\rangle_i \) and \( |V\rangle_i \), indicating no coherence.  
+- **Physical meaning**: The signal photon is a statistical mixture of paths \( A \) and \( B \). No interference fringes; fringe visibility \( V = 0 \).  
+
+**Step 4: Eraser Case (Delayed-Choice Measurement)**  
+The idler is measured in the diagonal basis \( \{ |+\rangle_i, |-\rangle_i \} \), where:  
+\[
+|+\rangle_i = \frac{1}{\sqrt{2}} (|H\rangle_i + |V\rangle_i), \quad |-\rangle_i = \frac{1}{\sqrt{2}} (|H\rangle_i - |V\rangle_i)
+\]  
+Rewriting \( |\Psi\rangle \) in this basis:  
+\[
+|\Psi\rangle = \frac{1}{2} \left[ |+\rangle_i \left( |A\rangle - |B\rangle \right) - |-\rangle_i \left( |A\rangle + |B\rangle \right) \right]
+\]  
+
+**Step 5: Projective Collapse of Signal State**  
+- If idler is measured in \( |+\rangle_i \) (probability \( \frac{1}{2} \)), signal collapses to:  
+  \[
+  |\psi_s^{+}\rangle = \frac{1}{\sqrt{2}} \left( |A\rangle - |B\rangle \right)
+  \]  
+- If idler is measured in \( |-\rangle_i \) (probability \( \frac{1}{2} \)), signal collapses to:  
+  \[
+  |\psi_s^{-}\rangle = \frac{1}{\sqrt{2}} \left( |A\rangle + |B\rangle \right)
+  \]  
+- **Physical meaning**: Measurement "erases" which-path information, restoring coherence in the signal superposition.  
+
+**Step 6: Interference Pattern Calculation**  
+For \( |\psi_s^{+}\rangle \), the screen wavefunction is \( \psi^{+}(x) = \frac{1}{\sqrt{2}} \left( \psi_A(x) - \psi_B(x) \right) \), where:  
+- \( \psi_A(x) = \langle x | A \rangle \), \( \psi_B(x) = \langle x | B \rangle \) are path wavefunctions.  
+- Assuming identical slits: \( \psi_A(x) = \psi_0 e^{i \phi_A(x)} \), \( \psi_B(x) = \psi_0 e^{i \phi_B(x)} \), with \( \delta(x) = \phi_A(x) - \phi_B(x) = \frac{2\pi d x}{\lambda L} \) (path phase difference).  
+Intensity:  
+\[
+I^{+}(x) = \left| \psi^{+}(x) \right|^2 = |\psi_0|^2 \left[ 1 - \cos \delta(x) \right]
+\]  
+Maxima at \( \delta(x) = (2n+1)\pi \), minima at \( \delta(x) = 2n\pi \):  
+\[
+I_{\text{max}}^{+} = 2|\psi_0|^2, \quad I_{\text{min}}^{+} = 0
+\]  
+Fringe visibility:  
+\[
+V^{+} = \frac{I_{\text{max}}^{+} - I_{\text{min}}^{+}}{I_{\text{max}}^{+} + I_{\text{min}}^{+}} = \frac{2|\psi_0|^2 - 0}{2|\psi_0|^2 + 0} = 1
+\]  
+Similarly, for \( |\psi_s^{-}\rangle \), \( I^{-}(x) = |\psi_0|^2 \left[ 1 + \cos \delta(x) \right] \), yielding \( V^{-} = 1 \).  
+
+**Step 7: Overall Fringe Visibility**  
+Conditioning on idler measurement outcomes restores full fringe visibility:  
+\[
+V = 1
+\]  
+- **Philosophical note**: Wavefunction collapse upon idler measurement creates definite coherence in the signal, illustrating the Copenhagen view that properties are realized only at measurement.  
+
+**Final Value**:  
+The predicted fringe visibility when which-path information is erased is \( 1.00 \).
+
+```json
+{"derivation": "Step 1: Initial entangled state: $|\\Psi\\rangle = \\frac{1}{\\sqrt{2}} \\left( |H\\rangle_s |V\\rangle_i - |V\\rangle_s |H\\rangle_i \\right)$. Step 2: After double slit with path tagging: $|\\Psi\\rangle = \\frac{1}{\\sqrt{2}} \\left( |A\\rangle |V\\rangle_i - |B\\rangle |H\\rangle_i \\right)$. Step 3: No eraser (which-path present): Reduced density matrix $\\rho_s = \\frac{1}{2} \\left( |A\\rangle \\langle A| + |B\\rangle \\langle B| \\right)$; visibility $V = 0$. Step 4: Eraser case: Rewrite in diagonal basis $\\{|+\\rangle_i, |-\\rangle_i\\}$: $|\\Psi\\rangle = \\frac{1}{2} \\left[ |+\\rangle_i (|A\\rangle - |B\\rangle) - |-\\rangle_i (|A\\rangle + |B\\rangle) \\right]$. Step 5: Projective collapse: If idler measured in $|+\\rangle_i$, signal state $|\\psi_s^{+}\\rangle = \\frac{1}{\\sqrt{2}} (|A\\rangle - |B\\rangle)$; if $|-\\rangle_i$, $|\\psi_s^{-}\\rangle = \\frac{1}{\\sqrt{2}} (|A\\rangle + |B\\rangle)$. Step 6: Interference for $|\\psi_s^{+}\\rangle$: $\\psi^{+}(x) = \\frac{1}{\\sqrt{2}} (\\psi_A(x) - \\psi_B(x))$, $I^{+}(x) = |\\psi_0|^2 [1 - \\cos \\delta(x)]$, $V^{+} = \\frac{I_{\\text{max}}^{+} - I_{\\text{min}}^{+}}{I_{\\text{max}}^{+} + I_{\\text{min}}^{+}} = 1$ (similarly for $|\\psi_s^{-}\\rangle$). Step 7: Erased which-path information restores full visibility: $V = 1$."}
+{"value": 1.00}
+```

@@ -1,0 +1,66 @@
+### Analysis using GRW Objective-Collapse Theory
+
+The GRW theory posits that wavefunctions undergo spontaneous localizations ("hits") at a rate of λ per particle, with each hit localizing the particle with a Gaussian spatial spread of width σ. For a composite object like a C₇₀ molecule, the total collapse rate scales with the number of constituent particles. Decoherence arises from these hits, suppressing interference by reducing off-diagonal terms in the density matrix. The fringe visibility quantifies this suppression.
+
+**Derivation:**
+
+1. **Total collapse rate for C₇₀:**
+   - C₇₀ has 70 carbon atoms. Each atom has 6 protons, 6 neutrons, and 6 electrons, totaling 18 particles per atom.
+   - Total particles: \( N = 70 \times 18 = 1260 \).
+   - Collapse rate per particle: \( \lambda = 10^{-16}  \text{s}^{-1} \).
+   - Total collapse rate: \( \Lambda = N \lambda = 1260 \times 10^{-16} = 1.26 \times 10^{-13}  \text{s}^{-1} \).
+
+2. **Time of flight in interferometer:**
+   - De Broglie wavelength: \( \lambda_{\text{dB}} = \frac{h}{p} \), where momentum \( p = m v \).
+   - Mass: \( m = 840  \text{amu} = 840 \times 1.660539 \times 10^{-27}  \text{kg} = 1.39485276 \times 10^{-24}  \text{kg} \).
+   - Velocity: \( v = 100  \text{m/s} \).
+   - Momentum: \( p = m v = 1.39485276 \times 10^{-24} \times 100 = 1.39485276 \times 10^{-22}  \text{kg·m/s} \).
+   - Planck's constant: \( h = 6.62607015 \times 10^{-34}  \text{J·s} \).
+   - \( \lambda_{\text{dB}} = \frac{6.62607015 \times 10^{-34}}{1.39485276 \times 10^{-22}} = 4.751 \times 10^{-12}  \text{m} \).
+   - Grating period: \( d = 990  \text{nm} = 9.9 \times 10^{-7}  \text{m} \).
+   - Talbot length: \( L_T = \frac{d^2}{\lambda_{\text{dB}}} = \frac{(9.9 \times 10^{-7})^2}{4.751 \times 10^{-12}} = 0.2063  \text{m} \).
+   - Total interferometer length (first to third grating): \( L_{\text{total}} = 2 L_T = 2 \times 0.2063 = 0.4126  \text{m} \).
+   - Time of flight: \( T = \frac{L_{\text{total}}}{v} = \frac{0.4126}{100} = 0.004126  \text{s} \).
+
+3. **Superposition separation:**
+   - The grating period defines the path separation: \( \Delta x = d = 9.9 \times 10^{-7}  \text{m} \).
+
+4. **Decoherence factor:**
+   - GRW decoherence factor for separation \( \Delta x \):
+     \[
+     D(\Delta x) = \exp\left[ -\Lambda T \left(1 - \exp\left(-\frac{(\Delta x)^2}{4 \sigma^2}\right)\right) \right]
+     \]
+   - Localization width: \( \sigma = 10^{-7}  \text{m} \).
+   - Compute exponent argument:
+     \[
+     \frac{(\Delta x)^2}{4 \sigma^2} = \frac{(9.9 \times 10^{-7})^2}{4 \times (10^{-7})^2} = \frac{9.801 \times 10^{-13}}{4 \times 10^{-14}} = 24.5025
+     \]
+     \[
+     \exp\left(-\frac{(\Delta x)^2}{4 \sigma^2}\right) = \exp(-24.5025) \approx 2.07 \times 10^{-11} \approx 0
+     \]
+     \[
+     1 - \exp\left(-\frac{(\Delta x)^2}{4 \sigma^2}\right) \approx 1 - 0 = 1
+     \]
+   - Thus:
+     \[
+     D(\Delta x) = \exp\left[ -(1.26 \times 10^{-13}) \times 0.004126 \right] = \exp\left(-5.19876 \times 10^{-16}\right)
+     \]
+   - For small \( x \), \( \exp(-x) \approx 1 - x \):
+     \[
+     D(\Delta x) \approx 1 - 5.19876 \times 10^{-16}
+     \]
+
+5. **Fringe visibility:**
+   - The decoherence factor \( D(\Delta x) \) directly gives the fringe visibility \( V \), as it quantifies the suppression of coherence:
+     \[
+     V = D(\Delta x) \approx 1
+     \]
+   - Numerically, \( V = 1.00 \) when rounded to two decimal places.
+
+**Conclusion:**  
+The spontaneous collapses in GRW theory have a negligible effect on fringe visibility for this experiment due to the small total collapse rate (\( \Lambda T \sim 10^{-16} \)) and large separation-to-width ratio (\( \Delta x / \sigma \approx 10 \)). The predicted visibility remains near unity, indicating preserved interference.
+
+**Output:**
+
+{"derivation": "Step 1: Total collapse rate $\\Lambda = N \\lambda$ for C$_{70}$. $N = 70 \\times 18 = 1260$ particles, $\\lambda = 10^{-16} \\, \\mathrm{s^{-1}}$, so $\\Lambda = 1.26 \\times 10^{-13} \\, \\mathrm{s^{-1}}$. Step 2: Time of flight $T = L_{\\mathrm{total}} / v$. Mass $m = 840 \\times 1.660539 \\times 10^{-27} = 1.39485276 \\times 10^{-24} \\, \\mathrm{kg}$, $v = 100 \\, \\mathrm{m/s}$, $p = m v = 1.39485276 \\times 10^{-22} \\, \\mathrm{kg \\cdot m/s}$, $\\lambda_{\\mathrm{dB}} = h / p = 6.62607015 \\times 10^{-34} / 1.39485276 \\times 10^{-22} = 4.751 \\times 10^{-12} \\, \\mathrm{m}$. Grating period $d = 990 \\, \\mathrm{nm} = 9.9 \\times 10^{-7} \\, \\mathrm{m}$, Talbot length $L_T = d^2 / \\lambda_{\\mathrm{dB}} = (9.9 \\times 10^{-7})^2 / (4.751 \\times 10^{-12}) = 0.2063 \\, \\mathrm{m}$, total length $L_{\\mathrm{total}} = 2 L_T = 0.4126 \\, \\mathrm{m}$, $T = 0.4126 / 100 = 0.004126 \\, \\mathrm{s}$. Step 3: Superposition size $\\Delta x = d = 9.9 \\times 10^{-7} \\, \\mathrm{m}$. Step 4: Decoherence factor $D(\\Delta x) = \\exp\\left[-\\Lambda T \\left(1 - \\exp\\left(-\\frac{(\\Delta x)^2}{4 \\sigma^2}\\right)\\right)\\right]$. $\\sigma = 10^{-7} \\, \\mathrm{m}$, $\\frac{(\\Delta x)^2}{4 \\sigma^2} = \\frac{(9.9 \\times 10^{-7})^2}{4 \\times (10^{-7})^2} = 24.5025$, $\\exp(-24.5025) \\approx 0$, so $D(\\Delta x) = \\exp\\left[- (1.26 \\times 10^{-13}) \\times 0.004126 \\right] = \\exp(-5.19876 \\times 10^{-16}) \\approx 1$. Step 5: Fringe visibility $V = D(\\Delta x) = 1.00$ (to two decimal places)."}
+{"value": 1.00}

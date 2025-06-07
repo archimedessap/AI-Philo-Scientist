@@ -1,0 +1,93 @@
+### Analysis of Wheeler's Delayed Choice Experiment using Temporally Symmetric Ontology (TSO)
+
+The experiment involves a Mach-Zehnder interferometer with single photons. A quantum random number generator (RNG) determines whether to insert or remove the output beam splitter *after* the photon enters the interferometer. The observable is fringe visibility, which quantifies interference contrast. TSO, a block-universe interpretation, requires symmetric boundary conditions and a causal potential field for time-symmetric dynamics.
+
+#### Key TSO Principles Applied:
+1. **Block Universe**: The entire experiment is a fixed 4D spacetime manifold. The photon's path, RNG choice, and detection are predetermined by global boundary conditions.
+2. **Causal Potential Field (\(\Phi\))**: Mediates bidirectional influences within light cones, ensuring consistency between initial (\(|\Psi_i\rangle\)) and final (\(|\Psi_f\rangle\)) boundary conditions.
+3. **Measurement Rule**: Probabilities follow the two-state vector formalism: \(P(\lambda) = \frac{|\langle \Psi_f | \Pi_\lambda | \Psi_i \rangle|^2}{\sum_{\lambda'} |\langle \Psi_f | \Pi_{\lambda'} | \Psi_i \rangle|^2}\), where \(\Pi_\lambda\) projects the history with choice \(\lambda\) (insert/remove beam splitter).
+
+---
+
+### Derivation of Fringe Visibility
+
+#### Step 1: Define Boundary Conditions and Initial State
+- **Initial State (\(|\Psi_i\rangle\))**: Photon enters interferometer, and RNG is in superposition:
+  \[
+  |\Psi_i\rangle = |\text{in}\rangle \otimes \frac{|0\rangle + |1\rangle}{\sqrt{2}}
+  \]
+  Here, \(|0\rangle\) (no beam splitter) and \(|1\rangle\) (beam splitter inserted) are RNG states.
+- **Final State (\(|\Psi_f^{\lambda, D_j}\rangle\))**: Post-selected on choice \(\lambda\) and detection at \(D_j\) (where \(j = 1, 2\)):
+  \[
+  |\Psi_f^{\lambda, D_j}\rangle = |D_j\rangle \otimes |\lambda\rangle
+  \]
+  This reflects detection and recorded choice in the block universe.
+
+#### Step 2: Evolution Operator and Amplitudes
+The unitary evolution \(U\) depends on the RNG state \(\lambda\):
+- **For \(\lambda = 0\) (no output beam splitter)**:
+  \[
+  U_0 |\text{in}\rangle = \frac{e^{i\phi} |D_1\rangle + |D_2\rangle}{\sqrt{2}}
+  \]
+- **For \(\lambda = 1\) (beam splitter inserted)**:
+  \[
+  U_1 |\text{in}\rangle = \frac{(e^{i\phi} + i)|D_1\rangle + (i e^{i\phi} + 1)|D_2\rangle}{2}
+  \]
+The amplitude for history \((\lambda, D_j)\) is:
+\[
+A(\lambda, D_j) = \langle \Psi_f^{\lambda, D_j} | U | \Psi_i \rangle = \frac{1}{\sqrt{2}} \langle D_j | U_\lambda | \text{in} \rangle
+\]
+
+#### Step 3: Probability Calculation
+Using TSO’s measurement rule:
+\[
+P(\lambda, D_j) = \frac{|A(\lambda, D_j)|^2}{\sum_{\lambda'=0,1} \sum_{k=1,2} |A(\lambda', D_k)|^2}
+\]
+The denominator sums all histories:
+\[
+\sum_{\lambda', k} |A(\lambda', D_k)|^2 = \frac{1}{2} \sum_{\lambda'} \left( |\langle D_1 | U_{\lambda'} | \text{in} \rangle|^2 + |\langle D_2 | U_{\lambda'} | \text{in} \rangle|^2 \right) = \frac{1}{2} \sum_{\lambda'} 1 = 1
+\]
+since \(U_{\lambda'}\) is unitary. Thus:
+\[
+P(\lambda, D_j) = \frac{1}{2} \left| \langle D_j | U_\lambda | \text{in} \rangle \right|^2
+\]
+Marginal probability for \(\lambda\):
+\[
+P(\lambda) = \sum_j P(\lambda, D_j) = \frac{1}{2} \underbrace{\sum_j \left| \langle D_j | U_\lambda | \text{in} \rangle \right|^2}_{=1} = \frac{1}{2}
+\]
+Conditional probability for detection given \(\lambda\):
+\[
+P(D_j | \lambda) = \frac{P(\lambda, D_j)}{P(\lambda)} = \left| \langle D_j | U_\lambda | \text{in} \rangle \right|^2
+\]
+
+#### Step 4: Detection Probability for \(\lambda = 1\) (Interference Case)
+For \(\lambda = 1\):
+\[
+\langle D_1 | U_1 | \text{in} \rangle = \frac{e^{i\phi} + i}{2}
+\]
+Probability:
+\[
+P(D_1 | \lambda = 1) = \left| \frac{e^{i\phi} + i}{2} \right|^2 = \frac{|e^{i\phi} + i|^2}{4} = \frac{\cos^2\phi + (\sin\phi + 1)^2}{4} = \frac{1 + \sin\phi}{2}
+\]
+- **Maximum**: \(\sin\phi = 1 \Rightarrow P_{\text{max}} = 1\)
+- **Minimum**: \(\sin\phi = -1 \Rightarrow P_{\text{min}} = 0\)
+
+#### Step 5: Fringe Visibility Calculation
+Fringe visibility \(V\) quantifies interference contrast:
+\[
+V = \frac{P_{\text{max}} - P_{\text{min}}}{P_{\text{max}} + P_{\text{min}}}
+\]
+Substitute values:
+\[
+V = \frac{1 - 0}{1 + 0} = 1
+\]
+
+---
+
+### Conclusion
+TSO predicts **fringe visibility \(V = 1\)** when the beam splitter is inserted (\(\lambda = 1\)). This arises from symmetric boundary conditions ensuring the photon exhibits wave-like behavior (full interference) consistent with the final choice. For \(\lambda = 0\), visibility is \(0\) (particle-like behavior), but the observable here is for the interference case. The causal potential \(\Phi\) and parameters \(\kappa, \Phi_0\) ensure global consistency but do not alter standard quantum probabilities in this setup.
+
+{
+  "derivation": "Step 1: Initial state $|\\Psi_i\\rangle = |\\text{in}\\rangle \\otimes \\frac{|0\\rangle + |1\\rangle}{\\sqrt{2}}$ (photon + RNG). Final boundary states $|\\Psi_f^{\\lambda, D_j}\\rangle = |D_j\\rangle \\otimes |\\lambda\\rangle$. Step 2: Evolution $U_0|\\text{in}\\rangle = \\frac{e^{i\\phi}|D_1\\rangle + |D_2\\rangle}{\\sqrt{2}}$, $U_1|\\text{in}\\rangle = \\frac{(e^{i\\phi} + i)|D_1\\rangle + (i e^{i\\phi} + 1)|D_2\\rangle}{2}$. Amplitude $A(\\lambda, D_j) = \\frac{1}{\\sqrt{2}} \\langle D_j | U_\\lambda | \\text{in} \\rangle$. Step 3: $P(\\lambda, D_j) = \\frac{1}{2} \\left| \\langle D_j | U_\\lambda | \\text{in} \\rangle \\right|^2$ (denominator sums to 1). $P(\\lambda) = \\frac{1}{2}$. $P(D_j | \\lambda) = \\left| \\langle D_j | U_\\lambda | \\text{in} \\rangle \\right|^2$. Step 4: For $\\lambda=1$, $P(D_1|\\lambda=1) = \\left| \\frac{e^{i\\phi} + i}{2} \\right|^2 = \\frac{1 + \\sin\\phi}{2}$. $\\max_\\phi P(D_1) = 1$, $\\min_\\phi P(D_1) = 0$. Step 5: Visibility $V = \\frac{1 - 0}{1 + 0} = 1$."
+}
+{"value": 1.00}

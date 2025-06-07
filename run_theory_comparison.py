@@ -11,7 +11,7 @@ import os
 import argparse
 import asyncio
 from theory_generation.llm_interface import LLMInterface
-from theory_generation.theory_comparator import TheoryComparator
+from theory_generation.constraint_embedding.theory_comparator import TheoryComparator
 
 def ensure_directory_exists(directory):
     """确保目录存在，如果不存在则创建"""

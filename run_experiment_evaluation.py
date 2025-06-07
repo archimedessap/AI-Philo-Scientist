@@ -8,8 +8,9 @@ python run_experiment_evaluation.py \
     --theory_file data/synthesized_theories/synthesis_20250516_174112/all_synthesized_theories.json \
     --experiments_path theory_experiment/data/experiments.json \
     --predictor_module theory_experiment.predictors.auto_predictor \
-    --llm_model deepseek-chat \
-    --output_file data/evaluations/experiment_eval.json
+    --model_source deepseek \
+    --model_name deepseek-chat \
+    --output_file data/evaluations/deepseek_chat_eval.json
 """
 import argparse, asyncio, glob, json, os, importlib
 from pathlib import Path
@@ -44,7 +45,7 @@ def main():
     ap.add_argument("--theory_file", help=".json / .jsonl file with theories")
     ap.add_argument("--theory_dir",  help="dir containing *.json theories")
     ap.add_argument("--experiments_path",
-                    default="theory_experiment/data/experiments.jsonl")
+                    default="theory_experiment/data/experiments.json")
     ap.add_argument("--predictor_module",
                     default="theory_experiment.predictors.auto_predictor")
     ap.add_argument("--model_source", 

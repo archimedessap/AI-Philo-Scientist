@@ -12,7 +12,7 @@ import json
 import argparse
 import asyncio
 from theory_generation.llm_interface import LLMInterface
-from core_embedding.embedding import ConceptEmbedder
+from data_preparation.theory_embedding.embedding import ConceptEmbedder
 
 def ensure_directory_exists(directory):
     """确保目录存在，如果不存在则创建"""

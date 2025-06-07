@@ -1,0 +1,69 @@
+### Step-by-Step Derivation Using Emergent Guiding Histories (EGH) Theory
+
+**Step 1: Identify key parameters from the experiment**  
+- Particle mass \(m\): Electron mass \(m = 9.11 \times 10^{-31} \, \text{kg}\)  
+- Acceleration voltage \(V = 50 \, \text{kV} = 50 \times 10^3 \, \text{V}\)  
+- Screen distance \(L = 1.5 \, \text{m}\)  
+- Observable: Fringe visibility \(V\)  
+
+**Step 2: Compute electron wavelength (de Broglie wavelength)**  
+The de Broglie wavelength \(\lambda\) for an electron accelerated by voltage \(V\) is:  
+\[
+\lambda = \frac{h}{\sqrt{2m e V}}
+\]  
+where:  
+- \(h = 6.626 \times 10^{-34} \, \text{J·s}\) (Planck's constant),  
+- \(e = 1.602 \times 10^{-19} \, \text{C}\) (electron charge).  
+Substitute values:  
+\[
+\lambda = \frac{6.626 \times 10^{-34}}{\sqrt{2 \times (9.11 \times 10^{-31}) \times (1.602 \times 10^{-19}) \times (50 \times 10^3)}} = 5.36 \times 10^{-12} \, \text{m}.
+\]  
+
+**Step 3: Fringe spacing in biprism interferometer**  
+For an electron biprism (analogous to double-slit), fringe spacing \(\Delta y\) is:  
+\[
+\Delta y = \frac{\lambda L}{d}
+\]  
+where \(d\) is the effective slit separation. Since \(d\) is unspecified, we retain it symbolically.  
+
+**Step 4: Intensity distribution on screen**  
+In standard quantum mechanics (recovered when \(\kappa = 0\)), the intensity \(I(y)\) is:  
+\[
+I(y) \propto \left| \psi_1 + \psi_2 \right|^2 = I_0 \cos^2\left(\frac{\pi y}{\Delta y}\right)
+\]  
+where \(y\) is the position on the screen.  
+- Maxima: \(I_{\text{max}} = I_0\) (when \(\cos^2 = 1\))  
+- Minima: \(I_{\text{min}} = 0\) (when \(\cos^2 = 0\))  
+
+**Step 5: Fringe visibility formula**  
+Fringe visibility \(V\) is defined as:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}}
+\]  
+Substitute \(I_{\text{max}} = I_0\) and \(I_{\text{min}} = 0\):  
+\[
+V = \frac{I_0 - 0}{I_0 + 0} = 1
+\]  
+
+**Step 6: EGH interpretation with \(\kappa = 0\)**  
+- **Philosophy**: The wave function \(\psi\) is emergent from decoherent history ensembles and guides particle positions via stochastic dynamics.  
+- **Formalism**: The state equation simplifies when \(\kappa = 0\):  
+  \[
+  d\mathbf{X}_t = \frac{\hbar}{m} \nabla S(\mathbf{X}_t, t)  dt + \sqrt{\frac{\hbar}{m}}  d\mathbf{W}_t
+  \]  
+  - \(\nabla S\): Bohm-like guidance term (deterministic drift),  
+  - \(d\mathbf{W}_t\): Wiener noise (quantum fluctuations).  
+- **Measurement**: Probability density \(\rho(\mathbf{x}, t) = |\psi(\mathbf{x}, t)|^2\) emerges from history statistics.  
+- **Key point**: Since \(\kappa = 0\), history interactions vanish, and EGH reproduces standard quantum interference. Decoherent histories ensure \(\rho(\mathbf{x}, t)\) matches the double-slit wave function \(|\psi|^2\), giving \(I_{\text{min}} = 0\) and \(V = 1\).  
+
+**Conclusion**:  
+The EGH theory with \(\kappa = 0\) predicts **full fringe visibility (\(V = 1\))** for an ideal biprism setup, consistent with standard quantum mechanics and the Tonomura experiment.
+
+---
+
+{
+  "derivation": "Step 1: Compute de Broglie wavelength. \[ \lambda = \frac{h}{\sqrt{2m e V}} = \frac{6.626 \times 10^{-34}}{\sqrt{2 \times 9.11 \times 10^{-31} \times 1.602 \times 10^{-19} \times 5 \times 10^4}} = 5.36 \times 10^{-12} \\, \\text{m} \] Step 2: Fringe spacing \( \Delta y = \frac{\lambda L}{d} \) (d: effective slit separation). Step 3: Intensity distribution \( I(y) \\propto \\cos^2\\left(\\frac{\\pi y}{\\Delta y}\\right) \). Thus, \( I_{\\text{max}} = I_0 \), \( I_{\\text{min}} = 0 \). Step 4: Fringe visibility \( V = \\frac{I_{\\text{max}} - I_{\\text{min}}}{I_{\\text{max}} + I_{\\text{min}}} = \\frac{I_0 - 0}{I_0 + 0} = 1 \). Step 5: EGH analysis: With \( \\kappa = 0 \), history interactions vanish. The emergent wave function \( \\psi \) guides particles stochastically, reproducing standard QM. Decoherent histories ensure \( \\rho(\\mathbf{x}, t) = |\\psi|^2 \), yielding perfect interference and \( V = 1 \)."
+}
+{
+  "value": 1.00
+}

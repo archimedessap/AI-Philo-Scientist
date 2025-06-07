@@ -1,0 +1,55 @@
+### Derivation
+The experiment is a Bell test using polarization-entangled photon pairs in the singlet state, analyzed via the Copenhagen interpretation. The CHSH S-value quantifies quantum correlations violating classical bounds.  
+
+**Step 1: Define the entangled state**  
+The photon pairs are in the singlet state:  
+\[
+|\psi^{-}\rangle = \frac{1}{\sqrt{2}} \left( |H\rangle_A \otimes |V\rangle_B - |V\rangle_A \otimes |H\rangle_B \right)
+\]  
+- \(H\): Horizontal polarization, \(V\): Vertical polarization.  
+- Subscripts \(A\) and \(B\) denote Alice’s and Bob’s photons.  
+- The wavefunction encodes superposition; measurement collapses it probabilistically (Born rule).  
+
+**Step 2: Correlation function \(E(a, b)\)**  
+For polarizer angles \(a\) (Alice) and \(b\) (Bob), the correlation is:  
+\[
+E(a, b) = \langle \psi^{-} | (\sigma_a \otimes \sigma_b) | \psi^{-} \rangle
+\]  
+- \(\sigma_\theta\): Measurement operator for angle \(\theta\), defined as \(\sigma_\theta = \cos(2\theta) \sigma_z + \sin(2\theta) \sigma_x\).  
+- \(\sigma_z = |H\rangle\langle H| - |V\rangle\langle V|\), \(\sigma_x = |H\rangle\langle V| + |V\rangle\langle H|\).  
+- Using singlet-state properties:  
+\[
+E(a, b) = -\cos(2(a - b))
+\]  
+- Physical meaning: Correlations arise from wavefunction collapse upon measurement, with outcome probabilities determined by the state’s projection onto measurement eigenstates.  
+
+**Step 3: Assign experiment angles**  
+Given polarizer angles: \(a = 0^\circ\), \(a' = 45^\circ\), \(b = 22.5^\circ\), \(b' = 67.5^\circ\).  
+
+**Step 4: Compute individual correlations**  
+- \(E(a, b) = E(0^\circ, 22.5^\circ) = -\cos(2(0 - 22.5)) = -\cos(-45^\circ) = -\cos(45^\circ) = -\frac{\sqrt{2}}{2}\)  
+- \(E(a, b') = E(0^\circ, 67.5^\circ) = -\cos(2(0 - 67.5)) = -\cos(-135^\circ) = -\cos(135^\circ) = -(-\frac{\sqrt{2}}{2}) = \frac{\sqrt{2}}{2}\)  
+- \(E(a', b) = E(45^\circ, 22.5^\circ) = -\cos(2(45 - 22.5)) = -\cos(45^\circ) = -\frac{\sqrt{2}}{2}\)  
+- \(E(a', b') = E(45^\circ, 67.5^\circ) = -\cos(2(45 - 67.5)) = -\cos(-45^\circ) = -\cos(45^\circ) = -\frac{\sqrt{2}}{2}\)  
+
+**Step 5: Compute CHSH S-value**  
+\[
+S = \left| E(a,b) - E(a,b') + E(a',b) + E(a',b') \right|
+\]  
+Substitute values:  
+\[
+S = \left| \left(-\frac{\sqrt{2}}{2}\right) - \left(\frac{\sqrt{2}}{2}\right) + \left(-\frac{\sqrt{2}}{2}\right) + \left(-\frac{\sqrt{2}}{2}\right) \right| = \left| -\frac{\sqrt{2}}{2} - \frac{\sqrt{2}}{2} - \frac{\sqrt{2}}{2} - \frac{\sqrt{2}}{2} \right| = \left| -4 \cdot \frac{\sqrt{2}}{2} \right| = \left| -2\sqrt{2} \right| = 2\sqrt{2}
+\]  
+- Result \(S = 2\sqrt{2}\) is the theoretical maximum for quantum mechanics, violating the classical CHSH bound \(|S| \leq 2\).  
+
+**Step 6: Numerical value**  
+\[
+2\sqrt{2} \approx 2.828427
+\]  
+- The separation (6.5 m) and random basis switching do not affect the prediction, as wavefunction collapse is instantaneous under Copenhagen interpretation.  
+
+### Value  
+The predicted CHSH S-value is \(2\sqrt{2} \approx 2.828427\).
+
+{"derivation": "Step 1: Entangled state: $|\\psi^{-}\\rangle = \\frac{1}{\\sqrt{2}} \\left( |H\\rangle_A |V\\rangle_B - |V\\rangle_A |H\\rangle_B \\right)$. \\n Step 2: Correlation $E(a, b) = \\langle \\psi^{-} | \\sigma_a \\otimes \\sigma_b | \\psi^{-} \\rangle = -\\cos(2(a - b))$. \\n Step 3: Angles $a = 0^\\circ$, $a' = 45^\\circ$, $b = 22.5^\\circ$, $b' = 67.5^\\circ$. \\n Step 4: $E(a,b) = -\\frac{\\sqrt{2}}{2}$, $E(a,b') = \\frac{\\sqrt{2}}{2}$, $E(a',b) = -\\frac{\\sqrt{2}}{2}$, $E(a',b') = -\\frac{\\sqrt{2}}{2}$. \\n Step 5: $S = \\left| -\\frac{\\sqrt{2}}{2} - \\frac{\\sqrt{2}}{2} - \\frac{\\sqrt{2}}{2} - \\frac{\\sqrt{2}}{2} \\right| = \\left| -2\\sqrt{2} \\right| = 2\\sqrt{2}$."}
+{"value": 2.828427}

@@ -1,0 +1,67 @@
+### Analysis Using Copenhagen Interpretation
+
+The Copenhagen interpretation describes quantum systems via a wavefunction that evolves unitarily under the Schrödinger equation until a measurement occurs, triggering a non-unitary collapse. For the double-slit experiment with electrons, the wavefunction encodes the electron's simultaneous passage through both paths (slits or biprism arms), leading to interference upon detection. The fringe visibility quantifies the contrast of this interference pattern, derived from the probability distribution \(|\psi(x)|^2\).
+
+#### Derivation of Fringe Visibility
+
+**Step 1: Electron wavelength via de Broglie relation**  
+The electron's kinetic energy \(K\) is determined by the acceleration voltage \(V = 50  \text{kV}\):  
+\[
+K = eV = (1.602 \times 10^{-19}  \text{C}) \times (50 \times 10^{3}  \text{V}) = 8.01 \times 10^{-15}  \text{J}.
+\]  
+The rest energy \(E_0 = m_e c^2\) is:  
+\[
+E_0 = (9.109 \times 10^{-31}  \text{kg}) \times (2.998 \times 10^8  \text{m/s})^2 = 8.187 \times 10^{-14}  \text{J}.
+\]  
+The total energy \(E = K + E_0 = 8.988 \times 10^{-14}  \text{J}\). Relativistic momentum \(p\) is:  
+\[
+p = \frac{1}{c} \sqrt{E^2 - E_0^2} = \frac{1}{2.998 \times 10^8} \sqrt{(8.988 \times 10^{-14})^2 - (8.187 \times 10^{-14})^2}.
+\]  
+Computing the difference:  
+\[
+E^2 - E_0^2 = (8.988^2 - 8.187^2) \times 10^{-28} = (80.77 - 67.02) \times 10^{-28} = 13.75 \times 10^{-28}  \text{J}^2.
+\]  
+\[
+\sqrt{E^2 - E_0^2} = \sqrt{1.375 \times 10^{-27}} = 3.708 \times 10^{-14}  \text{J·s/m}, \quad p = \frac{3.708 \times 10^{-14}}{2.998 \times 10^8} = 1.237 \times 10^{-22}  \text{kg·m/s}.
+\]  
+The de Broglie wavelength \(\lambda = h / p\):  
+\[
+\lambda = \frac{6.626 \times 10^{-34}}{1.237 \times 10^{-22}} = 5.357 \times 10^{-12}  \text{m}.
+\]
+
+**Step 2: Wavefunction after biprism**  
+The biprism splits the electron wavefunction into two coherent paths. At the screen (distance \(L = 1.5  \text{m}\)), the wavefunction is a superposition:  
+\[
+\psi(x) = \psi_1(x) + \psi_2(x) = A e^{i \phi_1(x)} + A e^{i \phi_2(x)},
+\]  
+where \(\phi_1(x) = k x \theta_1\), \(\phi_2(x) = k x \theta_2\), \(k = 2\pi / \lambda\), and \(\theta_1, \theta_2\) are angles. For symmetric biprism, \(\theta_1 = -\theta_2 = \theta\), with \(\theta \approx d/(2L)\) (\(d\): virtual source separation). The phase difference is:  
+\[
+\Delta \phi = \phi_1 - \phi_2 = \frac{2\pi}{\lambda} \cdot \frac{d x}{L}.
+\]  
+\[
+\psi(x) = A \left[ e^{i \pi d x / (\lambda L)} + e^{-i \pi d x / (\lambda L)} \right] = 2A \cos\left(\frac{\pi d x}{\lambda L}\right).
+\]
+
+**Step 3: Probability density (Born rule)**  
+The intensity (probability density) is:  
+\[
+I(x) = |\psi(x)|^2 = 4 |A|^2 \cos^2\left(\frac{\pi d x}{\lambda L}\right) = 2 |A|^2 \left[ 1 + \cos\left(\frac{2\pi d x}{\lambda L}\right) \right].
+\]  
+- **Physical meaning**: \(I(x)\) shows constructive (\(I_{\text{max}}\)) and destructive (\(I_{\text{min}}\)) interference from wavefunction superposition.
+
+**Step 4: Fringe visibility**  
+Maximum intensity: \(I_{\text{max}} = 4 |A|^2\) (when \(\cos^2 = 1\)).  
+Minimum intensity: \(I_{\text{min}} = 0\) (when \(\cos^2 = 0\)).  
+Visibility \(V\) is defined as:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}} = \frac{4 |A|^2 - 0}{4 |A|^2 + 0} = 1.
+\]  
+- **Physical meaning**: In the ideal case (equal amplitudes, full coherence), \(V = 1\) indicates perfect contrast. The Copenhagen interpretation attributes this to unitary evolution without decoherence; measurement collapse does not affect pre-measurement interference.
+
+**Conclusion**:  
+The wavefunction’s superposition results in a high-contrast pattern. Experimental imperfections (e.g., path-length differences, decoherence) could reduce \(V\), but the theory predicts \(V = 1\) for an ideal setup.
+
+### Output
+
+{"derivation": "Step 1: Calculate electron wavelength. Kinetic energy: $K = eV = 1.602 \\times 10^{-19} \\times 50 \\times 10^3 = 8.01 \\times 10^{-15} \\text{J}$. Rest energy: $E_0 = m_e c^2 = 9.109 \\times 10^{-31} \\times (2.998 \\times 10^8)^2 = 8.187 \\times 10^{-14} \\text{J}$. Total energy: $E = K + E_0 = 8.988 \\times 10^{-14} \\text{J}$. Momentum: $p = \\frac{1}{c} \\sqrt{E^2 - E_0^2} = \\frac{\\sqrt{(8.988 \\times 10^{-14})^2 - (8.187 \\times 10^{-14})^2}}{2.998 \\times 10^8} = 1.237 \\times 10^{-22} \\text{kg·m/s}$. Wavelength: $\\lambda = h / p = 6.626 \\times 10^{-34} / 1.237 \\times 10^{-22} = 5.357 \\times 10^{-12} \\text{m}$. Step 2: Wavefunction after biprism: $\\psi(x) = 2A \\cos(\\pi d x / (\\lambda L))$. Phase difference arises from path-length variation. Step 3: Probability density via Born rule: $I(x) = |\\psi(x)|^2 = 4 |A|^2 \\cos^2(\\pi d x / (\\lambda L))$. Step 4: Fringe visibility: $I_{\\text{max}} = 4 |A|^2$, $I_{\\text{min}} = 0$, so $V = (I_{\\text{max}} - I_{\\text{min}}) / (I_{\\text{max}} + I_{\\text{min}}) = 1$. Wavefunction superposition under unitary evolution yields perfect visibility in ideal conditions."}  
+{"value": 1.00}

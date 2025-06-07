@@ -1,0 +1,71 @@
+### Step-by-Step Derivation
+
+**Step 1: Calculate the de Broglie wavelength of the electron**  
+The electron is accelerated by a voltage \(V = 50 \, \text{kV} = 50,000 \, \text{V}\). The kinetic energy \(K\) is:  
+\[
+K = e V
+\]  
+where \(e = 1.602 \times 10^{-19} \, \text{C}\) is the electron charge. Substituting values:  
+\[
+K = (1.602 \times 10^{-19}) \times (5.0 \times 10^4) = 8.01 \times 10^{-15} \, \text{J}.
+\]  
+The momentum \(p\) is derived from \(K = \frac{p^2}{2m}\), where \(m = 9.109 \times 10^{-31} \, \text{kg}\) is the electron mass:  
+\[
+p = \sqrt{2mK} = \sqrt{2 \times (9.109 \times 10^{-31}) \times (8.01 \times 10^{-15})} = \sqrt{1.459 \times 10^{-44}} = 1.208 \times 10^{-22} \, \text{kg·m/s}.
+\]  
+The de Broglie wavelength \(\lambda\) is:  
+\[
+\lambda = \frac{h}{p} = \frac{6.626 \times 10^{-34}}{1.208 \times 10^{-22}} = 5.486 \times 10^{-12} \, \text{m}.
+\]  
+**Physical meaning**: \(\lambda\) determines the scale of quantum interference. In Stochastic Decoherent Paths, \(\lambda\) emerges from the wave function \(\Psi\), which guides stochastic particle trajectories via the drift term \(\frac{\hbar}{m} \text{Im}\left(\frac{\nabla \Psi}{\Psi}\right)\).
+
+---
+
+**Step 2: Determine the interference pattern at the screen**  
+The biprism creates two coherent virtual sources (analogous to double slits). The wave function \(\Psi\) at the screen (distance \(D = 1.5 \, \text{m}\)) is a superposition:  
+\[
+\Psi(y) = \Psi_1(y) + \Psi_2(y),
+\]  
+where \(y\) is the position on the screen, and \(\Psi_1, \Psi_2\) are wave functions from each virtual source. The intensity (probability density) is:  
+\[
+I(y) = |\Psi(y)|^2 = |\Psi_1 + \Psi_2|^2.
+\]  
+Assuming symmetric sources with equal amplitude \(A\) and wavelength \(\lambda\), the intensity pattern is:  
+\[
+I(y) = 2A^2 \left[ 1 + \cos\left( \frac{2\pi d y}{\lambda D} \right) \right],
+\]  
+where \(d\) is the effective separation between virtual sources. The term \(\frac{2\pi d y}{\lambda D}\) is the phase difference.  
+
+**Physical meaning**: The wave function \(\Psi\) (ontic field in configuration space) guides stochastic trajectories, resulting in an ensemble distribution \(|\Psi|^2\). The interference term \(\cos(\cdots)\) arises from unitary evolution of \(\Psi\) via the Schrödinger equation.  
+
+---
+
+**Step 3: Compute fringe visibility**  
+Fringe visibility \(V\) quantifies contrast:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}}.
+\]  
+From \(I(y)\):  
+- Maximum intensity \(I_{\text{max}} = 4A^2\) (when \(\cos = +1\)),  
+- Minimum intensity \(I_{\text{min}} = 0\) (when \(\cos = -1\)).  
+Substituting:  
+\[
+V = \frac{4A^2 - 0}{4A^2 + 0} = 1.
+\]  
+
+**Physical meaning**: In Stochastic Decoherent Paths, environmental decoherence is negligible in Tonomura's setup (isolated vacuum, single electrons). Thus:  
+- Trajectories remain guided by \(\Psi\) without path-decoherence.  
+- Decoherent paths (fundamental ontological entities) retain full coherence.  
+- The stochastic term \(\sqrt{\frac{\hbar}{2m}} d\mathbf{W}_t\) in \(d\mathbf{q}\) does not degrade visibility, as ensemble statistics match \(|\Psi|^2\).  
+- Measurement reveals pre-existing positions along coherent paths, yielding ideal visibility \(V = 1\).
+
+---
+
+**Conclusion**: The theory predicts maximum fringe visibility \(V = 1.00\) under ideal conditions (no decoherence).
+
+{
+  "derivation": "Step 1: Calculate de Broglie wavelength. $K = eV = (1.602 \\times 10^{-19}) \\times (5.0 \\times 10^4) = 8.01 \\times 10^{-15} \\text{ J}$, $p = \\sqrt{2mK} = \\sqrt{2 \\times (9.109 \\times 10^{-31}) \\times (8.01 \\times 10^{-15})} = 1.208 \\times 10^{-22} \\text{ kg·m/s}$, $\\lambda = h/p = (6.626 \\times 10^{-34}) / (1.208 \\times 10^{-22}) = 5.486 \\times 10^{-12} \\text{ m}$. Step 2: Interference pattern at screen. $\\Psi(y) = \\Psi_1(y) + \\Psi_2(y)$, $I(y) = |\\Psi|^2 = 2A^2 \\left[ 1 + \\cos\\left( \\frac{2\\pi d y}{\\lambda D} \\right) \\right]$. Step 3: Fringe visibility. $I_{\\text{max}} = 4A^2$, $I_{\\text{min}} = 0$, $V = (I_{\\text{max}} - I_{\\text{min}})/(I_{\\text{max}} + I_{\\text{min}}) = 1$. Theory context: No environmental decoherence; paths remain coherent; $|\\Psi|^2$ distribution emerges from stochastic trajectories."
+}
+{
+  "value": 1.00
+}

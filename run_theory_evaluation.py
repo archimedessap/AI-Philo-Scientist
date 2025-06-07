@@ -12,7 +12,7 @@ import argparse
 import asyncio
 import json
 from theory_generation.llm_interface import LLMInterface
-from theory_generation.theory_evaluator import TheoryEvaluator
+from theory_validation.agent_validation.theory_evaluator import TheoryEvaluator
 import glob
 
 def ensure_directory_exists(directory):

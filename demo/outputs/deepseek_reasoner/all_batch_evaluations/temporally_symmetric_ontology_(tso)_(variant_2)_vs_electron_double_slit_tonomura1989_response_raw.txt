@@ -1,0 +1,83 @@
+### Step-by-Step Derivation Using Temporally Symmetric Ontology (TSO)
+
+**Step 1: Establish boundary conditions and initial state**  
+In TSO, the electron's evolution is governed by initial (\(|\Psi_i\rangle\)) and final (\(|\Psi_f\rangle\)) boundary conditions in the block universe. For the double-slit experiment:  
+- \(|\Psi_i\rangle\): Electron wavefunction at the source (time \(t_i\)), modeled as a Gaussian wavepacket with momentum corresponding to 50 keV kinetic energy.  
+- \(|\Psi_f\rangle\): Projection onto the screen at \(t_f\), represented by position eigenstates \(|y\rangle\) at distance \(L = 1.5  \text{m}\).  
+
+The causal potential \(\Phi(\mathbf{x}, t)\) mediates bidirectional influences and satisfies:  
+\[
+\square \Phi(\mathbf{x}, t) = \Phi_0 |\Psi(\mathbf{x}, t)|^2
+\]  
+where \(\square = \frac{1}{c^2}\frac{\partial^2}{\partial t^2} - \nabla^2\) is the d'Alembert operator. For non-relativistic electrons (justified below), \(\square \approx -\nabla^2\).
+
+**Step 2: Compute de Broglie wavelength**  
+Electron energy: \(E = 50  \text{kV} \times e = 8.01 \times 10^{-15}  \text{J}\).  
+Relativistic effects are marginal (rest energy \(m_e c^2 = 511  \text{keV} \gg 50  \text{keV}\)), so use non-relativistic momentum:  
+\[
+p = \sqrt{2m_e E} = \sqrt{2 \times (9.11 \times 10^{-31}) \times (8.01 \times 10^{-15})} \approx 1.21 \times 10^{-22}  \text{kg·m/s}
+\]  
+De Broglie wavelength:  
+\[
+\lambda = \frac{h}{p} = \frac{6.63 \times 10^{-34}}{1.21 \times 10^{-22}} \approx 5.48  \text{pm}
+\]
+
+**Step 3: Wavefunction without causal coupling (\(\kappa = 0\))**  
+The unperturbed wavefunction \(\Psi_0\) evolves under \(\hat{H}_{\text{QM}}\) (free particle + biprism potential). For a symmetric biprism (effective slit separation \(d\)), the screen wavefunction is:  
+\[
+\Psi_0(y) = \frac{1}{\sqrt{2}} \left[ \psi_1(y) + \psi_2(y) \right]
+\]  
+where \(\psi_{1,2}(y)\) are plane waves from each virtual source. Intensity:  
+\[
+I_0(y) = |\Psi_0(y)|^2 = I_0 \left[ 1 + \cos\left( \frac{2\pi y d}{\lambda L} \right) \right]
+\]  
+Fringe visibility (standard QM):  
+\[
+V_0 = \frac{I_{\max} - I_{\min}}{I_{\max} + I_{\min}} = 1
+\]
+
+**Step 4: Causal potential correction**  
+The causal term in the Hamiltonian:  
+\[
+\hat{H}' = \kappa \int d^3\mathbf{x}'  \Phi(\mathbf{x}, t)  \Phi(\mathbf{x}', t')  \hat{\rho}(\mathbf{x}') \delta(s^2_{xx'})
+\]  
+For a single electron, \(\hat{\rho}(\mathbf{x}') = |\mathbf{x}'\rangle\langle\mathbf{x}'|\). The light-cone delta \(\delta(s^2_{xx'})\) restricts interactions to spacelike/timelike separations. In steady-state, \(\Phi\) solves:  
+\[
+\nabla^2 \Phi(\mathbf{x}) = -\Phi_0 |\Psi(\mathbf{x})|^2
+\]  
+This is a Poisson equation; \(\Phi\) is proportional to \(|\Psi|^2\). For small \(\kappa\), perturbation theory gives:  
+\[
+\Psi \approx \Psi_0 + \kappa \Psi_1, \quad \Phi \approx \Phi_0 \nabla^{-2} |\Psi_0|^2
+\]  
+The first-order correction \(\kappa \Psi_1\) introduces nonlinearity, potentially reducing coherence. However, TSO requires boundary-consistent histories:  
+\[
+P(y) = \frac{ | \langle \Psi_f | \Pi_y | \Psi_i \rangle |^2 }{ \sum_{y'} | \langle \Psi_f | \Pi_{y'} | \Psi_i \rangle |^2 }
+\]  
+where \(\Pi_y = |y\rangle\langle y|\). Global consistency preserves phase coherence.
+
+**Step 5: Estimate causal term magnitude**  
+Parameters \(\kappa\) (causal coupling) and \(\Phi_0\) (potential amplitude) are unknown. The correction scale:  
+\[
+\frac{ |\hat{H}' \Psi| }{ |\hat{H}_{\text{QM}} \Psi| } \sim \kappa \Phi_0^2 \, \ell^3
+\]  
+where \(\ell\) is the characteristic length (\(\sim \lambda\)). Without empirical constraints, \(\kappa \Phi_0^2 \to 0\) to match established experiments (Tonomura 1989). Thus:  
+\[
+\hat{H}_{\text{total}} \approx \hat{H}_{\text{QM}}, \quad V \approx V_0 = 1
+\]
+
+**Step 6: Fringe visibility prediction**  
+For symmetric boundary conditions and negligible \(\kappa\), TSO reproduces standard visibility:  
+\[
+V = \frac{4A^2 - 0}{4A^2 + 0} = 1
+\]  
+where \(A\) is the amplitude from each slit.
+
+### Final Numerical Value  
+Fringe visibility \(V = 1.00\) (ideal case, no decoherence).
+
+{
+  "derivation": "Step 1: Boundary conditions: $|\\Psi_i\\rangle$ (electron at source) and $|\\Psi_f\\rangle$ (screen projection). Causal potential $\\Phi$ solves $\\square \\Phi = \\Phi_0 |\\Psi|^2$. Non-relativistic approximation valid. \\ Step 2: de Broglie wavelength: $E = 50\\ \\text{keV}$, $p = \\sqrt{2m_eE} \\approx 1.21 \\times 10^{-22}\\ \\text{kg·m/s}$, $\\lambda = h/p \\approx 5.48\\ \\text{pm}$. \\ Step 3: Unperturbed wavefunction $\\Psi_0(y) = \\frac{1}{\\sqrt{2}}[\\psi_1(y) + \\psi_2(y)]$, intensity $I_0(y) = I_0[1 + \\cos(2\\pi y d / \\lambda L)]$, standard visibility $V_0 = 1$. \\ Step 4: Causal Hamiltonian $\\hat{H}' = \\kappa \\int d^3\\mathbf{x}'  \\Phi(\\mathbf{x}, t)  \\Phi(\\mathbf{x}', t')  \\hat{\\rho}(\\mathbf{x}') \\delta(s^2_{xx'})$. Boundary-consistent histories preserve coherence: $P(y) = |\\langle \\Psi_f | \\Pi_y | \\Psi_i \\rangle|^2 / \\sum_{y'} |\\langle \\Psi_f | \\Pi_{y'} | \\Psi_i \\rangle|^2$. \\ Step 5: Perturbation scale $|\\hat{H}' \\Psi| / |\\hat{H}_{\\text{QM}} \\Psi| \\sim \\kappa \\Phi_0^2 \\ell^3$. Unknown $\\kappa$, $\\Phi_0$ default to $0$ to match experiments. \\ Step 6: Visibility $V = 1$ for symmetric setup."
+}
+{
+  "value": 1.00
+}

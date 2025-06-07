@@ -12,7 +12,7 @@ import os
 import json
 import csv
 from typing import Dict, List, Tuple, Any, Optional
-from .llm_interface import LLMInterface
+from theory_generation.llm_interface import LLMInterface
 import re
 
 class PriorTheoryGenerator:

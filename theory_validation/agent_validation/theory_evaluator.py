@@ -38,7 +38,7 @@ class TheoryEvaluator:
         
         # 安全导入验证器
         try:
-            from theory_validation.experimetal_validation.schema_validator import SchemaValidator
+            from theory_experiment.experimetal_validation.schema_validator import SchemaValidator
             self.schema_validator = SchemaValidator()
         except ImportError:
             # 如果导入失败，创建一个简单的替代验证器

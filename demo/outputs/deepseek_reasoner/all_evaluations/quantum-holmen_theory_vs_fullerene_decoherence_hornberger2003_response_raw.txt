@@ -1,0 +1,52 @@
+### Analysis using Quantum-Holmen Theory
+
+The experiment involves a C70 fullerene molecule (mass 840 amu) in a Talbot-Lau interferometer with a grating period of 990 nm, average velocity 100 m/s, and a high-vacuum environment with a thermal source at 900 K. The observable is fringe visibility, which quantifies interference contrast. Quantum-Holmen Theory combines objective wavefunction collapse (via stochastic localization events) with Bohmian guidance. Key parameters are the collapse rate per particle λ = 10⁻¹⁶ s⁻¹ and localization width σ = 10⁻⁷ m. Decoherence arises from stochastic collapses, reducing fringe visibility. The thermal environment is ignored as the theory focuses solely on collapse-induced decoherence.
+
+#### Derivation of Fringe Visibility
+
+**Step 1: Total collapse rate for C70**  
+C70 has 70 carbon atoms, each with 12 nucleons, totaling N = 840 nucleons. Collapses occur independently per nucleon. The total collapse rate Λ is:  
+$$\Lambda = \lambda N = (10^{-16}  \text{s}^{-1}) \times 840 = 8.4 \times 10^{-14}  \text{s}^{-1}$$  
+*Physical meaning*: Λ is the expected number of collapse events per second for the entire molecule.
+
+**Step 2: Characteristic interference separation**  
+The grating period d = 990 nm defines the spatial separation between interfering paths:  
+$$\Delta x = d = 990  \text{nm} = 9.9 \times 10^{-7}  \text{m}$$  
+*Physical meaning*: Δx is the distance over which coherence must be maintained for interference.
+
+**Step 3: Decoherence rate Γ**  
+Each collapse reduces coherence. The decoherence rate depends on Δx and σ:  
+$$\Gamma = \Lambda \left[1 - \exp\left(-\frac{(\Delta x)^2}{4\sigma^2}\right)\right]$$  
+Substitute values:  
+$$\frac{(\Delta x)^2}{4\sigma^2} = \frac{(9.9 \times 10^{-7})^2}{4 \times (10^{-7})^2} = \frac{9.801 \times 10^{-13}}{4 \times 10^{-14}} = 24.5025$$  
+$$\exp(-24.5025) \approx 1.97 \times 10^{-11}$$  
+Thus,  
+$$\Gamma = 8.4 \times 10^{-14} \times (1 - 1.97 \times 10^{-11}) \approx 8.4 \times 10^{-14}  \text{s}^{-1}$$  
+*Physical meaning*: Γ quantifies the exponential decay rate of coherence due to collapses. The separation Δx ≫ σ, so localization is strong, and Γ ≈ Λ.
+
+**Step 4: Time of flight t**  
+The time during which decoherence accumulates is the traversal time through the interferometer. The Talbot length Z_T characterizes the interference revival distance:  
+$$Z_T = \frac{2d^2}{\lambda_{\text{dB}}}, \quad \lambda_{\text{dB}} = \frac{h}{mv}$$  
+Mass \(m = 840 \times 1.660539 \times 10^{-27}  \text{kg} = 1.39485 \times 10^{-24}  \text{kg}\), velocity \(v = 100  \text{m/s}\):  
+$$\lambda_{\text{dB}} = \frac{6.62607015 \times 10^{-34}}{(1.39485 \times 10^{-24}) \times 100} = 4.751 \times 10^{-12}  \text{m}$$  
+$$Z_T = \frac{2 \times (9.9 \times 10^{-7})^2}{4.751 \times 10^{-12}} = 0.4126  \text{m}$$  
+Time of flight:  
+$$t = \frac{Z_T}{v} = \frac{0.4126}{100} = 4.126 \times 10^{-3}  \text{s}$$  
+*Physical meaning*: t is the duration over which collapses degrade coherence.
+
+**Step 5: Decoherence factor D**  
+The fringe visibility equals the decoherence factor, which decays exponentially:  
+$$D = \exp(-\Gamma t) = \exp\left(-(8.4 \times 10^{-14}) \times (4.126 \times 10^{-3})\right) = \exp(-3.4658 \times 10^{-16})$$  
+For small exponents, \(\exp(-x) \approx 1 - x\):  
+$$D \approx 1 - 3.4658 \times 10^{-16}$$  
+*Physical meaning*: D represents the fraction of coherence remaining. Bohmian trajectories guide particles but do not affect visibility decay, which is governed solely by collapse-induced wavefunction localization.
+
+**Step 6: Fringe visibility**  
+The predicted fringe visibility is D. Since \(3.4658 \times 10^{-16}\) is negligible, D ≈ 1.00:  
+$$\text{fringe visibility} \approx 1.00$$  
+*Physical meaning*: Collapse effects are minuscule; coherence is preserved, and interference remains near-maximal.
+
+### JSON Output
+
+{"derivation": "Step 1: Total collapse rate $\\Lambda = \\lambda N = 10^{-16} \\times 840 = 8.4 \\times 10^{-14}  \\mathrm{s}^{-1}$ ($N=840$ nucleons). \\n Step 2: Interference separation $\\Delta x = d = 990  \\mathrm{nm} = 9.9 \\times 10^{-7}  \\mathrm{m}$. \\n Step 3: Decoherence rate $\\Gamma = \\Lambda \\left[1 - \\exp\\left(-\\frac{(\\Delta x)^2}{4\\sigma^2}\\right)\\right] = 8.4 \\times 10^{-14} \\left[1 - \\exp\\left(-\\frac{(9.9 \\times 10^{-7})^2}{4 \\times (10^{-7})^2}\\right)\\right] \\approx 8.4 \\times 10^{-14}  \\mathrm{s}^{-1}$ (since $\\Delta x / \\sigma = 9.9$). \\n Step 4: Time of flight $t = Z_T / v$, $\\lambda_{\\text{dB}} = h / (m v) = 6.62607015 \\times 10^{-34} / (1.39485 \\times 10^{-24} \\times 100) = 4.751 \\times 10^{-12}  \\mathrm{m}$, $Z_T = 2 d^2 / \\lambda_{\\text{dB}} = 2 \\times (9.9 \\times 10^{-7})^2 / (4.751 \\times 10^{-12}) = 0.4126  \\mathrm{m}$, $t = 0.4126 / 100 = 4.126 \\times 10^{-3}  \\mathrm{s}$. \\n Step 5: Decoherence factor $D = \\exp(-\\Gamma t) = \\exp(-8.4 \\times 10^{-14} \\times 4.126 \\times 10^{-3}) = \\exp(-3.4658 \\times 10^{-16}) \\approx 1 - 3.4658 \\times 10^{-16}$. \\n Step 6: Fringe visibility $V = D \\approx 1.00$ (collapse effects negligible)."}
+{"value": 1.00}

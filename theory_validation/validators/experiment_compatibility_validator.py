@@ -27,7 +27,7 @@ class ExperimentCompatibilityValidator:
         
         # 导入已有的实验评估器
         try:
-            from theory_validation.experimetal_validation.experiment_evaluator import ExperimentEvaluator
+            from theory_experiment.experiment_evaluator import ExperimentEvaluator
             self.experiment_evaluator = ExperimentEvaluator(experiments_path)
             print(f"[INFO] 已成功加载实验评估器")
         except ImportError:

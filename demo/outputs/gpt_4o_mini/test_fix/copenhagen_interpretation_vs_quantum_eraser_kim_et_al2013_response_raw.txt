@@ -1,0 +1,104 @@
+### Analysis Using the Copenhagen Interpretation
+
+The experiment involves polarization-entangled photon pairs passing through a double-slit setup where each slit tags the photon with orthogonal polarizations (e.g., slit 1: horizontal \(|H\rangle\), slit 2: vertical \(|V\rangle\)). The "eraser" is implemented via delayed-choice measurement of the partner photon's polarization, controlled by an electro-optic modulator (EOM). The fringe visibility quantifies the contrast in the interference pattern, which depends on the presence or absence of which-path information.
+
+#### Key Principles of Copenhagen Interpretation:
+- **Wavefunction (\(\psi\))**: Describes the quantum state and evolves unitarily via the Schrödinger equation.
+- **Measurement**: Causes non-unitary collapse to an eigenstate, with probabilities given by the Born rule.
+- **Entanglement**: The state of the photons is non-separable; measuring one photon instantaneously affects the other, even at a distance.
+
+#### Derivation of Fringe Visibility:
+
+**Step 1: Initial Entangled State**  
+The polarization-entangled photon pair (photons A and B) is prepared in the Bell state:  
+\[
+|\Psi\rangle = \frac{1}{\sqrt{2}} \left( |H\rangle_A |V\rangle_B + |V\rangle_A |H\rangle_B \right)
+\]  
+- **Semantics**: \(\psi\) encodes the superposition of both photons having complementary polarizations.
+
+**Step 2: Double-Slit Tagging**  
+Photon A passes through the slits, with path information tagged by polarization:  
+- Slit 1: \(| \text{path}_1 \rangle |H\rangle_A\)  
+- Slit 2: \(| \text{path}_2 \rangle |V\rangle_A\)  
+The spatial wavefunctions after the slits are \(\psi_1(\mathbf{r})\) (slit 1) and \(\psi_2(\mathbf{r})\) (slit 2). The full state becomes:  
+\[
+|\Psi\rangle = \frac{1}{\sqrt{2}} \left( \psi_1(\mathbf{r}) |H\rangle_A |V\rangle_B + \psi_2(\mathbf{r}) |V\rangle_A |H\rangle_B \right)
+\]  
+- **Semantics**: The wavefunction now includes path-polarization correlations, enabling which-path information.
+
+**Step 3: Measurement Without Eraser (Which-Path Information Present)**  
+If photon B is measured in the \(\{|H\rangle_B, |V\rangle_B\}\) basis:  
+- Measuring \(|H\rangle_B\) collapses photon A to \(\psi_2(\mathbf{r}) |V\rangle_A\) (path 2).  
+- Measuring \(|V\rangle_B\) collapses photon A to \(\psi_1(\mathbf{r}) |H\rangle_A\) (path 1).  
+The spatial probability density for photon A at position \(\mathbf{r}\) is:  
+\[
+P_{\text{no eraser}}(\mathbf{r}) = \frac{1}{2} |\psi_1(\mathbf{r})|^2 + \frac{1}{2} |\psi_2(\mathbf{r})|^2
+\]  
+- **Semantics**: Collapse destroys interference; the result is a sum of single-slit patterns with **fringe visibility \(V = 0\)**.
+
+**Step 4: Measurement With Eraser (Which-Path Information Erased)**  
+Photon B is measured in the diagonal basis \(\{|+\rangle_B, |-\rangle_B\}\), where:  
+\[
+|+\rangle_B = \frac{1}{\sqrt{2}} (|H\rangle_B + |V\rangle_B), \quad |-\rangle_B = \frac{1}{\sqrt{2}} (|H\rangle_B - |V\rangle_B)
+\]  
+Rewriting the entangled state in this basis:  
+\[
+|\Psi\rangle = \frac{1}{2} \left[ |+\rangle_B \left( \psi_1 |H\rangle_A + \psi_2 |V\rangle_A \right) + |-\rangle_B \left( -\psi_1 |H\rangle_A + \psi_2 |V\rangle_A \right) \right]
+\]  
+
+**Step 5: Collapse and Conditional Interference**  
+- **Case 1**: Photon B measured as \(|+\rangle_B\). Photon A collapses to:  
+  \[
+  |\phi_{+}\rangle_A = \frac{1}{\sqrt{2}} \left( \psi_1 |H\rangle_A + \psi_2 |V\rangle_A \right)
+  \]  
+  To observe interference, measure photon A in the diagonal basis \(\{|+\rangle_A, |-\rangle_A\}\):  
+  \[
+  |+\rangle_A = \frac{1}{\sqrt{2}} (|H\rangle_A + |V\rangle_A), \quad |-\rangle_A = \frac{1}{\sqrt{2}} (|H\rangle_A - |V\rangle_A)
+  \]  
+  The amplitude for \(|+\rangle_A\) at \(\mathbf{r}\) is:  
+  \[
+  \langle \mathbf{r}, +_A | \phi_{+} \rangle_A = \frac{1}{2} \left( \psi_1(\mathbf{r}) + \psi_2(\mathbf{r}) \right)
+  \]  
+  The probability density is:  
+  \[
+  P_+(\mathbf{r}) = \left| \frac{1}{2} \left( \psi_1(\mathbf{r}) + \psi_2(\mathbf{r}) \right) \right|^2 = \frac{1}{4} \left| \psi_1(\mathbf{r}) + \psi_2(\mathbf{r}) \right|^2
+  \]  
+
+- **Case 2**: Photon B measured as \(|-\rangle_B\). Similarly:  
+  \[
+  P_-(\mathbf{r}) = \frac{1}{4} \left| \psi_1(\mathbf{r}) - \psi_2(\mathbf{r}) \right|^2
+  \]  
+
+**Step 6: Interference Pattern and Fringe Visibility**  
+For identical slits and symmetric setup:  
+\[
+\psi_1(\mathbf{r}) = \sqrt{I_0} \, e^{i \phi(\mathbf{r})}, \quad \psi_2(\mathbf{r}) = \sqrt{I_0} \, e^{-i \phi(\mathbf{r})}
+\]  
+where \(\phi(\mathbf{r}) = \pi d \sin\theta / \lambda\) (phase difference due to path length), \(d\) = slit separation, \(\theta\) = angle on screen.  
+- **Intensity for \(P_+(\mathbf{r})\)**:  
+  \[
+  I_+(\mathbf{r}) \propto \left| e^{i\phi} + e^{-i\phi} \right|^2 = 4 I_0 \cos^2 \phi(\mathbf{r})
+  \]  
+- **Intensity for \(P_-(\mathbf{r})\)**:  
+  \[
+  I_-(\mathbf{r}) \propto \left| e^{i\phi} - e^{-i\phi} \right|^2 = 4 I_0 \sin^2 \phi(\mathbf{r})
+  \]  
+For \(I_+(\mathbf{r})\):  
+- Maximum intensity: \(I_{\text{max}} = 4I_0\) (when \(\cos^2 \phi = 1\))  
+- Minimum intensity: \(I_{\text{min}} = 0\) (when \(\cos^2 \phi = 0\))  
+Fringe visibility is defined as:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}}
+\]  
+Substituting values:  
+\[
+V = \frac{4I_0 - 0}{4I_0 + 0} = 1
+\]  
+
+**Conclusion**:  
+The eraser measurement restores full interference contrast by erasing which-path information. The fringe visibility is **1** (perfect visibility).
+
+---
+
+{"derivation": "Step 1: Initial entangled state: $|\\Psi\\rangle = \\frac{1}{\\sqrt{2}} \\left( |H\\rangle_A |V\\rangle_B + |V\\rangle_A |H\\rangle_B \\right)$. Step 2: Double-slit tagging: $|\\Psi\\rangle = \\frac{1}{\\sqrt{2}} \\left( \\psi_1(\\mathbf{r}) |H\\rangle_A |V\\rangle_B + \\psi_2(\\mathbf{r}) |V\\rangle_A |H\\rangle_B \\right)$. Step 3: No eraser (B measured in $\\{|H\\rangle_B, |V\\rangle_B\\}$): $P_{\\text{no eraser}}(\\mathbf{r}) = \\frac{1}{2} |\\psi_1(\\mathbf{r})|^2 + \\frac{1}{2} |\\psi_2(\\mathbf{r})|^2$, visibility $V = 0$. Step 4: With eraser (B measured in $\\{|+\\rangle_B, |-\\rangle_B\\}$): $|\\Psi\\rangle = \\frac{1}{2} \\left[ |+\\rangle_B \\left( \\psi_1 |H\\rangle_A + \\psi_2 |V\\rangle_A \\right) + |-\\rangle_B \\left( -\\psi_1 |H\\rangle_A + \\psi_2 |V\\rangle_A \\right) \\right]$. Step 5: For $|+\\rangle_B$ outcome, A collapses to $|\\phi_{+}\\rangle_A = \\frac{1}{\\sqrt{2}} \\left( \\psi_1 |H\\rangle_A + \\psi_2 |V\\rangle_A \\right)$. Measuring A in $\\{|+\\rangle_A, |-\\rangle_A\\}$ gives $P_+(\\mathbf{r}) = \\frac{1}{4} \\left| \\psi_1(\\mathbf{r}) + \\psi_2(\\mathbf{r}) \\right|^2$. Step 6: For symmetric slits, $\\psi_1(\\mathbf{r}) = \\sqrt{I_0} e^{i \\phi(\\mathbf{r})}$, $\\psi_2(\\mathbf{r}) = \\sqrt{I_0} e^{-i \\phi(\\mathbf{r})$. Thus, $I_+(\\mathbf{r}) \\propto \\cos^2 \\phi(\\mathbf{r})$. Visibility $V = \\frac{I_{\\text{max}} - I_{\\text{min}}}{I_{\\text{max}} + I_{\\text{min}}} = \\frac{4I_0 - 0}{4I_0 + 0} = 1$."}  
+{"value": 1.00}

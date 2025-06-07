@@ -1,0 +1,115 @@
+### Analysis Using Emergent Guiding Histories (EGH) Theory
+
+The EGH theory with κ=0 recovers standard quantum mechanics. The state equation reduces to stochastic mechanics without history interactions. For a free particle (V=0), the Hamiltonian is \(\hat{H} = -\frac{\hbar^2}{2m}\nabla^2\). The particle's motion combines deterministic drift from the phase gradient and quantum noise:
+
+\[
+d\mathbf{X}_t = \frac{\hbar}{m} \nabla S(\mathbf{X}_t, t)  dt + \sqrt{\frac{\hbar}{m}}  d\mathbf{W}_t
+\]
+
+- \(\nabla S\): Phase gradient (drift velocity).
+- \(d\mathbf{W}_t\): Wiener process (quantum noise).
+- \(\rho(\mathbf{x}, t) = |\psi(\mathbf{x}, t)|^2\): History density.
+
+Fringe visibility \(V\) measures interference contrast. For an interferometer, \(V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}}\). Decoherence reduces \(V\) due to environmental interactions. Here, the thermal source (900 K) causes photon scattering, introducing additional stochastic momentum transfers.
+
+**Decoherence from thermal photons**: 
+- Photon scattering randomizes the phase difference between paths. The decoherence rate \(\Gamma_{\text{dec}}\) is:
+  \[
+  \Gamma_{\text{dec}} = \frac{\alpha^2 (k_B T)^9 d^2}{16\pi^4 \hbar^7 c^6}
+  \]
+  where \(\alpha\) is polarizability, \(d\) is grating period, and \(T\) is temperature.
+- Time of flight \(t = \frac{L}{v}\), with \(L\) as interferometer length. For Talbot-Lau, \(L = \frac{d^2}{\lambda_{\text{dB}}}\) (Talbot length), and \(\lambda_{\text{dB}} = \frac{h}{mv}\).
+- Decoherence parameter \(\Lambda = \Gamma_{\text{dec}} \cdot t\) reduces visibility: \(V = V_0 e^{-\Lambda}\).
+
+### Step-by-Step Derivation
+
+**Step 1: Calculate de Broglie wavelength**
+\[
+\lambda_{\text{dB}} = \frac{h}{p} = \frac{h}{mv}
+\]
+- \(m = 840 \times 1.660539 \times 10^{-27} \, \text{kg} = 1.3949 \times 10^{-24} \, \text{kg}\)
+- \(v = 100 \, \text{m/s}\)
+- \(p = mv = 1.3949 \times 10^{-22} \, \text{kg·m/s}\)
+- \(h = 6.62607015 \times 10^{-34} \, \text{J·s}\)
+\[
+\lambda_{\text{dB}} = \frac{6.62607015 \times 10^{-34}}{1.3949 \times 10^{-22}} = 4.750 \times 10^{-12} \, \text{m}
+\]
+
+**Step 2: Determine Talbot length (interferometer length)**
+\[
+L = \frac{d^2}{\lambda_{\text{dB}}} \quad \text{(for Talbot-Lau interferometer)}
+\]
+- \(d = 990 \times 10^{-9} \, \text{m} = 9.90 \times 10^{-7} \, \text{m}\)
+\[
+L = \frac{(9.90 \times 10^{-7})^2}{4.750 \times 10^{-12}} = 0.2063 \, \text{m}
+\]
+
+**Step 3: Compute time of flight**
+\[
+t = \frac{L}{v} = \frac{0.2063}{100} = 2.063 \times 10^{-3} \, \text{s}
+\]
+
+**Step 4: Calculate decoherence parameter \(\Lambda\)**
+- \(\Lambda = \Gamma_{\text{dec}} \cdot t\), with
+  \[
+  \Gamma_{\text{dec}} = \frac{\alpha^2 (k_B T)^9 d^2}{16\pi^4 \hbar^7 c^6}
+  \]
+- Constants:
+  - \(\alpha = 1.76 \times 10^{-39} \, \text{F·m}^2\) (C70 polarizability, Hornberger 2003),
+  - \(k_B = 1.380649 \times 10^{-23} \, \text{J/K}\),
+  - \(T = 900 \, \text{K}\),
+  - \(\hbar = \frac{h}{2\pi} = 1.0545718 \times 10^{-34} \, \text{J·s}\),
+  - \(c = 2.99792458 \times 10^8 \, \text{m/s}\),
+  - \(d = 9.90 \times 10^{-7} \, \text{m}\).
+
+Substitute values:
+\[
+(k_B T) = 1.380649 \times 10^{-23} \times 900 = 1.2426 \times 10^{-20} \, \text{J}
+\]
+\[
+(k_B T)^9 = (1.2426 \times 10^{-20})^9 = 5.684 \times 10^{-180} \, \text{J}^9
+\]
+\[
+\alpha^2 = (1.76 \times 10^{-39})^2 = 3.098 \times 10^{-78} \, \text{F}^2\text{m}^4
+\]
+\[
+d^2 = (9.90 \times 10^{-7})^2 = 9.801 \times 10^{-13} \, \text{m}^2
+\]
+\[
+16\pi^4 = 16 \times (97.409) = 1558.54
+\]
+\[
+\hbar^7 = (1.0545718 \times 10^{-34})^7 = 1.449 \times 10^{-238} \, \text{J}^7\text{s}^7
+\]
+\[
+c^6 = (2.99792458 \times 10^8)^6 = 7.262 \times 10^{50} \, \text{m}^6/\text{s}^6
+\]
+\[
+\Gamma_{\text{dec}} = \frac{3.098 \times 10^{-78} \times 5.684 \times 10^{-180} \times 9.801 \times 10^{-13}}{1558.54 \times 1.449 \times 10^{-238} \times 7.262 \times 10^{50}} = 1.699 \times 10^{-42} \, \text{s}^{-1}
+\]
+\[
+\Lambda = \Gamma_{\text{dec}} \cdot t = (1.699 \times 10^{-42}) \times (2.063 \times 10^{-3}) = 3.506 \times 10^{-45}
+\]
+
+**Step 5: Compute fringe visibility**
+\[
+V = V_0 e^{-\Lambda}
+\]
+- With \(\Lambda \approx 0\), \(e^{-\Lambda} \approx 1\).
+- \(V_0\) is the baseline visibility. For an ideal interferometer, \(V_0 = 1\).
+\[
+V = 1 \times e^{-3.506 \times 10^{-45}} \approx 1
+\]
+
+### Physical Interpretation
+- The EGH theory with κ=0 has no history interactions. The quantum noise (\(d\mathbf{W}_t\)) maintains coherence.
+- Thermal decoherence is not modeled in this variant (environmental coupling is absent in the formalism).
+- Thus, the theory predicts no visibility reduction, despite the thermal source.
+
+### Final Numerical Value
+The predicted fringe visibility is 1.00.
+
+{
+  "derivation": "Step 1: Calculate de Broglie wavelength: \\[ \\lambda_{\\text{dB}} = \\frac{h}{mv} = \\frac{6.626 \\times 10^{-34}}{1.395 \\times 10^{-22}} = 4.75 \\times 10^{-12} \\, \\text{m} \\]. Step 2: Determine Talbot length (interferometer length): \\[ L = \\frac{d^2}{\\lambda_{\\text{dB}}} = \\frac{(990 \\times 10^{-9})^2}{4.75 \\times 10^{-12}} = 0.206 \\, \\text{m} \\]. Step 3: Compute time of flight: \\[ t = \\frac{L}{v} = \\frac{0.206}{100} = 2.06 \\times 10^{-3} \\, \\text{s} \\]. Step 4: Calculate decoherence parameter \\[ \\Lambda = \\Gamma_{\\text{dec}} t \\], where \\[ \\Gamma_{\\text{dec}} = \\frac{\\alpha^2 (k_B T)^9 d^2}{16\\pi^4 \\hbar^7 c^6} \\]. Substituting constants: \\[ \\Gamma_{\\text{dec}} \\approx 1.70 \\times 10^{-42} \\, \\text{s}^{-1}, \\, \\Lambda = 3.51 \\times 10^{-45} \\]. Step 5: Compute visibility: \\[ V = V_0 e^{-\\Lambda} \\approx 1 \\times e^0 = 1 \\]. EGH with \\kappa=0 has no environmental coupling; thus, no decoherence."
+}
+{"value": 1.00}

@@ -1,0 +1,76 @@
+### Analysis of the Experiment Using GRW Theory
+
+**Step 1: Calculate electron velocity and de Broglie wavelength**  
+The electron is accelerated by \(V = 50 \, \text{kV}\). Its kinetic energy is:  
+\[
+K = eV = (1.602 \times 10^{-19} \, \text{C}) \times (50 \times 10^3 \, \text{V}) = 8.01 \times 10^{-15} \, \text{J}.
+\]  
+Using the non-relativistic approximation (\(K \ll m_e c^2\)), the momentum \(p\) is:  
+\[
+p = \sqrt{2m_e K}, \quad m_e = 9.109 \times 10^{-31} \, \text{kg}.
+\]  
+\[
+p = \sqrt{2 \times 9.109 \times 10^{-31} \times 8.01 \times 10^{-15}} = \sqrt{1.459 \times 10^{-44}} \approx 1.208 \times 10^{-22} \, \text{kg·m/s}.
+\]  
+The de Broglie wavelength \(\lambda_e\) is:  
+\[
+\lambda_e = \frac{h}{p} = \frac{6.626 \times 10^{-34}}{1.208 \times 10^{-22}} \approx 5.49 \times 10^{-12} \, \text{m}.
+\]
+
+**Step 2: Estimate fringe spacing**  
+In a double-slit setup, fringe spacing \(\Delta x\) is:  
+\[
+\Delta x = \frac{\lambda_e D}{d},
+\]  
+where \(D = 1.5 \, \text{m}\) is the screen distance, and \(d\) is the slit separation. For an electron biprism, \(d \sim 1 \, \mu\text{m} = 10^{-6} \, \text{m}\) (typical value). Thus:  
+\[
+\Delta x = \frac{(5.49 \times 10^{-12}) \times 1.5}{10^{-6}} \approx 8.24 \times 10^{-6} \, \text{m}.
+\]
+
+**Step 3: Time of flight**  
+Electron velocity \(v\) is:  
+\[
+v = \frac{p}{m_e} = \frac{1.208 \times 10^{-22}}{9.109 \times 10^{-31}} \approx 1.326 \times 10^8 \, \text{m/s}.
+\]  
+Time of flight \(t\) from source to screen:  
+\[
+t = \frac{D}{v} = \frac{1.5}{1.326 \times 10^8} \approx 1.131 \times 10^{-8} \, \text{s}.
+\]
+
+**Step 4: Probability of GRW collapse (hit)**  
+GRW hit rate per particle: \(\lambda = 10^{-16} \, \text{s}^{-1}\). The probability of **no hit** during \(t\) is:  
+\[
+P_{\text{no hit}} = e^{-\lambda t} = \exp\left[-(10^{-16}) \times (1.131 \times 10^{-8})\right] = \exp(-1.131 \times 10^{-24}).
+\]  
+For small \(x\), \(e^{-x} \approx 1 - x\), so:  
+\[
+P_{\text{no hit}} \approx 1 - 1.131 \times 10^{-24}.
+\]  
+The probability of **at least one hit** is:  
+\[
+P_{\text{hit}} = 1 - P_{\text{no hit}} \approx 1.131 \times 10^{-24}.
+\]
+
+**Step 5: Effect of a hit on fringe visibility**  
+- **No hit (\(P_{\text{no hit}} \approx 1\))**: Wavefunction evolves unitarily, yielding full interference with visibility \(V_0 = 1\).  
+- **Hit (\(P_{\text{hit}} \approx 10^{-24}\))**: The wavefunction collapses via a Gaussian operator \(L_i\) with width \(\sigma = 10^{-7} \, \text{m}\).  
+  - \(\sigma = 0.1 \, \mu\text{m}\) is comparable to \(\Delta x = 8.24 \, \mu\text{m}\) (since \(\sigma < \Delta x\)), localizing the electron within one fringe.  
+  - This destroys coherence, reducing visibility to \(V_{\text{hit}} = 0\).  
+
+**Step 6: Ensemble visibility**  
+The observed visibility \(V\) is the weighted average:  
+\[
+V = P_{\text{no hit}} \cdot V_0 + P_{\text{hit}} \cdot V_{\text{hit}} \approx (1 - 1.131 \times 10^{-24}) \times 1 + (1.131 \times 10^{-24}) \times 0.
+\]  
+\[
+V \approx 1 - 1.131 \times 10^{-24}.
+\]  
+Since \(1.131 \times 10^{-24}\) is negligible, \(V \approx 1\).
+
+**Conclusion**  
+GRW collapses are extremely rare for a single electron (\(\lambda t \sim 10^{-24}\)). The wavefunction remains coherent, reproducing standard quantum interference with near-perfect visibility.
+
+### JSON Output
+
+{"derivation": "Step 1: Calculate electron velocity and de Broglie wavelength. Kinetic energy: $K = eV = 8.01 \\times 10^{-15} \\, \\text{J}$. Momentum: $p = \\sqrt{2m_e K} \\approx 1.208 \\times 10^{-22} \\, \\text{kg·m/s}$. Wavelength: $\\lambda_e = h/p \\approx 5.49 \\times 10^{-12} \\, \\text{m}$. Step 2: Fringe spacing: $\\Delta x = \\lambda_e D / d$. With $D = 1.5 \\, \\text{m}$, $d \\sim 10^{-6} \\, \\text{m}$, $\\Delta x \\approx 8.24 \\times 10^{-6} \\, \\text{m}$. Step 3: Time of flight: $t = D / v \\approx 1.131 \\times 10^{-8} \\, \\text{s}$ ($v = p / m_e \\approx 1.326 \\times 10^8 \\, \\text{m/s}$). Step 4: Probability of no GRW hit: $P_{\\text{no hit}} = e^{-\\lambda t} \\approx 1 - 1.131 \\times 10^{-24}$. Step 5: Visibility without hit: $V_0 = 1$. With hit: $V_{\\text{hit}} = 0$ (collapse localizes electron within $\\sigma = 10^{-7} \\, \\text{m} < \\Delta x$). Step 6: Ensemble visibility: $V \\approx (1 - 1.131 \\times 10^{-24}) \\cdot 1 + (1.131 \\times 10^{-24}) \\cdot 0 = 1 - 1.131 \\times 10^{-24} \\approx 1$."}
+{"value": 1.0}

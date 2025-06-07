@@ -1,0 +1,77 @@
+### Analysis of the Quantum Eraser Experiment using Quantum-Holmen Theory
+
+The Quantum-Holmen Theory (QHT) combines objective wavefunction collapse with Bohmian guidance. For the given experiment with polarization-entangled photons, we analyze the fringe visibility under erasure conditions. The stochastic collapse rate per photon is \(\lambda = 10^{-16}  \text{s}^{-1}\) and localization width \(\sigma = 10^{-7}  \text{m}\). The experimental timescale is \(\sim 10^{-9}  \text{s}\), so the expected collapse events per photon are \(\lambda \cdot t = 10^{-25}\), negligible. Thus, collapses do not occur during photon flight, and standard quantum evolution applies until measurement.
+
+**Derivation for Fringe Visibility (Eraser Case):**
+
+**Step 1: Initial Entangled State**  
+The polarization-entangled photon pair (signal and idler) is:
+\[
+|\Psi\rangle = \frac{1}{\sqrt{2}} \left( |H\rangle_s |V\rangle_i - |V\rangle_s |H\rangle_i \right)
+\]
+After the double slit (slit A tagged with \(|H\rangle\), slit B with \(|V\rangle\)), the spatial wavefunction couples to polarization:
+\[
+|\Psi\rangle = \frac{1}{\sqrt{2}} \left( \psi_A(\mathbf{r}_s) |H\rangle_s |V\rangle_i - \psi_B(\mathbf{r}_s) |V\rangle_s |H\rangle_i \right)
+\]
+where \(\psi_A(\mathbf{r}_s)\) and \(\psi_B(\mathbf{r}_s)\) are spatial wavefunctions from slits A and B.
+
+**Step 2: Signal Photon Polarization Erasure**  
+A \(45^\circ\) polarizer projects the signal photon onto:
+\[
+|45^\circ\rangle_s = \frac{1}{\sqrt{2}} \left( |H\rangle_s + |V\rangle_s \right)
+\]
+The state becomes:
+\[
+|\Psi'\rangle = \left( \mathbb{I}_i \otimes |45^\circ\rangle\langle 45^\circ|_s \right) |\Psi\rangle = \frac{1}{2} \left( \psi_A(\mathbf{r}_s) |V\rangle_i - \psi_B(\mathbf{r}_s) |H\rangle_i \right) |45^\circ\rangle_s
+\]
+
+**Step 3: Idler Measurement in Diagonal Basis**  
+The idler basis is \(|+\rangle_i = \frac{1}{\sqrt{2}} (|H\rangle_i + |V\rangle_i)\), \(|-\rangle_i = \frac{1}{\sqrt{2}} (|H\rangle_i - |V\rangle_i)\). For coincidence measurements post-selected on \(|+\rangle_i\):
+\[
+\langle + | \Psi' \rangle = \frac{1}{2\sqrt{2}} \left( \psi_A(\mathbf{r}_s) - \psi_B(\mathbf{r}_s) \right) |45^\circ\rangle_s
+\]
+The probability density for signal position \(\mathbf{r}_s\) is:
+\[
+P_+(\mathbf{r}_s) = \left| \langle + | \Psi' \rangle \right|^2 = \frac{1}{8} \left| \psi_A(\mathbf{r}_s) - \psi_B(\mathbf{r}_s) \right|^2
+\]
+
+**Step 4: Far-Field Wavefunctions**  
+In the far field (angle \(\theta\)), the wavefunctions from identical slits are:
+\[
+\psi_A(\theta) = \frac{C}{\sqrt{2}} e^{i\phi(\theta)}, \quad \psi_B(\theta) = \frac{C}{\sqrt{2}} e^{-i\phi(\theta)}
+\]
+where \(\phi(\theta) = \frac{\pi d \sin\theta}{\lambda}\), \(d\) is slit separation, \(\lambda\) wavelength, and \(C\) a constant. Thus:
+\[
+\psi_A - \psi_B = \frac{C}{\sqrt{2}} \left( e^{i\phi} - e^{-i\phi} \right) = i\sqrt{2}  C \sin\phi
+\]
+
+**Step 5: Intensity Distribution**  
+The intensity for \(|+\rangle_i\) coincidence is:
+\[
+I_+(\theta) = P_+(\theta) = \frac{1}{8} \left| i\sqrt{2}  C \sin\phi \right|^2 = \frac{1}{8} \cdot 2 |C|^2 \sin^2\phi = \frac{|C|^2}{4} \sin^2\phi
+\]
+Maximum intensity \(I_{\text{max}} = |C|^2/4\) at \(\sin^2\phi = 1\), minimum \(I_{\text{min}} = 0\) at \(\sin^2\phi = 0\).
+
+**Step 6: Fringe Visibility Calculation**  
+Visibility is defined as:
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}}
+\]
+Substituting values:
+\[
+V = \frac{|C|^2/4 - 0}{|C|^2/4 + 0} = 1
+\]
+
+**Physical Interpretation in QHT:**  
+- The negligible collapse rate (\(\lambda t \sim 10^{-25}\)) ensures no decoherence during flight.  
+- The spatial localization width (\(\sigma = 0.1  \mu\text{m}\)) is much smaller than typical fringe spacings (\(\sim \text{mm}\)), so position measurements resolve interference.  
+- Bohmian guidance between collapses ensures deterministic trajectories that sample the interference pattern.  
+- Measurement collapses (screen detection and idler polarization) enforce the Born rule, yielding high visibility when which-path information is erased.
+
+**Final Numerical Value:**  
+The predicted fringe visibility is \(1.0\) under ideal erasure conditions.
+
+```json
+{"derivation": "Step 1: Initial entangled state: $|\\Psi\\rangle = \\frac{1}{\\sqrt{2}} \\left( |H\\rangle_s |V\\rangle_i - |V\\rangle_s |H\\rangle_i \\right)$. After double slit: $|\\Psi\\rangle = \\frac{1}{\\sqrt{2}} \\left( \\psi_A(\\mathbf{r}_s) |H\\rangle_s |V\\rangle_i - \\psi_B(\\mathbf{r}_s) |V\\rangle_s |H\\rangle_i \\right)$. Step 2: After $45^\\circ$ polarizer on signal: $|\\Psi'\\rangle = \\frac{1}{2} \\left( \\psi_A(\\mathbf{r}_s) |V\\rangle_i - \\psi_B(\\mathbf{r}_s) |H\\rangle_i \\right) |45^\\circ\\rangle_s$. Step 3: Post-select idler on $|+\\rangle_i$: $\\langle + | \\Psi' \\rangle = \\frac{1}{2\\sqrt{2}} \\left( \\psi_A(\\mathbf{r}_s) - \\psi_B(\\mathbf{r}_s) \\right) |45^\\circ\\rangle_s$. Probability density: $P_+(\\mathbf{r}_s) = \\frac{1}{8} \\left| \\psi_A(\\mathbf{r}_s) - \\psi_B(\\mathbf{r}_s) \\right|^2$. Step 4: Far-field wavefunctions: $\\psi_A(\\theta) = \\frac{C}{\\sqrt{2}} e^{i\\phi}$, $\\psi_B(\\theta) = \\frac{C}{\\sqrt{2}} e^{-i\\phi}$, $\\phi = \\frac{\\pi d \\sin\\theta}{\\lambda}$. Thus $\\psi_A - \\psi_B = i\\sqrt{2} C \\sin\\phi$. Step 5: Intensity: $I_+(\\theta) = \\frac{|C|^2}{4} \\sin^2\\phi$. Step 6: Visibility $V = \\frac{I_{\\text{max}} - I_{\\text{min}}}{I_{\\text{max}} + I_{\\text{min}}} = \\frac{|C|^2/4 - 0}{|C|^2/4 + 0} = 1$. Collapses are negligible ($\\lambda t \\sim 10^{-25}$), and $\\sigma$ is smaller than fringe spacing, preserving interference."}
+{"value": 1.0}
+```

@@ -1,0 +1,81 @@
+### Analysis Using Temporally Symmetric Ontology (TSO)
+
+In the quantum eraser experiment, polarization-entangled photon pairs are generated. The signal photon passes through a double slit with orthogonal polarizations (H for slit A, V for slit B), tagging the path. The idler photon is measured in a delayed-choice manner. Fringe visibility quantifies interference contrast. TSO, with its block universe ontology and causal potential field, describes the system via symmetric boundary conditions and time-symmetric dynamics. The derivation proceeds as follows:
+
+**Step 1: Initial Entangled State**  
+The initial state of the photon pair (preselected boundary condition \(|\Psi_i\rangle\)) is a Bell state:  
+\[
+|\Psi_i\rangle = \frac{1}{\sqrt{2}} \left( |H_A, V_B\rangle - |V_A, H_B\rangle \right)
+\]  
+Here, \(H_A\) and \(V_A\) denote horizontal/vertical polarization for the signal photon (paths A/B), and \(V_B\), \(H_B\) for the idler. The causal potential field \(\Phi\) encodes global consistency across spacetime, ensuring correlations via \(\kappa\)-coupled dynamics in the Hamiltonian.
+
+**Step 2: State After Double Slit (Path-Polarization Entanglement)**  
+The signal photon’s traversal through the tagged slits entangles path and polarization:  
+\[
+|\Psi_{\text{slit}}\rangle = \frac{1}{\sqrt{2}} \left( |A, H_A, V_B\rangle - |B, V_A, H_B\rangle \right)
+\]  
+Path information is stored in polarization. The absence of interference arises from orthogonal polarizations (\(H_A\), \(V_A\)) decohering the spatial superposition.
+
+**Step 3: Erasure via Idler Measurement in Diagonal Basis**  
+For interference restoration, the idler is measured in the diagonal basis:  
+\[
+|+\rangle_B = \frac{|H_B\rangle + |V_B\rangle}{\sqrt{2}}, \quad
+|-\rangle_B = \frac{|H_B\rangle - |V_B\rangle}{\sqrt{2}}
+\]  
+The projector for idler outcome \(+\) is \(\Pi_{+} = |+\rangle_B\langle+|_B\). Applying this to \(|\Psi_{\text{slit}}\rangle\):  
+\[
+\Pi_{+} |\Psi_{\text{slit}}\rangle = \frac{1}{\sqrt{2}} \left[ \langle+|_B V_B\rangle |A, H_A\rangle |+\rangle_B - \langle+|_B H_B\rangle |B, V_A\rangle |+\rangle_B \right]
+\]  
+With \(\langle+|_B V_B\rangle = \langle+|_B H_B\rangle = \frac{1}{\sqrt{2}}\):  
+\[
+\Pi_{+} |\Psi_{\text{slit}}\rangle = \frac{1}{2} \left( |A, H_A\rangle - |B, V_A\rangle \right) |+\rangle_B
+\]  
+This conditions the signal photon on idler outcome \(+\) but retains orthogonal polarizations, preventing interference.
+
+**Step 4: Local Erasure via Signal Polarizer**  
+To observe interference, a polarizer projects the signal photon onto \(|+\rangle_A = \frac{|H_A\rangle + |V_A\rangle}{\sqrt{2}}\) (postselection in final boundary \(|\Psi_f\rangle\)). The combined projector is \(\Pi_{\lambda} = \Pi_x \otimes |+\rangle_A\langle+|_A \otimes \Pi_{+}\), where \(\Pi_x\) is position detection. The amplitude for position \(x\) and outcome \(+\) is:  
+\[
+\langle \Psi_f | \Pi_{\lambda} | \Psi_i \rangle = \langle x, +_A | \otimes \langle +_B | \Psi_{\text{slit}} \rangle
+\]  
+Substituting \(|\Psi_{\text{slit}}\rangle\):  
+\[
+= \frac{1}{\sqrt{2}} \left[ \langle x|A\rangle \underbrace{\langle +_A | H_A \rangle}_{\frac{1}{\sqrt{2}}} \underbrace{\langle +_B | V_B \rangle}_{\frac{1}{\sqrt{2}}} - \langle x|B\rangle \underbrace{\langle +_A | V_A \rangle}_{\frac{1}{\sqrt{2}}} \underbrace{\langle +_B | H_B \rangle}_{\frac{1}{\sqrt{2}}} \right] = \frac{1}{2\sqrt{2}} \left( \psi_A(x) - \psi_B(x) \right)
+\]  
+Here, \(\psi_A(x) = \langle x | A \rangle\), \(\psi_B(x) = \langle x | B \rangle\) are spatial wavefunctions.
+
+**Step 5: Probability Density via Born Rule**  
+The probability density for position \(x\) given idler outcome \(+\) uses TSO’s measurement rule:  
+\[
+P(x | +) = \frac{ \left| \langle \Psi_f | \Pi_{\lambda} | \Psi_i \rangle \right|^2 }{ \sum_{\lambda'} \left| \langle \Psi_f | \Pi_{\lambda'} | \Psi_i \rangle \right|^2 }
+\]  
+The numerator is:  
+\[
+\left| \frac{1}{2\sqrt{2}} (\psi_A(x) - \psi_B(x)) \right|^2 = \frac{1}{8} \left| \psi_A(x) - \psi_B(x) \right|^2
+\]  
+The denominator normalizes by the total probability for idler outcome \(+\):  
+\[
+P(+) = \int dx \, \frac{1}{8} \left| \psi_A(x) - \psi_B(x) \right|^2
+\]  
+With \(\psi_A(x) = \frac{\psi_0(x)}{\sqrt{2}} e^{i \phi/2}\), \(\psi_B(x) = \frac{\psi_0(x)}{\sqrt{2}} e^{-i \phi/2}\) (where \(\phi = \frac{2\pi d \sin\theta}{\lambda}\) for slit separation \(d\)), and \(\int |\psi_0(x)|^2 dx = 1\), we get:  
+\[
+\left| \psi_A - \psi_B \right|^2 = \frac{1}{2} |\psi_0|^2 \left( 1 - \cos \phi \right), \quad P(+) = \frac{1}{8} \cdot 2 \int |\psi_0|^2 dx = \frac{1}{4}
+\]  
+Thus:  
+\[
+P(x | +) = \frac{ \frac{1}{8} \cdot \frac{1}{2} |\psi_0|^2 (1 - \cos \phi) }{ \frac{1}{4} } = \frac{1}{4} |\psi_0|^2 (1 - \cos \phi)
+\]
+
+**Step 6: Fringe Visibility Calculation**  
+The intensity is \(I(\phi) \propto 1 - \cos \phi\). Maxima occur at \(\phi = \pi\) (\(I_{\text{max}} = 2\)), minima at \(\phi = 0\) (\(I_{\text{min}} = 0\)). Visibility \(V\) is:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}} = \frac{2 - 0}{2 + 0} = 1
+\]  
+This full visibility arises because erasure restores coherence. TSO’s causal potential \(\Phi\) ensures boundary consistency: the delayed idler measurement and signal polarizer are fixed in the block universe, enabling retrocausal correlations that restore interference.
+
+**Final Numerical Value**  
+The fringe visibility in the erased condition is \(1.00\).
+
+```json
+{"derivation": "Step 1: Initial entangled state: $|\\Psi_i\\rangle = \\frac{1}{\\sqrt{2}} (|H_A, V_B\\rangle - |V_A, H_B\\rangle)$. Step 2: After double slit: $|\\Psi_{\\text{slit}}\\rangle = \\frac{1}{\\sqrt{2}} (|A, H_A, V_B\\rangle - |B, V_A, H_B\\rangle)$. Step 3: Idler measurement in $|+\\rangle_B$ basis: $\\Pi_{+} |\\Psi_{\\text{slit}}\\rangle = \\frac{1}{2} (|A, H_A\\rangle - |B, V_A\\rangle) |+\\rangle_B$. Step 4: Signal polarizer $|+\\rangle_A$: Amplitude $\\langle \\Psi_f | \\Pi_{\\lambda} | \\Psi_i \\rangle = \\frac{1}{2\\sqrt{2}} (\\psi_A(x) - \\psi_B(x))$. Step 5: Probability density $P(x | +) = \\frac{ \\left| \\frac{1}{2\\sqrt{2}} (\\psi_A(x) - \\psi_B(x)) \\right|^2 }{ P(+) } = \\frac{1}{4} |\\psi_0|^2 (1 - \\cos \\phi)$. Step 6: Fringe visibility $V = \\frac{I_{\\text{max}} - I_{\\text{min}}}{I_{\\text{max}} + I_{\\text{min}}} = \\frac{2 - 0}{2 + 0} = 1$."}
+{"value": 1.00}
+```

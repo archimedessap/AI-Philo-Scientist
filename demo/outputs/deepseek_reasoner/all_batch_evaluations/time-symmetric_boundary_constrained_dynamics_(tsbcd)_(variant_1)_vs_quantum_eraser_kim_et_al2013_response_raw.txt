@@ -1,0 +1,77 @@
+### Derivation using Time-Symmetric Boundary Constrained Dynamics (TSBCD)
+
+**Step 1: Define initial and final quantum states**  
+The experiment uses polarization-entangled photon pairs in the Bell state:  
+\[
+|\psi_i\rangle = \frac{1}{\sqrt{2}} \left( |H\rangle_s |V\rangle_i - |V\rangle_s |H\rangle_i \right)
+\]  
+where \(s\) = signal photon (double-slit path), \(i\) = idler photon (eraser control). The double slits are tagged:  
+- Slit A: Vertical polarization (\(|V\rangle_s\))  
+- Slit B: Horizontal polarization (\(|H\rangle_s\))  
+
+The final state \(|\psi_f\rangle\) includes the screen detection outcome (\(x\)) and the delayed-choice eraser measurement outcome (\(|\pm\rangle_i\) for the idler, where \(|\pm\rangle = \frac{1}{\sqrt{2}}(|H\rangle \pm |V\rangle)\)).  
+
+**Step 2: Express screen detection amplitude**  
+For a signal photon detected at position \(x\) on the screen, the amplitude is a superposition of paths through slits A and B:  
+\[
+\langle x | \psi_{\text{slit}} \rangle = \psi_A(x) |A\rangle + \psi_B(x) |B\rangle
+\]  
+where \(\psi_A(x)\) and \(\psi_B(x)\) are wavefunctions from slits A and B, respectively. The polarization tagging correlates paths with states: \(|A\rangle \equiv |V\rangle_s\), \(|B\rangle \equiv |H\rangle_s\).  
+
+**Step 3: Apply TSBCD measurement rule**  
+The probability of detecting the signal at \(x\) and idler in erasure outcome \(|O_i\rangle\) (where \(O_i \in \{+, -\}\)) is given by the time-symmetrized Born rule:  
+\[
+P(x, O_i) = \frac{ \left| \langle \psi_f | U(t_f, t) | x, O_i \rangle \langle x, O_i | U(t, t_0) | \psi_i \rangle \right|^2 }{\mathcal{N}}
+\]  
+Here, \(U(t, t_0)\) is unitary evolution, \(\mathcal{N}\) normalizes probabilities, and \(t\) is the screen-detection time. The future boundary \(|\psi_f\rangle\) fixes \(O_i\).  
+
+**Step 4: Compute overlap with initial state**  
+The amplitude \(\langle x, O_i | U(t, t_0) | \psi_i \rangle\) is:  
+\[
+\langle x, O_i | \psi_i \rangle = \frac{1}{\sqrt{2}} \left( \psi_A(x) \langle O_i | V \rangle_i - \psi_B(x) \langle O_i | H \rangle_i \right)
+\]  
+For erasure basis:  
+\[
+\langle + | H \rangle = \langle + | V \rangle = \frac{1}{\sqrt{2}}, \quad \langle - | H \rangle = \frac{1}{\sqrt{2}}, \quad \langle - | V \rangle = -\frac{1}{\sqrt{2}}
+\]  
+Thus:  
+\[
+\langle x, + | \psi_i \rangle = \frac{1}{2} \left( \psi_A(x) - \psi_B(x) \right), \quad \langle x, - | \psi_i \rangle = \frac{1}{2} \left( \psi_A(x) + \psi_B(x) \right)
+\]  
+
+**Step 5: Compute joint probability**  
+Assuming symmetric double slits, \(\psi_A(x) = \psi(x) e^{i \phi(x)}\), \(\psi_B(x) = \psi(x) e^{-i \phi(x)}\), where \(\phi(x)\) is the phase difference. For outcome \(+\):  
+\[
+P(x, +) \propto \left| \psi_A(x) - \psi_B(x) \right|^2 = 4 \left| \psi(x) \right|^2 \sin^2 \phi(x)
+\]  
+For outcome \(-\):  
+\[
+P(x, -) \propto \left| \psi_A(x) + \psi_B(x) \right|^2 = 4 \left| \psi(x) \right|^2 \cos^2 \phi(x)
+\]  
+The normalization \(\mathcal{N}\) ensures \(\sum_{O_i} \int P(x, O_i)  dx = 1\).  
+
+**Step 6: Derive conditional fringe visibility**  
+Conditional intensity given erasure outcome \(O_i\):  
+\[
+I_+(x) = P(x | +) \propto \sin^2 \phi(x), \quad I_-(x) \propto \cos^2 \phi(x)
+\]  
+Fringe visibility \(V\) for a pattern \(I(x) \propto a + b \cos(2\phi(x))\) is:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}} = \frac{b}{a}
+\]  
+For \(I_+(x)\):  
+\[
+I_+(x) \propto \frac{1}{2} (1 - \cos(2\phi(x))) \implies a = \frac{1}{2},  b = \frac{1}{2} \implies V_+ = \frac{1/2}{1/2} = 1
+\]  
+Similarly, \(V_- = 1\) for \(I_-(x)\).  
+
+**Step 7: Incorporate TSBCD dynamics**  
+The causal action \(S_C\) minimization selects trajectories consistent with boundary constraints. The time-symmetry parameter \(\lambda_{TS}\) (philosophically weighting past/future constraints) does not alter the measurement probabilities in this case, as the time-symmetrized Born rule is fixed. Retrocausal and superdeterministic elements ensure the eraser choice (future boundary) restores interference by correlating with past hidden variables (slit paths).  
+
+**Conclusion**:  
+The fringe visibility when which-path information is erased is \(V = 1\).
+
+{
+  "derivation": "Step 1: Initial quantum state: $|\\psi_i\\rangle = \\frac{1}{\\sqrt{2}} \\left( |H\\rangle_s |V\\rangle_i - |V\\rangle_s |H\\rangle_i \\right)$ with slit tagging $|A\\rangle \\equiv |V\\rangle_s$, $|B\\rangle \\equiv |H\\rangle_s$. Final state $|\\psi_f\\rangle$ includes screen position $x$ and idler erasure outcome $|O_i\\rangle \\in \\{|+\\rangle, |-\\rangle\\}$. \\nStep 2: Screen amplitude $\\langle x | \\psi_{\\text{slit}} \\rangle = \\psi_A(x) |A\\rangle + \\psi_B(x) |B\\rangle$. \\nStep 3: TSBCD probability rule: $P(x, O_i) = \\frac{ \\left| \\langle \\psi_f | U(t_f, t) | x, O_i \\rangle \\langle x, O_i | U(t, t_0) | \\psi_i \\rangle \\right|^2}{\\mathcal{N}}$. \\nStep 4: Amplitude $\\langle x, O_i | \\psi_i \\rangle = \\frac{1}{\\sqrt{2}} \\left( \\psi_A(x) \\langle O_i | V \\rangle_i - \\psi_B(x) \\langle O_i | H \\rangle_i \\right)$. For erasure basis: $\\langle + | H \\rangle = \\langle + | V \\rangle = \\frac{1}{\\sqrt{2}}$, $\\langle - | H \\rangle = \\frac{1}{\\sqrt{2}}$, $\\langle - | V \\rangle = -\\frac{1}{\\sqrt{2}}$. Thus $\\langle x, + | \\psi_i \\rangle = \\frac{1}{2} (\\psi_A(x) - \\psi_B(x))$, $\\langle x, - | \\psi_i \\rangle = \\frac{1}{2} (\\psi_A(x) + \\psi_B(x))$. \\nStep 5: Joint probability $P(x, +) \\propto |\\psi_A(x) - \\psi_B(x)|^2$, $P(x, -) \\propto |\\psi_A(x) + \\psi_B(x)|^2$. For symmetric slits, $\\psi_A(x) = \\psi(x) e^{i \\phi(x)}$, $\\psi_B(x) = \\psi(x) e^{-i \\phi(x)}$, so $P(x, +) \\propto 4 |\\psi(x)|^2 \\sin^2 \\phi(x)$, $P(x, -) \\propto 4 |\\psi(x)|^2 \\cos^2 \\phi(x)$. \\nStep 6: Conditional intensity $I_+(x) = P(x|+) \\propto \\sin^2 \\phi(x) = \\frac{1}{2} (1 - \\cos 2\\phi(x))$. Fringe visibility $V = \\frac{I_{\\text{max}} - I_{\\text{min}}}{I_{\\text{max}} + I_{\\text{min}}}}$. For $I_+(x)$, $I_{\\text{max}} = 1$, $I_{\\text{min}} = 0$ (modulo envelope), so $V = 1$. Similarly for $I_-(x)$. \\nStep 7: $\\lambda_{TS}$ (time-symmetry parameter) does not affect probabilities; boundary constraints enforce interference restoration via retrocausal/superdeterministic trajectory selection."
+}
+{"value": 1.00}

@@ -15,7 +15,7 @@ python demo/demo_1.py --model_source deepseek --model_name deepseek-chat --theor
 python demo/demo_1.py --model_source deepseek --model_name deepseek-chat --theories_json_file data/synthesized_theories/synthesis_20250520_152448/all_synthesized_theories.json --setup_file demo/experiments/c60_double_slit_setup.json --measured_file demo/experiments/c60_double_slit_measured.json --output_dir demo/outputs/deepseek_chat/theories_batch
 
 # 评估单个理论对目录中的所有实验
-python demo/demo_1.py --model_source openai --model_name gpt-4o-mini --theory_file demo/theories/theories_more/copenhagen.json --experiment_dir demo/experiments --output_dir demo/outputs/gpt_4o_mini/experiments --use_instrument_correction
+python demo/demo_1.py --model_source openai --model_name gpt-4o-mini --theory_file demo/theories/theories_more/copenhagen.json --experiment_dir demo/experiments --output_dir demo/outputs/deepseek_reasoner/experiments --use_instrument_correction
 
 # 评估目录中的所有理论对所有实验
 python demo/demo_1.py --model_source deepseek --model_name deepseek-reasoner --theory_dir demo/theories/theories_more --experiment_dir demo/experiments --output_dir demo/outputs/deepseek_reasoner/all_evaluations --use_instrument_correction
@@ -642,31 +642,50 @@ async def main():
                     # 计算综合排名（实验成功率 + 角色评估）
                     combined_rankings = []
                     for role_result in role_results:
-                        theory_name = role_result['theory']['name']
+                        # 修复：安全地获取理论名称
+                        if 'theory' in role_result and 'name' in role_result['theory']:
+                            theory_name = role_result['theory']['name']
+                        elif 'theory_name' in role_result:
+                            theory_name = role_result['theory_name']
+                        else:
+                            # 从已有的理论数据中查找匹配的理论名称
+                            theory_name = None
+                            for name, theory_data in theories.items():
+                                # 通过比较理论数据来找到对应的理论名称
+                                if ('theory' in role_result and 
+                                    role_result['theory'] == theory_data) or \
+                                   ('summary' in role_result and 
+                                    role_result.get('summary') == theory_data.get('summary')):
+                                    theory_name = name
+                                    break
+                            
+                            if theory_name is None:
+                                print(f"[WARNING] 无法确定角色评估结果对应的理论名称，跳过此结果")
+                                continue
                         
                         # 计算角色评估平均分
                         role_scores = [
                             eval_result['overall_score'] 
-                            for eval_result in role_result['evaluations']
+                            for eval_result in role_result.get('evaluations', [])
                             if 'overall_score' in eval_result and eval_result['overall_score'] is not None
                         ]
                         avg_role_score = sum(role_scores) / len(role_scores) if role_scores else 0
                         
                         # 综合评分 = 实验成功率 * 0.6 + 角色评估分 * 0.4
                         combined_score = (
-                            role_result['experiment_success_rate'] * 0.6 + 
+                            role_result.get('experiment_success_rate', 0) * 0.6 + 
                             avg_role_score / 10.0 * 0.4  # 角色评估分通常是1-10分，归一化到0-1
                         )
                         
                         combined_rankings.append({
                             'theory_name': theory_name,
-                            'experiment_success_rate': role_result['experiment_success_rate'],
-                            'average_chi2': role_result['average_chi2'],
+                            'experiment_success_rate': role_result.get('experiment_success_rate', 0),
+                            'average_chi2': role_result.get('average_chi2', float('inf')),
                             'average_role_score': avg_role_score,
                             'combined_score': combined_score,
                             'role_details': {
-                                eval_result['role']: eval_result.get('overall_score', 0)
-                                for eval_result in role_result['evaluations']
+                                eval_result.get('role', 'unknown'): eval_result.get('overall_score', 0)
+                                for eval_result in role_result.get('evaluations', [])
                             }
                         })
                     

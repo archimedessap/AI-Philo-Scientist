@@ -1,0 +1,72 @@
+### Step-by-Step Derivation Using TSBCD Theory
+
+**Step 1: Define the experimental setup and boundary conditions**  
+The experiment uses a Mach-Zehnder interferometer with single photons. The initial quantum state \(|\psi_i\rangle\) at \(t_0\) is the photon entering the first beam splitter. After the first beam splitter, the photon is in a superposition of paths A and B:  
+\[
+|\psi_{\text{ph}}(t_c)\rangle = \frac{1}{\sqrt{2}} \left( |A\rangle + e^{i\phi} |B\rangle \right)
+\]  
+where \(\phi\) is the phase difference between the arms. The choice to insert/remove the output beam splitter (BS) is made at time \(t_c\) (after photon entry) using a quantum RNG. The RNG’s initial state is \(|+\rangle_R = \frac{1}{\sqrt{2}} (|0\rangle_R + |1\rangle_R)\), where \(|0\rangle_R\) (no BS) and \(|1\rangle_R\) (BS inserted). The full initial state is:  
+\[
+|\psi_i\rangle = |\text{entering}\rangle \otimes |+\rangle_R
+\]  
+The final quantum state \(|\psi_f\rangle\) at \(t_f\) is the joint detector-RNG outcome \(|D, b\rangle\) (e.g., \(|D0, 1\rangle\)).
+
+**Step 2: Apply TSBCD measurement rule**  
+The probability of outcome \(O = |D, b\rangle\) at detection time \(t_f\) is given by:  
+\[
+P(O) = \frac{ | \langle \psi_f | U(t_f, t) | O \rangle \langle O | U(t, t_0) | \psi_i \rangle |^2 }{ \mathcal{N} }
+\]  
+Since measurement occurs at \(t = t_f\), \(U(t_f, t_f) = I\), and \(|\psi_f\rangle = |O\rangle\) (final boundary condition matches the outcome), this simplifies to:  
+\[
+\langle \psi_f | O \rangle = 1, \quad \text{so} \quad P(O) = \frac{ | \langle O | U(t_f, t_0) | \psi_i \rangle |^2 }{ \mathcal{N} }
+\]  
+where \(\mathcal{N} = \sum_O | \langle O | U(t_f, t_0) | \psi_i \rangle |^2\) ensures normalization. This recovers the standard Born rule.
+
+**Step 3: Compute unitary evolution \(U(t_f, t_0)\)**  
+The evolution from \(t_0\) to \(t_f\) includes:  
+- **From \(t_0\) to \(t_c\)**: Photon evolves to \(|\psi_{\text{ph}}(t_c)\rangle \otimes |+\rangle_R\).  
+- **At \(t_c\)**: RNG measurement applies a controlled unitary \(U_c\):  
+  \[
+  U_c = |0\rangle\langle 0|_R \otimes U_0 + |1\rangle\langle 1|_R \otimes U_1
+  \]  
+  where \(U_0\) (no BS) maps \(|A\rangle \to |D0\rangle\), \(|B\rangle \to |D1\rangle\), and \(U_1\) (BS inserted) maps:  
+  \[
+  U_1 |A\rangle = \frac{1}{\sqrt{2}} (|D0\rangle + |D1\rangle), \quad U_1 |B\rangle = \frac{1}{\sqrt{2}} (|D0\rangle - |D1\rangle).
+  \]  
+  The state after \(U_c\) is:  
+  \[
+  |\Psi(t_f)\rangle = \frac{1}{2} \left[ (|D0\rangle + e^{i\phi} |D1\rangle) \otimes |0\rangle_R + \frac{1}{\sqrt{2}} \left( (1 + e^{i\phi}) |D0\rangle + (1 - e^{i\phi}) |D1\rangle \right) \otimes |1\rangle_R \right]
+  \]
+
+**Step 4: Calculate probabilities for \(b = 1\) (BS inserted)**  
+The coefficient for \(|D0, 1\rangle\) is \(\frac{1}{2\sqrt{2}} (1 + e^{i\phi})\). Thus:  
+\[
+P(D0, 1) = \left| \frac{1}{2\sqrt{2}} (1 + e^{i\phi}) \right|^2 = \frac{1}{8} |1 + e^{i\phi}|^2 = \frac{1}{8} (2 + 2\cos\phi) = \frac{1}{4} (1 + \cos\phi)
+\]  
+Similarly, \(P(D1, 1) = \frac{1}{4} (1 - \cos\phi)\). The marginal probability for \(b = 1\) is:  
+\[
+P(b=1) = P(D0, 1) + P(D1, 1) = \frac{1}{4}(1 + \cos\phi + 1 - \cos\phi) = \frac{1}{2}
+\]  
+The conditional probability for \(D0\) given \(b=1\) is:  
+\[
+P(D0 | b=1) = \frac{P(D0, 1)}{P(b=1)} = \frac{\frac{1}{4}(1 + \cos\phi)}{\frac{1}{2}} = \frac{1}{2} (1 + \cos\phi)
+\]
+
+**Step 5: Compute fringe visibility**  
+The intensity at detector \(D0\) (as a function of \(\phi\)) is \(I_{D0}(\phi) \propto P(D0 | b=1) = \frac{1}{2} (1 + \cos\phi)\). The maximum and minimum intensities are:  
+\[
+I_{\text{max}} = \frac{1}{2} (1 + 1) = 1, \quad I_{\text{min}} = \frac{1}{2} (1 - 1) = 0
+\]  
+Fringe visibility is defined as:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}} = \frac{1 - 0}{1 + 0} = 1
+\]  
+This result holds for any \(\lambda_{\text{TS}}\) in TSBCD, as the measurement rule reduces to standard quantum mechanics for final-time observations.
+
+**Conclusion**:  
+The TSBCD theory predicts **fringe_visibility = 1** when the output beam splitter is inserted, consistent with standard quantum mechanics. The time-symmetric boundary conditions and global optimization of \(S_C\) do not alter empirical predictions for this observable, as the measurement rule recovers the Born rule at \(t_f\).
+
+{
+  "derivation": "Step 1: Initial state: $|\\psi_i\\rangle = |\\text{entering}\\rangle \\otimes |+\\rangle_R$. After first beam splitter: $|\\psi_{\\text{ph}}(t_c)\\rangle = \\frac{1}{\\sqrt{2}} \\left( |A\\rangle + e^{i\\phi} |B\\rangle \\right)$. Step 2: TSBCD measurement rule at $t_f$ simplifies to $P(O) = \\frac{ | \\langle O | U(t_f, t_0) | \\psi_i \\rangle |^2 }{ \\mathcal{N} }$ since $\\langle \\psi_f | O \\rangle = 1$ for final outcome $O = |D, b\\rangle$. Step 3: Unitary evolution $U(t_f, t_0)$ includes RNG-controlled operation: $U_c = |0\\rangle\\langle 0|_R \\otimes U_0 + |1\\rangle\\langle 1|_R \\otimes U_1$, yielding final state $|\\Psi(t_f)\\rangle = \\frac{1}{2} \\left[ (|D0\\rangle + e^{i\\phi} |D1\\rangle) \\otimes |0\\rangle_R + \\frac{1}{\\sqrt{2}} \\left( (1 + e^{i\\phi}) |D0\\rangle + (1 - e^{i\\phi}) |D1\\rangle \\right) \\otimes |1\\rangle_R \\right]$. Step 4: For $b=1$ (BS inserted), $P(D0, 1) = \\frac{1}{4}(1 + \\cos\\phi)$, $P(b=1) = \\frac{1}{2}$, so $P(D0|b=1) = \\frac{1}{2}(1 + \\cos\\phi)$. Step 5: Fringe visibility $V = \\frac{I_{\\text{max}} - I_{\\text{min}}}{I_{\\text{max}} + I_{\\text{min}}} = \\frac{1 - 0}{1 + 0} = 1$."
+}
+{"value": 1.00}

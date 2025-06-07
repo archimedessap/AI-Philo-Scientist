@@ -1,0 +1,67 @@
+### Analysis using the Copenhagen Interpretation
+
+The experiment is Wheeler's delayed-choice quantum eraser using a Mach-Zehnder interferometer (MZI) with single photons. The choice to insert/remove the output beam splitter is made randomly after the photon enters the interferometer. We analyze this using the Copenhagen interpretation, which requires unitary evolution of the wavefunction followed by projective collapse upon measurement. The fringe visibility \(V\) quantifies wave-like behavior and is defined as:
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}}
+\]
+where \(I\) is intensity (probability density) at a detector.
+
+**Derivation:**
+
+**Step 1: Initial state and first beam splitter**  
+The photon enters the MZI. The first beam splitter (BS1) transforms the initial state \(| \psi_{\text{in}} \rangle = | \text{entering} \rangle\) into a superposition:
+\[
+| \psi_1 \rangle = \frac{1}{\sqrt{2}} \left( | \text{path}_0 \rangle + | \text{path}_1 \rangle \right)
+\]
+Here, \(| \text{path}_0 \rangle\) and \(| \text{path}_1 \rangle\) are orthogonal path states. The factor \(1/\sqrt{2}\) ensures normalization, reflecting a 50% probability for each path.
+
+**Step 2: Phase accumulation**  
+A phase shift \(\phi\) is introduced in one arm (e.g., path\(_0\)) via path-length differences or a phase shifter. The state becomes:
+\[
+| \psi_2 \rangle = \frac{1}{\sqrt{2}} \left( e^{i\phi} | \text{path}_0 \rangle + | \text{path}_1 \rangle \right)
+\]
+The phase \(\phi\) is the control parameter for observing interference fringes.
+
+**Step 3: Random choice and unitary evolution**  
+After the photon passes BS1, a quantum random number generator (RNG) decides whether to insert (\(b=1\)) or remove (\(b=0\)) the output beam splitter (BS2). Since the choice is classical (determining the Hamiltonian post-decision), we handle cases separately. For fringe visibility, only \(b=1\) (BS2 present) is relevant, as interference requires superposition recombination.
+
+**Step 4: Evolution with BS2 present (\(b=1\))**  
+BS2 applies a unitary transformation mixing path states into detector states \(| D_0 \rangle\) and \(| D_1 \rangle\):
+\[
+U_{\text{BS2}} | \text{path}_0 \rangle = \frac{1}{\sqrt{2}} \left( | D_0 \rangle + | D_1 \rangle \right), \quad
+U_{\text{BS2}} | \text{path}_1 \rangle = \frac{1}{\sqrt{2}} \left( | D_0 \rangle - | D_1 \rangle \right)
+\]
+Applying \(U_{\text{BS2}}\) to \(| \psi_2 \rangle\):
+\[
+| \psi_3 \rangle = \frac{1}{\sqrt{2}} \left[ e^{i\phi} \cdot \frac{1}{\sqrt{2}} \left( | D_0 \rangle + | D_1 \rangle \right) + 1 \cdot \frac{1}{\sqrt{2}} \left( | D_0 \rangle - | D_1 \rangle \right) \right] = \frac{1}{2} \left[ \left( e^{i\phi} + 1 \right) | D_0 \rangle + \left( e^{i\phi} - 1 \right) | D_1 \rangle \right]
+\]
+
+**Step 5: Measurement probabilities**  
+Projective measurement collapses the wavefunction. The probability to detect at \(D_0\) is:
+\[
+P(D_0 | \phi, b=1) = \left| \langle D_0 | \psi_3 \rangle \right|^2 = \left| \frac{e^{i\phi} + 1}{2} \right|^2
+\]
+Expanding \(e^{i\phi} = \cos\phi + i\sin\phi\):
+\[
+\left| \frac{e^{i\phi} + 1}{2} \right|^2 = \frac{1}{4} \left[ (\cos\phi + 1)^2 + \sin^2\phi \right] = \frac{1}{4} \left[ \cos^2\phi + 2\cos\phi + 1 + \sin^2\phi \right] = \frac{1}{4} \left[ 2 + 2\cos\phi \right] = \frac{1 + \cos\phi}{2}
+\]
+Similarly, \(P(D_1 | \phi, b=1) = \left| \frac{e^{i\phi} - 1}{2} \right|^2 = \frac{1 - \cos\phi}{2}\).
+
+**Step 6: Fringe visibility calculation**  
+For detector \(D_0\), the intensity \(I_{D_0}(\phi) = P(D_0 | \phi, b=1)\) oscillates with \(\phi\):
+- Maximum intensity: \(I_{\text{max}} = \max \left( \frac{1 + \cos\phi}{2} \right) = 1\) (when \(\phi = 0\))
+- Minimum intensity: \(I_{\text{min}} = \min \left( \frac{1 + \cos\phi}{2} \right) = 0\) (when \(\phi = \pi\))  
+Fringe visibility is:
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}} = \frac{1 - 0}{1 + 0} = 1
+\]
+
+**Philosophical note:** The delayed choice (made after photon entry) doesn't alter the outcome. Wavefunction evolution remains unitary until measurement. Inserting BS2 enables interference by erasing "which-path" information, manifesting wave-like behavior (\(V=1\)). Removing BS2 would yield particle-like behavior (\(V=0\)), but only \(b=1\) cases contribute to the fringe visibility observable.
+
+**Final value:**  
+The predicted fringe visibility is \(1.00\).
+
+{
+  "derivation": "Step 1: Initial state after first beam splitter: $| \\psi_1 \\rangle = \\frac{1}{\\sqrt{2}} \\left( | \\text{path}_0 \\rangle + | \\text{path}_1 \\rangle \\right)$. Step 2: Phase shift in path$_0$: $| \\psi_2 \\rangle = \\frac{1}{\\sqrt{2}} \\left( e^{i\\phi} | \\text{path}_0 \\rangle + | \\text{path}_1 \\rangle \\right)$. Step 3: Choice $b=1$ (BS2 present) selected for interference measurement. Step 4: Unitary evolution through BS2: $| \\psi_3 \\rangle = \\frac{1}{2} \\left[ (e^{i\\phi} + 1) | D_0 \\rangle + (e^{i\\phi} - 1) | D_1 \\rangle \\right]$. Step 5: Probability at $D_0$: $P(D_0 | \\phi, b=1) = \\left| \\frac{e^{i\\phi} + 1}{2} \\right|^2 = \\frac{1 + \\cos\\phi}{2}$. Step 6: Fringe visibility: $I_{\\text{max}} = 1$ ($\\phi=0$), $I_{\\text{min}} = 0$ ($\\phi=\\pi$), $V = \\frac{1 - 0}{1 + 0} = 1$."
+}
+{"value": 1.00}

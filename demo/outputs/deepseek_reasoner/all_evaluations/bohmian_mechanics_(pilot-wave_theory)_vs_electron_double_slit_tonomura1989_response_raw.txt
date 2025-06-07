@@ -1,0 +1,58 @@
+### Analysis using Bohmian Mechanics
+
+**Philosophical Framework:**  
+In Bohmian mechanics, electrons are real particles with definite trajectories, guided by a wavefunction \(\psi\) that evolves unitarily via the Schrödinger equation. The wavefunction acts as a "pilot wave" in configuration space, determining particle velocities through the guiding equation. Measurement outcomes (e.g., electron positions on the screen) arise from decoherence effects conditioned on \(\psi\), with the Born rule (\(|\psi|^2\)) emerging from quantum equilibrium (initial position distribution matches \(|\psi|^2\)).
+
+**Derivation of Fringe Visibility:**
+
+#### Step 1: Define the wavefunction for the biprism setup
+The electron biprism creates two coherent virtual sources (analogous to double slits). The wavefunction \(\psi(x,t)\) at position \(x\) on the screen (distance \(L = 1.5  \text{m}\)) is a superposition:  
+\[
+\psi(x,t) = \psi_1(x,t) + \psi_2(x,t),
+\]  
+where \(\psi_1\) and \(\psi_2\) are wavefunctions from each virtual source. For electrons accelerated by \(V = 50  \text{kV}\), the de Broglie wavelength \(\lambda\) is calculated as follows:  
+- Relativistic momentum: \(p = \frac{\sqrt{E_k(E_k + 2m_ec^2)}}{c}\), where \(E_k = eV\) (kinetic energy), \(e\) is electron charge, \(m_e\) is electron rest mass.  
+- \(E_k = 50 \times 10^3  \text{eV} = 8.01 \times 10^{-15}  \text{J}\)  
+- \(m_ec^2 = 0.511  \text{MeV} = 8.187 \times 10^{-14}  \text{J}\)  
+- \(p = \frac{\sqrt{(8.01 \times 10^{-15})(8.01 \times 10^{-15} + 2 \times 8.187 \times 10^{-14})}}{3 \times 10^8} = 1.236 \times 10^{-22}  \text{kg·m/s}\)  
+- \(\lambda = \frac{h}{p} = \frac{6.626 \times 10^{-34}}{1.236 \times 10^{-22}} = 5.36 \times 10^{-12}  \text{m}\).  
+
+#### Step 2: Far-field wavefunction in Fraunhofer approximation
+With \(L \gg d\) (slit separation \(d\) typically \(\sim 10^{-6}  \text{m}\)), the wavefunction at the screen is:  
+\[
+\psi(x) \approx \frac{e^{ikr_0}}{r_0} \left[ e^{i k d \sin\theta / 2} + e^{-i k d \sin\theta / 2} \right] \propto \cos\left(\frac{\pi d x}{\lambda L}\right),
+\]  
+where \(k = 2\pi / \lambda\), \(\sin\theta \approx x/L\), and \(x\) is the screen coordinate. The probability density is:  
+\[
+|\psi(x)|^2 \propto \cos^2\left(\frac{\pi d x}{\lambda L}\right).
+\]  
+
+#### Step 3: Intensity profile and fringe extremes
+The intensity (particle density) on the screen follows \(I(x) = |\psi(x)|^2\):  
+- Maxima at \(x = n \lambda L / d\): \(I_{\text{max}} = I_0 \cos^2(0) = I_0\)  
+- Minima at \(x = (n + \frac{1}{2}) \lambda L / d\): \(I_{\text{min}} = I_0 \cos^2(\pi/2) = 0\)  
+
+#### Step 4: Fringe visibility formula
+Visibility \(V\) is defined as:  
+\[
+V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}}.
+\]  
+Substituting values:  
+\[
+V = \frac{I_0 - 0}{I_0 + 0} = 1.
+\]  
+
+#### Step 5: Bohmian trajectory justification
+Particles follow deterministic paths via the guiding equation:  
+\[
+\dot{x} = \frac{\hbar}{m} \Im\left( \frac{\partial_x \psi}{\psi} \right).
+\]  
+Initial positions are distributed as \(|\psi_0|^2\) (quantum equilibrium). At the screen, position measurements sample \(|\psi(x)|^2\), reproducing the interference pattern. Thus, fringe visibility matches standard quantum mechanics.  
+
+**Conclusion:**  
+Bohmian mechanics predicts full fringe visibility (\(V = 1\)) for ideal biprism interference, as particle trajectories distribute according to \(|\psi|^2\), yielding perfect contrast. Experimental imperfections (not modeled here) may reduce \(V\), but the theory fundamentally prescribes \(V = 1\).
+
+---
+
+{"derivation": "Step 1: Calculate de Broglie wavelength. Kinetic energy \(E_k = eV = 50 \\times 10^3 \\text{eV}\). Relativistic momentum: \(p = \\frac{\\sqrt{E_k(E_k + 2m_ec^2)}}{c}\), where \(m_ec^2 = 0.511 \\text{MeV}\). Result: \(p = 1.236 \\times 10^{-22} \\text{kg·m/s}\). Thus, \(\\lambda = h/p = 5.36 \\times 10^{-12} \\text{m}\). Step 2: Wavefunction at screen (distance \(L = 1.5 \\text{m}\)): \( \\psi(x) \\propto \\cos\\left( \\frac{\\pi d x}{\\lambda L} \\right) \). Probability density: \( |\\psi(x)|^2 \\propto \\cos^2\\left( \\frac{\\pi d x}{\\lambda L} \\right) \\). Step 3: Intensity extremes: \(I_{\\text{max}} = I_0\) (at \(x = n \\lambda L / d\)), \(I_{\\text{min}} = 0\) (at \(x = (n + 1/2) \\lambda L / d\)). Step 4: Visibility: \(V = \\frac{I_{\\text{max}} - I_{\\text{min}}}{I_{\\text{max}} + I_{\\text{min}}} = \\frac{I_0 - 0}{I_0 + 0} = 1\). Step 5: Bohmian mechanics: Trajectories guided by \( \\dot{x} = \\frac{\\hbar}{m} \\Im\\!\\left( \\frac{\\partial_x \\psi}{\\psi} \\right) \), with initial distribution \( |\\psi_0|^2 \). Screen positions obey \( |\\psi|^2 \), confirming \(V=1\)."}  
+{"value": 1.00}

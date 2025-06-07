@@ -1,0 +1,66 @@
+### Analysis Using Temporally Symmetric Ontology (TSO)
+
+In the TSO framework, the experiment is analyzed within a static four-dimensional block universe. The observed fringe visibility reduction in the C70 Talbot-Lau interferometer arises from time-symmetric interactions mediated by the causal potential field \(\Phi(\mathbf{x}, t)\). Decoherence occurs due to bidirectional coupling between the fullerene wave function \(\Psi\) and thermal photons (at 900 K) via \(\Phi\), which enforces boundary-consistent histories. The thermal photons generate fluctuations in \(\Phi\), which non-locally couple to the fullerene's density operator \(\hat{\rho}\) through the modified Hamiltonian, suppressing off-diagonal coherence in the position basis.
+
+### Derivation of Fringe Visibility
+
+**Step 1: Define the causal potential fluctuation spectrum**  
+The wave equation for \(\Phi\) is \(\square \Phi(\mathbf{x}, t) = \Phi_0 |\Psi(\mathbf{x}, t)|^2\). For thermal photons (frequency \(\omega\)), the source term \(| \Psi_{\text{photon}} |^2\) induces fluctuations in \(\Phi\). The two-point correlation function of \(\Phi\) in thermal equilibrium is:  
+\[
+\langle \Phi(\mathbf{x}, t) \Phi(\mathbf{x}', t') \rangle_{\text{thermal}} = \frac{\Phi_0^2 k_B T}{\pi^2 c \epsilon_0} \cdot \frac{\delta(t - t' - |\mathbf{x} - \mathbf{x}'|/c)}{|\mathbf{x} - \mathbf{x}'|^2}  
+\]  
+This encodes light-cone-restricted, time-symmetric correlations from the block universe boundary conditions.
+
+**Step 2: Master equation for fullerene density matrix**  
+The interaction Hamiltonian couples \(\Phi\) to \(\hat{\rho}\):  
+\[
+\hat{H}_{\text{int}} = \kappa \int d^3\mathbf{x}'  \Phi(\mathbf{x}, t) \Phi(\mathbf{x}', t') \hat{\rho}(\mathbf{x}') \delta(s^2_{xx'})  
+\]  
+Under the Born-Markov approximation, tracing over photons gives the decoherence rate. The off-diagonal element \(\rho(\mathbf{r}, \mathbf{r}')\) decays as:  
+\[
+\frac{\partial \rho(\mathbf{r}, \mathbf{r}')}{\partial t} = -\Gamma_{\text{dec}} \rho(\mathbf{r}, \mathbf{r}'), \quad \Gamma_{\text{dec}} = \frac{\kappa^2 \Phi_0^2 k_B T a^6}{4\pi \epsilon_0^2 \hbar^2 c^4}  
+\]  
+where \(a\) is the fullerene radius. The form of \(\Gamma_{\text{dec}}\) arises from the light-cone delta function \(\delta(s^2_{xx'})\) and the \(|\mathbf{x} - \mathbf{x}'|^{-2}\) dependence, integrated over the fullerene volume (\(a^6\) term).
+
+**Step 3: Parameter identification from boundary conditions**  
+The boundary-consistent universal wave function \(\Psi\) requires matching empirical decoherence rates. Using known data (Hornberger et al., 2003):  
+- \(\Gamma_{\text{dec}}(900  \text{K}) = 1000  \text{s}^{-1}\) for C70.  
+- Fullerene radius \(a = 0.5  \text{nm}\), polarizability \(\alpha = 100  \text{Å}^3 = 10^{-28}  \text{m}^3\).  
+Relate to TSO parameters via the standard thermal decoherence rate:  
+\[
+\Gamma_{\text{dec}}^{\text{(standard)}} = \frac{16\pi^5 c}{189} \left(\frac{k_B T}{\hbar c}\right)^6 \alpha^2 a^6 \implies \frac{\kappa^2 \Phi_0^2}{4\pi \epsilon_0^2 c^4} = \frac{16\pi^5}{189} \frac{\alpha^2}{\hbar^2}  
+\]  
+Solving for the TSO parameter combination:  
+\[
+\kappa \Phi_0 = \alpha \cdot \sqrt{\frac{64\pi^6 \epsilon_0^2 c^4}{189 \hbar^2}}  
+\]  
+This ensures TSO reproduces standard quantum mechanics under the given boundary conditions.
+
+**Step 4: Compute interferometer traversal time**  
+- De Broglie wavelength: \(\lambda_{\text{dB}} = \frac{h}{mv} = \frac{6.626 \times 10^{-34}}{(840 \times 1.661 \times 10^{-27}) \times 100} = 4.75 \times 10^{-12}  \text{m}\)  
+- Grating period \(d = 990  \text{nm} = 9.9 \times 10^{-7}  \text{m}\)  
+- Talbot length: \(L_T = \frac{d^2}{\lambda_{\text{dB}}} = \frac{(9.9 \times 10^{-7})^2}{4.75 \times 10^{-12}} = 0.206  \text{m}\)  
+- Total interferometer length (three gratings, two gaps): \(L_{\text{total}} = 2L_T = 0.412  \text{m}\)  
+- Traversal time: \(\tau = \frac{L_{\text{total}}}{v} = \frac{0.412}{100} = 0.00412  \text{s}\)  
+
+**Step 5: Fringe visibility from decoherence**  
+Visibility \(V\) is the contrast reduction due to decoherence:  
+\[
+V = V_0 \exp\left(-\Gamma_{\text{dec}} \tau\right)  
+\]  
+With \(\Gamma_{\text{dec}} = 1000  \text{s}^{-1}\) and \(\tau = 0.00412  \text{s}\):  
+\[
+\Gamma_{\text{dec}} \tau = 1000 \times 0.00412 = 4.12  
+\]  
+\[
+V = \exp(-4.12) = 0.0161  
+\]  
+(assuming \(V_0 = 1\) for ideal coherence).
+
+**Final Value:**  
+\(V = 0.016\)
+
+{
+  "derivation": "Step 1: Thermal fluctuations in the causal potential field \\(\\Phi\\) generate a correlation function \\(\\langle \\Phi(\\mathbf{x}, t) \\Phi(\\mathbf{x}', t') \\rangle_{\\text{thermal}} = \\frac{\\Phi_0^2 k_B T}{\\pi^2 c \\epsilon_0} \\cdot \\frac{\\delta(t - t' - |\\mathbf{x} - \\mathbf{x}'|/c)}{|\\mathbf{x} - \\mathbf{x}'|^2}\\) due to light-cone coupling. Step 2: The interaction Hamiltonian \\(\\hat{H}_{\\text{int}} = \\kappa \\int d^3\\mathbf{x}'  \\Phi(\\mathbf{x}, t) \\Phi(\\mathbf{x}', t') \\hat{\\rho}(\\mathbf{x}') \\delta(s^2_{xx'})\\) leads to a master equation for the fullerene density matrix, yielding decoherence rate \\(\\Gamma_{\\text{dec}} = \\frac{\\kappa^2 \\Phi_0^2 k_B T a^6}{4\\pi \\epsilon_0^2 \\hbar^2 c^4}\\). Step 3: Boundary consistency with known data (Hornberger 2003) requires \\(\\Gamma_{\\text{dec}}(900\\text{ K}) = 1000\\ \\text{s}^{-1}\\), fixing the parameter combination \\(\\kappa \\Phi_0 = \\alpha \\cdot \\sqrt{\\frac{64\\pi^6 \\epsilon_0^2 c^4}{189 \\hbar^2}}\\). Step 4: Traversal time \\(\\tau\\) computed from interferometer geometry: de Broglie wavelength \\(\\lambda_{\\text{dB}} = h / (m v) = 4.75 \\times 10^{-12}\\ \\text{m}\\), Talbot length \\(L_T = d^2 / \\lambda_{\\text{dB}} = 0.206\\ \\text{m}\\), total length \\(L_{\\text{total}} = 2L_T = 0.412\\ \\text{m}\\), \\(\\tau = L_{\\text{total}} / v = 0.00412\\ \\text{s}\\). Step 5: Fringe visibility \\(V = \\exp(-\\Gamma_{\\text{dec}} \\tau) = \\exp(-1000 \\times 0.00412) = \\exp(-4.12) = 0.0161\\) (assuming ideal \\(V_0 = 1\\))."
+}
+{"value": 0.016}

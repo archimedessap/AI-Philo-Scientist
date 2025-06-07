@@ -1,0 +1,68 @@
+### Analysis Using Copenhagen Interpretation
+
+The experiment is a quantum eraser with polarization-entangled photon pairs. The double slits are tagged by orthogonal polarizations (e.g., slit A: horizontal, slit B: vertical). The eraser uses delayed-choice measurement of the partner photon's polarization, controlled via an electro-optic modulator (EOM). The observable is fringe visibility, which quantifies interference contrast:  
+\[ V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}} \]  
+where \( I \) is the intensity pattern on the screen.
+
+#### Key Principles from Copenhagen Interpretation:
+- **Wavefunction (\( \psi \))**: Encodes all potentialities of the system.
+- **Measurement**: Causes non-unitary collapse via projection postulate.
+- **Entanglement**: The signal (s) and idler (i) photons share a non-separable state.
+- **Which-path information**: If accessible, destroys interference; erasure restores it.
+
+#### Derivation of Fringe Visibility
+
+**Step 1: Initial State**  
+The polarization-entangled photon pairs are in a Bell state:  
+\[ |\Psi\rangle = \frac{1}{\sqrt{2}} \left( |A\rangle_s |V\rangle_i - |B\rangle_s |H\rangle_i \right) \]  
+- \( |A\rangle_s, |B\rangle_s \): Path states of the signal photon (slit A or B).  
+- \( |H\rangle_i, |V\rangle_i \): Polarization states of the idler photon (horizontal or vertical).  
+- Entanglement links path (A/B) to idler polarization (V/H).
+
+**Step 2: Evolution to Screen (Unitary Process)**  
+The signal photon propagates to the screen. The spatial wavefunctions for paths A and B are \( \psi_A(x) \) and \( \psi_B(x) \), where \( x \) is the position on the screen. The full state becomes:  
+\[ |\Psi\rangle = \frac{1}{\sqrt{2}} \int dx \left[ \psi_A(x) |x\rangle |A\rangle_s |V\rangle_i - \psi_B(x) |x\rangle |B\rangle_s |H\rangle_i \right] \]  
+- \( |x\rangle \): Position eigenstate on the screen.  
+- Unitary evolution preserves entanglement.
+
+**Step 3: Case 1 - Which-Path Information Present (No Eraser)**  
+No measurement on the idler photon. The reduced density matrix for the signal photon is obtained by tracing over the idler:  
+\[ \rho_s = \text{Tr}_i \left( |\Psi\rangle \langle\Psi| \right) \]  
+Compute matrix elements:  
+\[ \langle x' | \rho_s | x \rangle = \frac{1}{2} \left[ \psi_A(x') \psi_A^*(x) \langle A|A\rangle \delta_{x'x} + \psi_B(x') \psi_B^*(x) \langle B|B\rangle \delta_{x'x} \right] \]  
+- Cross-terms vanish due to orthogonality of idler states (\( \langle V|H\rangle_i = 0 \)).  
+The probability density at \( x \) is:  
+\[ P(x) = \langle x | \rho_s | x \rangle = \frac{1}{2} \left( |\psi_A(x)|^2 + |\psi_B(x)|^2 \right) \]  
+- No interference terms (\( \propto \psi_A \psi_B^* \)) → **fringe visibility \( V = 0 \)**.
+
+**Step 4: Case 2 - Which-Path Information Erased**  
+Idler photon measured in the diagonal basis:  
+\[ |+\rangle_i = \frac{|H\rangle_i + |V\rangle_i}{\sqrt{2}}, \quad |-\rangle_i = \frac{|H\rangle_i - |V\rangle_i}{\sqrt{2}} \]  
+Rewrite the entangled state:  
+\[ |\Psi\rangle = \frac{1}{2} \int dx \left[ |x\rangle \left( \psi_A(x) |A\rangle_s - \psi_B(x) |B\rangle_s \right) |+\rangle_i - |x\rangle \left( \psi_A(x) |A\rangle_s + \psi_B(x) |B\rangle_s \right) |-\rangle_i \right] \]  
+**Step 4a: Conditional State for \( |+\rangle_i \) Measurement**  
+Amplitude for signal at \( x \) and idler outcome \( + \):  
+\[ \langle x, + | \Psi \rangle = \frac{1}{2} \left( \psi_A(x) - \psi_B(x) \right) \]  
+Probability density (conditional on \( + \)):  
+\[ P(x | +) \propto \left| \psi_A(x) - \psi_B(x) \right|^2 \]  
+**Step 4b: Interference Pattern for Symmetric Slits**  
+Assume symmetric setup: \( |\psi_A(x)| = |\psi_B(x)| = \psi_0(x) \), and relative phase \( \delta = \phi_A(x) - \phi_B(x) \):  
+\[ \left| \psi_A - \psi_B \right|^2 = 2 \psi_0^2 \left( 1 - \cos \delta \right) \]  
+Intensity extrema:  
+- Maximum at \( \cos \delta = -1 \) → \( I_{\text{max}} = 4 \psi_0^2 \)  
+- Minimum at \( \cos \delta = 1 \) → \( I_{\text{min}} = 0 \)  
+Fringe visibility:  
+\[ V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}} = \frac{4\psi_0^2 - 0}{4\psi_0^2 + 0} = 1 \]  
+
+**Step 5: Philosophical Context**  
+- **Without eraser**: Which-path information exists → wavefunction collapse "chooses" a path → no interference.  
+- **With eraser**: Measurement in \( \{|+\rangle, |-\rangle\} \) basis erases path information → wavefunction remains in superposition → interference restored.  
+- **Delayed choice**: Collapse timing irrelevant; outcome depends on measurement basis, not order.  
+
+#### Predicted Value  
+For the erased case (interference restored), ideal fringe visibility is **1.00**.
+
+```json
+{"derivation": "Step 1: Initial entangled state: $|\\Psi\\rangle = \\frac{1}{\\sqrt{2}} \\left( |A\\rangle_s |V\\rangle_i - |B\\rangle_s |H\\rangle_i \\right)$. Step 2: Unitary evolution to screen: $|\\Psi\\rangle = \\frac{1}{\\sqrt{2}} \\int dx \\left[ \\psi_A(x) |x\\rangle |A\\rangle_s |V\\rangle_i - \\psi_B(x) |x\\rangle |B\\rangle_s |H\\rangle_i \\right]$. Step 3: No eraser (which-path present): Reduced density matrix $\\rho_s = \\text{Tr}_i(|\\Psi\\rangle\\langle\\Psi|)$ gives $P(x) = \\frac{1}{2} \\left( |\\psi_A(x)|^2 + |\\psi_B(x)|^2 \\right)$; visibility $V = 0$. Step 4: With eraser: Measure idler in $|\\pm\\rangle_i = \\frac{|H\\rangle_i \\pm |V\\rangle_i}{\\sqrt{2}}$. Conditional amplitude for $|+\\rangle_i$: $\\langle x, + | \\Psi \\rangle = \\frac{1}{2} (\\psi_A(x) - \\psi_B(x))$. Probability density $P(x|+) \\propto |\\psi_A(x) - \\psi_B(x)|^2$. For symmetric slits ($|\\psi_A| = |\\psi_B| = \\psi_0$): $|\\psi_A - \\psi_B|^2 = 2\\psi_0^2 (1 - \\cos \\delta)$, yielding $I_{\\text{max}} = 4\\psi_0^2$, $I_{\\text{min}} = 0$, $V = 1$. Step 5: Collapse erases which-path info, restoring interference."}
+{"value": 1.00}
+```

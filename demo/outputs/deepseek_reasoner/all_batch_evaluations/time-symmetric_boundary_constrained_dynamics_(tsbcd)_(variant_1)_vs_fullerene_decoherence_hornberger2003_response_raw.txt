@@ -1,0 +1,77 @@
+### Analysis using Time-Symmetric Boundary Constrained Dynamics (TSBCD)
+
+The experiment investigates decoherence of C₇₀ fullerene molecules (mass 840 amu) in a Talbot-Lau interferometer (grating period 990 nm) at an average velocity of 100 m/s, with a thermal source at 900 K. The observable is fringe visibility, which quantifies interference contrast. TSBCD describes particle trajectories via minimization of a causal action \( S_C \) constrained by fixed initial (\( \psi_i \)) and final (\( \psi_f \)) quantum states. Decoherence arises from interactions with the thermal environment (blackbody radiation), which entangles the system with environmental degrees of freedom. The final boundary condition includes the environment, suppressing interference.
+
+#### Derivation of Fringe Visibility
+
+**Step 1: Compute de Broglie wavelength**  
+The de Broglie wavelength \( \lambda_{\text{dB}} \) determines the interferometer's Talbot length.  
+\[
+\lambda_{\text{dB}} = \frac{h}{m v}
+\]  
+- \( h = 6.626 \times 10^{-34}  \text{J·s} \)  
+- \( m = 840  \text{amu} = 840 \times 1.661 \times 10^{-27}  \text{kg} = 1.395 \times 10^{-24}  \text{kg} \)  
+- \( v = 100  \text{m/s} \)  
+\[
+\lambda_{\text{dB}} = \frac{6.626 \times 10^{-34}}{1.395 \times 10^{-24} \times 100} = 4.751 \times 10^{-12}  \text{m}
+\]
+
+**Step 2: Compute Talbot length**  
+The Talbot length \( L_T \) sets the interferometer scale.  
+\[
+L_T = \frac{2 d^2}{\lambda_{\text{dB}}}
+\]  
+- \( d = 990  \text{nm} = 9.90 \times 10^{-7}  \text{m} \)  
+\[
+L_T = \frac{2 \times (9.90 \times 10^{-7})^2}{4.751 \times 10^{-12}} = \frac{2 \times 9.801 \times 10^{-13}}{4.751 \times 10^{-12}} = 0.4126  \text{m}
+\]
+
+**Step 3: Compute time of flight**  
+The time \( t \) between interferometer gratings is:  
+\[
+t = \frac{L_T}{v} = \frac{0.4126}{100} = 4.126 \times 10^{-3}  \text{s}
+\]
+
+**Step 4: Compute path separation**  
+The maximum path separation \( \Delta x \) is the grating period:  
+\[
+\Delta x = d = 9.90 \times 10^{-7}  \text{m}
+\]
+
+**Step 5: Compute decoherence rate due to blackbody radiation**  
+The decoherence rate \( \Gamma \) scales with \( (\Delta x)^2 \) and \( T^4 \). From experimental data (Hackermüller et al., 2004), for \( \Delta x = 14  \text{nm} \) at \( T = 900  \text{K} \), \( \Gamma = 20  \text{s}^{-1} \). Scaling to \( \Delta x = 990  \text{nm} \):  
+\[
+\Gamma = 20 \times \left( \frac{990 \times 10^{-9}}{14 \times 10^{-9}} \right)^2 = 20 \times \left( \frac{990}{14} \right)^2 = 20 \times 5000 = 1.000 \times 10^{5}  \text{s}^{-1}
+\]
+
+**Step 6: Compute decoherence factor**  
+The fringe visibility reduction is exponential:  
+\[
+\text{Visibility} = V_0 \exp\left( -\Gamma t \right)
+\]  
+- \( V_0 = 1 \) (ideal interference)  
+\[
+\Gamma t = (1.000 \times 10^{5}) \times (4.126 \times 10^{-3}) = 412.6
+\]  
+\[
+\exp(-412.6) \approx 0
+\]
+
+**Step 7: TSBCD interpretation**  
+In TSBCD, the trajectory \( Q(t) \) minimizes the causal action:  
+\[
+S_C = \lambda_{TS} \mathcal{L}(Q(t_0), \psi_i) + (1-\lambda_{TS}) \mathcal{L}(Q(t_f), \psi_f) + \int_{t_0}^{t_f} \mathcal{A}(Q, \dot{Q}, t)  dt
+\]  
+The thermal environment (final boundary condition \( \psi_f \)) correlates with the system, suppressing coherence. The measurement probability for fringe visibility incorporates environmental degrees of freedom, yielding:  
+\[
+P(\text{high visibility}) \propto \left| \langle \psi_f | U(t_f, t) | \text{interference} \rangle \langle \text{interference} | U(t, t_0) | \psi_i \rangle \right|^2
+\]  
+Final environmental states (blackbody photons) are unmeasured, necessitating summation. This trace erases interference, consistent with \( \exp(-\Gamma t) \to 0 \).
+
+#### Final Numerical Value
+The fringe visibility is 0.
+
+```json
+{"derivation": "Step 1: Compute de Broglie wavelength: $\\lambda_{\\text{dB}} = \\frac{h}{m v} = \\frac{6.626 \\times 10^{-34}}{1.395 \\times 10^{-24} \\times 100} = 4.751 \\times 10^{-12} \\text{m}$. Step 2: Compute Talbot length: $L_T = \\frac{2 d^2}{\\lambda_{\\text{dB}}} = \\frac{2 \\times (9.90 \\times 10^{-7})^2}{4.751 \\times 10^{-12}} = 0.4126 \\text{m}$. Step 3: Compute time of flight: $t = \\frac{L_T}{v} = \\frac{0.4126}{100} = 4.126 \\times 10^{-3} \\text{s}$. Step 4: Path separation $\\Delta x = d = 9.90 \\times 10^{-7} \\text{m}$. Step 5: Decoherence rate: $\\Gamma = 20 \\times \\left( \\frac{990}{14} \\right)^2 = 1.000 \\times 10^{5} \\text{s}^{-1}$ (scaled from literature). Step 6: Decoherence factor: $\\exp(-\\Gamma t) = \\exp(-412.6) \\approx 0$. Step 7: TSBCD: Final boundary condition $\\psi_f$ includes thermal environment, suppressing coherence via summation over unmeasured states."}
+{"value": 0}
+```

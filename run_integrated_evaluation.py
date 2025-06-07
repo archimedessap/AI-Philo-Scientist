@@ -13,7 +13,7 @@ import json
 import argparse
 import asyncio
 from theory_validation.agent_validation.theory_evaluator import TheoryEvaluator
-from theory_validation.experimetal_validation.experiment_evaluator import ExperimentEvaluator
+from theory_experiment.experiment_evaluator import ExperimentEvaluator
 from theory_generation.llm_interface import LLMInterface
 
 class TheoryEvaluationIntegrator:

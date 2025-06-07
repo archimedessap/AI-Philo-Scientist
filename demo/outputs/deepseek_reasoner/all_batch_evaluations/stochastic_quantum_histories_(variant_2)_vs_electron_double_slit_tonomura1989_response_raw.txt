@@ -1,0 +1,57 @@
+### Analysis Using Stochastic Quantum Histories (Variant 2)
+
+**Philosophical Framework:**  
+In this theory, electrons follow stochastic trajectories in configuration space, guided by a universal wave function $\psi$. The wave function has dual roles:  
+1. **Ontological:** Acts as a physical field determining the drift velocity ($v^i$) of particles.  
+2. **Epistemological:** Encodes amplitudes for coarse-grained histories.  
+Interference arises from the wave-like nature of $\psi$, while particle positions ($\mathbf{Q}_t$) evolve stochastically. The Born rule ($|\psi|^2$ probability density) emerges from history-constrained stochastic dynamics.  
+
+**Derivation of Fringe Visibility:**  
+
+#### **Step 1: Compute de Broglie wavelength**  
+The electron's kinetic energy $E$ from acceleration voltage $V = 50 \text{ kV}$:  
+$$E = eV = (1.602 \times 10^{-19}  \text{C}) \times (50 \times 10^3  \text{V}) = 8.01 \times 10^{-15}  \text{J}.$$  
+Momentum $p$ from $E = p^2 / (2m)$:  
+$$p = \sqrt{2mE} = \sqrt{2 \times (9.109 \times 10^{-31}  \text{kg}) \times (8.01 \times 10^{-15}  \text{J})} = 1.208 \times 10^{-22}  \text{kg·m/s}.$$  
+de Broglie wavelength $\lambda$:  
+$$\lambda = \frac{h}{p} = \frac{6.626 \times 10^{-34}  \text{J·s}}{1.208 \times 10^{-22}  \text{kg·m/s}} = 5.486 \times 10^{-12}  \text{m}.$$  
+
+#### **Step 2: Define wave function after biprism**  
+The biprism acts as a double slit, creating a superposition. At $t=0$ (post-biprism), the wave function in the $x$-direction (perpendicular to propagation) is:  
+$$\psi(x,0) = \frac{1}{\sqrt{2}} \left[ \psi_1(x,0) + \psi_2(x,0) \right],$$  
+where $\psi_1$ and $\psi_2$ are Gaussian wave packets centered at $\pm d/2$ (slit separation $d$ unknown).  
+
+#### **Step 3: Propagate wave function to screen**  
+Electrons propagate freely to the screen at distance $L = 1.5  \text{m}$. The time-dependent wave function $\psi(x,t)$ solves:  
+$$i\hbar \frac{\partial \psi}{\partial t} = -\frac{\hbar^2}{2m} \frac{\partial^2 \psi}{\partial x^2}.$$  
+Using the free-particle propagator $G(x,t; x',0)$:  
+$$\psi(x,t) = \int G(x,t; x',0) \psi(x',0)  dx', \quad G(x,t; x',0) = \sqrt{\frac{m}{2\pi i \hbar t}} \exp\left( i \frac{m(x-x')^2}{2\hbar t} \right).$$  
+For $L \gg d$, the phase difference between paths dominates, yielding:  
+$$\psi(x,t) \approx \frac{e^{i\phi_0}}{\sqrt{2}} \left[ e^{i \frac{2\pi x d}{2\lambda L}} + e^{-i \frac{2\pi x d}{2\lambda L}} \right] \cdot \text{(envelope)} = e^{i\phi_0} \sqrt{2} \cos\left( \frac{\pi d x}{\lambda L} \right) \cdot \text{(envelope)}.$$  
+
+#### **Step 4: Intensity pattern and probability density**  
+The probability density $P(x)$ (from Born rule) is:  
+$$P(x) = |\psi(x,t)|^2 \propto \cos^2\left( \frac{\pi d x}{\lambda L} \right).$$  
+Intensity $I(x)$ on screen is proportional to $P(x)$:  
+$$I(x) = I_0 \cos^2\left( \frac{\pi d x}{\lambda L} \right) = \frac{I_0}{2} \left[ 1 + \cos\left( \frac{2\pi d x}{\lambda L} \right) \right].$$  
+- $I_{\text{max}} = I_0$ (at $\cos^2 = 1$),  
+- $I_{\text{min}} = 0$ (at $\cos^2 = 0$).  
+
+#### **Step 5: Fringe visibility**  
+Fringe visibility $V$:  
+$$V = \frac{I_{\text{max}} - I_{\text{min}}}{I_{\text{max}} + I_{\text{min}}} = \frac{I_0 - 0}{I_0 + 0} = 1.$$  
+
+**Role of Stochastic Dynamics:**  
+- Stochastic trajectories $dQ_t = v\, dt + \sqrt{\hbar / m}\, dW_t$ (with $v \propto \Im[\nabla \psi / \psi]$) maintain $|\psi|^2$ as the equilibrium distribution.  
+- Histories consistent with the global wave function yield the same interference pattern as standard QM.  
+- No reduction in visibility: The stochastic term preserves quantum coherence, and the biprism setup ensures no which-path information.  
+
+**Numerical Value:**  
+For an ideal double-slit/biprism, $V = 1$ regardless of $\lambda$, $d$, or $L$, as minima are perfectly dark ($I_{\text{min}} = 0$).  
+
+---
+
+```json
+{"derivation": "Step 1: Compute de Broglie wavelength. Kinetic energy $E = eV = (1.602 \\times 10^{-19}) \\times (50 \\times 10^3) = 8.01 \\times 10^{-15} \\text{ J}$. Momentum $p = \\sqrt{2mE} = \\sqrt{2 \\times 9.109 \\times 10^{-31} \\times 8.01 \\times 10^{-15}} = 1.208 \\times 10^{-22} \\text{ kg·m/s}$. Wavelength $\\lambda = h/p = 6.626 \\times 10^{-34} / 1.208 \\times 10^{-22} = 5.486 \\times 10^{-12} \\text{ m}$. Step 2: Post-biprism wave function $\\psi(x,0) = \\frac{1}{\\sqrt{2}} [\\psi_1(x,0) + \\psi_2(x,0)]$. Step 3: Propagate to screen: $\\psi(x,t) \\propto \\cos\\left( \\frac{\\pi d x}{\\lambda L} \\right)$ for $L = 1.5 \\text{ m} \\gg d$. Step 4: Probability density $P(x) = |\\psi(x,t)|^2 \\propto \\cos^2\\left( \\frac{\\pi d x}{\\lambda L} \\right)$. Intensity $I(x) = I_0 \\cos^2\\left( \\frac{\\pi d x}{\\lambda L} \\right)$, so $I_{\\text{max}} = I_0$, $I_{\\text{min}} = 0$. Step 5: Fringe visibility $V = (I_{\\text{max}} - I_{\\text{min}})/(I_{\\text{max}} + I_{\\text{min}}) = (I_0 - 0)/(I_0 + 0) = 1$. Stochastic trajectories maintain $|\\psi|^2$ distribution, ensuring ideal interference."}
+{"value": 1.0}
+```

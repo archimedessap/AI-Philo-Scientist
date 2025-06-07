@@ -1,0 +1,111 @@
+### Analysis of Wheeler's Delayed Choice Experiment using Dynamic Boundary Symmetry (DBS) Interpretation
+
+**Experiment Summary**:  
+Single photons traverse a Mach-Zehnder interferometer (MZI). After a photon passes the first beam splitter (BS1), a quantum random number generator (RNG) triggers an electro-optic modulator to either insert or remove the output beam splitter (BS2). The observable is fringe visibility, which quantifies interference contrast when BS2 is inserted.
+
+**DBS Framework Application**:  
+- **Time-symmetric boundaries**: The photon's evolution is co-determined by the initial state \(|\Psi(t_i)\rangle\) and the final boundary state \(\langle \Phi_f |\).  
+- **Observer-dependent flexibility**: The choice to insert/remove BS2 (denoted \(\theta\)) dynamically updates \(\langle \Phi_f | \rightarrow \langle \Phi_f(\theta)|\) within flexibility bounds governed by \(\Lambda\).  
+- **Measurement rule**: Outcomes are determined by consistency between forward evolution and the updated final boundary via the ABL rule.  
+- **Key semantics**:  
+  - \(|\Psi(t)\rangle\): Forward-evolving state from \(|\Psi_0\rangle\) (initial condition).  
+  - \(\langle \Phi_f |\): Dynamically updated final boundary state.  
+  - \(\Lambda\): Flexibility scale for boundary updates (\(\Lambda \to \infty\) permits free updates; \(\Lambda = 0\) implies superdeterminism).  
+
+Since fringe visibility is defined only when BS2 is inserted (closed MZI), we analyze this case. The delayed choice (timed after photon enters) updates \(\langle \Phi_f |\) retroactively, but the calculation shows \(\Lambda\) does not affect visibility (as \(\Lambda \geq 0\) and boundary optimization yields standard quantum results).
+
+---
+
+### Step-by-Step Derivation of Fringe Visibility
+
+**Step 1: Initial state after first beam splitter (BS1)**  
+The photon enters in state \(|\Psi_{\text{in}}\rangle = |0\rangle\) (e.g., upper path). After BS1 (50:50):  
+\[
+|\Psi_{\text{after BS1}}\rangle = \frac{1}{\sqrt{2}} \left( |0\rangle + |1\rangle \right)
+\]  
+Here, \(|0\rangle\) and \(|1\rangle\) denote upper/lower paths. This state evolves until the delayed choice.
+
+**Step 2: State before detection (with BS2 inserted and phase \(\phi\))**  
+After the delayed choice (\(\theta = 1\): BS2 inserted), the photon acquires a phase shift \(\phi\) in one arm (e.g., \(|0\rangle \rightarrow e^{i\phi} |0\rangle\)). Before BS2:  
+\[
+|\Psi_{\text{before BS2}}\rangle = \frac{1}{\sqrt{2}} \left( e^{i\phi} |0\rangle + |1\rangle \right)
+\]  
+BS2 applies the transformation:  
+\[
+|0\rangle \rightarrow \frac{1}{\sqrt{2}} (|D_1\rangle + |D_2\rangle), \quad 
+|1\rangle \rightarrow \frac{1}{\sqrt{2}} (|D_1\rangle - |D_2\rangle)
+\]  
+Thus, the state at detection time \(t_f\) is:  
+\[
+|\Psi(t_f)\rangle = \frac{1}{2} \left[ (e^{i\phi} + 1) |D_1\rangle + (e^{i\phi} - 1) |D_2\rangle \right]
+\]  
+where \(|D_1\rangle, |D_2\rangle\) correspond to detector states.
+
+**Step 3: Final boundary state and measurement rule**  
+The default final boundary is symmetric:  
+\[
+\langle \Phi_0 | = \frac{1}{\sqrt{2}} (\langle D_1 | + \langle D_2 |)
+\]  
+The observer's choice to insert BS2 updates \(\langle \Phi_f |\) dynamically. For \(\theta = 1\) (BS2 inserted), the updated boundary remains:  
+\[
+\langle \Phi_f(\theta=1) | = \frac{1}{\sqrt{2}} (\langle D_1 | + \langle D_2 |)
+\]  
+This update respects boundary flexibility \(\Lambda\) (since it matches the default and \(\Lambda \geq 0\) permits it). The measurement probability for outcome \(a\) (e.g., \(D_1\)) uses the ABL rule:  
+\[
+P(a) = \frac{ \left| \langle \Phi_f | \hat{\Pi}_a | \Psi(t_f) \rangle \right|^2 }{ \sum_{a'} \left| \langle \Phi_f | \hat{\Pi}_{a'} | \Psi(t_f) \rangle \right|^2 }
+\]  
+where \(\hat{\Pi}_{D_1} = |D_1\rangle\langle D_1|\), \(\hat{\Pi}_{D_2} = |D_2\rangle\langle D_2|\).
+
+**Step 4: Compute probability for \(D_1\)**  
+- Numerator term:  
+\[
+\langle \Phi_f | \hat{\Pi}_{D_1} | \Psi(t_f) \rangle = \left( \frac{1}{\sqrt{2}} \langle D_1 | + \frac{1}{\sqrt{2}} \langle D_2 | \right) |D_1\rangle \langle D_1 | \Psi(t_f) \rangle = \frac{1}{\sqrt{2}} \cdot \frac{1}{2} (e^{i\phi} + 1)
+\]  
+Magnitude squared:  
+\[
+\left| \frac{1}{\sqrt{2}} \cdot \frac{1}{2} (e^{i\phi} + 1) \right|^2 = \frac{1}{8} |e^{i\phi} + 1|^2 = \frac{1}{8} (2 + 2\cos\phi) = \frac{1}{4} (1 + \cos\phi)
+\]  
+- Denominator term for \(D_2\):  
+\[
+\langle \Phi_f | \hat{\Pi}_{D_2} | \Psi(t_f) \rangle = \left( \frac{1}{\sqrt{2}} \langle D_1 | + \frac{1}{\sqrt{2}} \langle D_2 | \right) |D_2\rangle \langle D_2 | \Psi(t_f) \rangle = \frac{1}{\sqrt{2}} \cdot \frac{1}{2} (e^{i\phi} - 1)
+\]  
+Magnitude squared:  
+\[
+\left| \frac{1}{\sqrt{2}} \cdot \frac{1}{2} (e^{i\phi} - 1) \right|^2 = \frac{1}{8} |e^{i\phi} - 1|^2 = \frac{1}{8} (2 - 2\cos\phi) = \frac{1}{4} (1 - \cos\phi)
+\]  
+- Sum:  
+\[
+\sum_{a'} \left| \langle \Phi_f | \hat{\Pi}_{a'} | \Psi(t_f) \rangle \right|^2 = \frac{1}{4} (1 + \cos\phi) + \frac{1}{4} (1 - \cos\phi) = \frac{1}{2}
+\]  
+- Probability:  
+\[
+P(D_1) = \frac{ \frac{1}{4} (1 + \cos\phi) }{ \frac{1}{2} } = \frac{1}{2} (1 + \cos\phi)
+\]
+
+**Step 5: Compute fringe visibility**  
+Fringe visibility \(V\) is defined from the probability at one detector (e.g., \(D_1\)) as \(\phi\) varies:  
+\[
+V = \frac{ P_{\text{max}} - P_{\text{min}} }{ P_{\text{max}} + P_{\text{min}} }
+\]  
+- Maximize \(P(D_1)\):  
+\[
+P_{\text{max}} = \max_{\phi} \left[ \frac{1}{2} (1 + \cos\phi) \right] = \frac{1}{2} (1 + 1) = 1 \quad (\text{at } \phi = 0)
+\]  
+- Minimize \(P(D_1)\):  
+\[
+P_{\text{min}} = \min_{\phi} \left[ \frac{1}{2} (1 + \cos\phi) \right] = \frac{1}{2} (1 - 1) = 0 \quad (\text{at } \phi = \pi)
+\]  
+- Visibility:  
+\[
+V = \frac{1 - 0}{1 + 0} = 1
+\]
+
+**Conclusion**:  
+The fringe visibility is 1, indicating full interference contrast. The delayed choice updates \(\langle \Phi_f |\), but the symmetric default boundary already encodes interference compatibility, so \(\Lambda\) does not alter the result. The derivation aligns with DBS: observer choice retroactively refines the boundary, but path consistency preserves standard quantum predictions.
+
+---
+
+### JSON Output
+
+{"derivation": "Step 1: Initial state after BS1: $|\\Psi_{\\text{after BS1}}\\rangle = \\frac{1}{\\sqrt{2}} \\left( |0\\rangle + |1\\rangle \\right)$. \\\\ Step 2: State before detection (with BS2, phase $\\phi$): $|\\Psi(t_f)\\rangle = \\frac{1}{2} \\left[ (e^{i\\phi} + 1) |D_1\\rangle + (e^{i\\phi} - 1) |D_2\\rangle \\right]$. \\\\ Step 3: Final boundary after choice $\\theta=1$: $\\langle \\Phi_f(\\theta=1) | = \\frac{1}{\\sqrt{2}} (\\langle D_1 | + \\langle D_2 |)$. Apply ABL rule for $P(D_1)$. \\\\ Step 4: Compute $P(D_1)$: $\\langle \\Phi_f | \\hat{\\Pi}_{D_1} | \\Psi(t_f) \\rangle = \\frac{1}{\\sqrt{2}} \\cdot \\frac{1}{2} (e^{i\\phi} + 1)$, so $\\left| \\cdot \\right|^2 = \\frac{1}{4}(1 + \\cos\\phi)$. Denominator: $\\sum_{a'} \\left| \\langle \\Phi_f | \\hat{\\Pi}_{a'} | \\Psi(t_f) \\rangle \\right|^2 = \\frac{1}{4}(1 + \\cos\\phi) + \\frac{1}{4}(1 - \\cos\\phi) = \\frac{1}{2}$. Thus $P(D_1) = \\frac{\\frac{1}{4}(1 + \\cos\\phi)}{\\frac{1}{2}} = \\frac{1}{2}(1 + \\cos\\phi)$. \\\\ Step 5: Fringe visibility: $P_{\\text{max}} = 1$ at $\\phi=0$, $P_{\\text{min}} = 0$ at $\\phi=\\pi$, so $V = \\frac{1 - 0}{1 + 0} = 1$. \\\\ Physical meaning: Initial/final boundaries co-determine evolution. Observer's choice updates $\\langle \\Phi_f |$ within $\\Lambda$-flexibility, but symmetric boundary yields full visibility."}
+{"value": 1.00}

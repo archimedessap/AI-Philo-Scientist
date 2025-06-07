@@ -10,7 +10,7 @@
 import os
 import argparse
 import glob
-from document_preprocessor import DocumentPreprocessor
+from data_preparation.concept_extraction.document_preprocessor import DocumentPreprocessor
 
 def main():
     parser = argparse.ArgumentParser(description="预处理量子理论文献，分割成适合LLM处理的片段")

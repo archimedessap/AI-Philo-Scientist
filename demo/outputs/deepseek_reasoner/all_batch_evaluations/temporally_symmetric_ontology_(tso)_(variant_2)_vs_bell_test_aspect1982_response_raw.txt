@@ -1,0 +1,72 @@
+### Analysis of Aspect's 1982 Bell Test using Temporally Symmetric Ontology (TSO)
+
+**Philosophical Framework**:  
+In TSO, the universe is a static 4D block where quantum events are determined by symmetric boundary conditions \(|\Psi_i\rangle\) (initial) and \(|\Psi_f\rangle\) (final). The causal potential field \(\Phi(\mathbf{x}, t)\) mediates bidirectional influences within light cones, enforcing global consistency. Measurement outcomes are pre-determined by boundary conditions, reconciling retrocausality and superdeterminism. For spacelike-separated measurements (detector separation = 6.5 m), \(\delta(s^2_{xx'})\) restricts \(\Phi\)-mediated interactions to light-cone connections, preventing direct signaling. Thus, entanglement correlations arise from boundary-consistent histories encoded in \(\Psi\).
+
+**Derivation of CHSH \(S\)-value**:
+
+**Step 1: Define initial/final boundary conditions**  
+The entangled photon-pair state from Ca-cascade emission is the singlet state:  
+\[
+|\Psi_i\rangle = \frac{1}{\sqrt{2}} \left( |H\rangle_A |V\rangle_B - |V\rangle_A |H\rangle_B \right)
+\]  
+The final boundary condition \(|\Psi_f\rangle\) is consistent with measurement outcomes. For polarization measurements at angles \(\theta_A\) (Alice) and \(\theta_B\) (Bob), the projector for outcomes \(\lambda = (a, b)\) (where \(a, b = \pm 1\)) is:  
+\[
+\Pi_\lambda = \Pi_a^{\theta_A} \otimes \Pi_b^{\theta_B}, \quad \Pi_{\pm 1}^\theta = \frac{1}{2} \left( \mathbb{I} \pm \hat{\sigma}_\theta \right)
+\]  
+Here, \(\hat{\sigma}_\theta = \cos(2\theta) \sigma_z + \sin(2\theta) \sigma_x\) is the Pauli operator for polarization at angle \(\theta\).
+
+**Step 2: Apply TSO measurement rule**  
+The probability of outcomes \(\lambda\) is given by boundary-consistent histories:  
+\[
+P(\lambda) = \frac{ \left| \langle \Psi_f | \Pi_\lambda | \Psi_i \rangle \right|^2 }{ \sum_{\lambda'} \left| \langle \Psi_f | \Pi_{\lambda'} | \Psi_i \rangle \right|^2 }
+\]  
+Since measurements are spacelike separated, \(\delta(s^2_{xx'}) = 0\) in the Hamiltonian coupling term \(\kappa \int d^3\mathbf{x}' \Phi \Phi' \hat{\rho} \delta(s^2_{xx'})\). Thus, \(\Phi\) does not contribute directly, and probabilities reduce to standard quantum mechanics:  
+\[
+P(a,b) = \left| \langle \theta_A^a, \theta_B^b | \Psi_i \rangle \right|^2
+\]  
+where \(|\theta_A^a, \theta_B^b\rangle\) are eigenstates of \(\hat{\sigma}_{\theta_A} \otimes \hat{\sigma}_{\theta_B}\).
+
+**Step 3: Compute correlation function**  
+The expectation value \(E(\theta_A, \theta_B)\) is:  
+\[
+E(\theta_A, \theta_B) = \sum_{a,b} a \cdot b \cdot P(a,b) = \langle \Psi_i | \hat{\sigma}_{\theta_A} \otimes \hat{\sigma}_{\theta_B} | \Psi_i \rangle
+\]  
+For the singlet state \(|\Psi_i\rangle\), this evaluates to:  
+\[
+E(\theta_A, \theta_B) = -\cos \left[ 2(\theta_A - \theta_B) \right]
+\]
+
+**Step 4: Evaluate for given angles**  
+Angles: \(\theta_A \in \{0^\circ, 45^\circ\}, \theta_B \in \{22.5^\circ, 67.5^\circ\}\).  
+- \(E(a,b) = E(0^\circ, 22.5^\circ) = -\cos[2(0^\circ - 22.5^\circ)] = -\cos(-45^\circ) = -\frac{\sqrt{2}}{2}\)  
+- \(E(a,b') = E(0^\circ, 67.5^\circ) = -\cos[2(0^\circ - 67.5^\circ)] = -\cos(-135^\circ) = -\left(-\frac{\sqrt{2}}{2}\right) = \frac{\sqrt{2}}{2}\)  
+- \(E(a',b) = E(45^\circ, 22.5^\circ) = -\cos[2(45^\circ - 22.5^\circ)] = -\cos(45^\circ) = -\frac{\sqrt{2}}{2}\)  
+- \(E(a',b') = E(45^\circ, 67.5^\circ) = -\cos[2(45^\circ - 67.5^\circ)] = -\cos(-45^\circ) = -\frac{\sqrt{2}}{2}\)
+
+**Step 5: Compute CHSH \(S\)-value**  
+\[
+S = \left| E(a,b) - E(a,b') \right| + \left| E(a',b) + E(a',b') \right|
+\]  
+Substitute values:  
+\[
+S = \left| -\frac{\sqrt{2}}{2} - \frac{\sqrt{2}}{2} \right| + \left| -\frac{\sqrt{2}}{2} + \left(-\frac{\sqrt{2}}{2}\right) \right| = \left| -\sqrt{2} \right| + \left| -\sqrt{2} \right| = \sqrt{2} + \sqrt{2} = 2\sqrt{2}
+\]
+
+**Step 6: Numerical value**  
+\[
+2\sqrt{2} \approx 2.8284271247461903
+\]
+
+**Physical Interpretation**:  
+The TSO prediction matches quantum mechanics (\(S = 2\sqrt{2}\)) because:  
+1. Boundary conditions \(|\Psi_i\rangle\) and \(|\Psi_f\rangle\) encode nonlocal correlations.  
+2. Spacelike separation nullifies \(\Phi\)-mediated interactions (\(\delta(s^2_{xx'}) = 0\)), leaving correlations dictated solely by \(|\Psi_i\rangle\).  
+3. Random basis switching (via acousto-optic modulators) is predetermined in the block universe, satisfying superdeterminism.
+
+**Final Output**:
+
+```json
+{"derivation": "Step 1: Initial state: $|\\Psi_i\\rangle = \\frac{1}{\\sqrt{2}} \\left( |H\\rangle_A |V\\rangle_B - |V\\rangle_A |H\\rangle_B \\right)$. Final boundary $|\\Psi_f\\rangle$ consistent with measurement outcomes. Projectors $\\Pi_\\lambda = \\Pi_a^{\\theta_A} \\otimes \\Pi_b^{\\theta_B}$ for $\\lambda = (a, b)$. Step 2: TSO probability rule: $P(\\lambda) = \\frac{ | \\langle \\Psi_f | \\Pi_\\lambda | \\Psi_i \\rangle |^2 }{ \\sum_{\\lambda'} | \\langle \\Psi_f | \\Pi_{\\lambda'} | \\Psi_i \\rangle |^2 }$. For spacelike separation, $\\delta(s^2_{xx'}) = 0$ in $\\hat{H}_{\\text{total}}$, so $\\Phi$ has no local effect. Thus, $P(a,b) = | \\langle \\theta_A^a, \\theta_B^b | \\Psi_i \\rangle |^2$. Step 3: Correlation $E(\\theta_A, \\theta_B) = \\langle \\Psi_i | \\hat{\\sigma}_{\\theta_A} \\otimes \\hat{\\sigma}_{\\theta_B} | \\Psi_i \\rangle = -\\cos[2(\\theta_A - \\theta_B)]$. Step 4: Compute $E$ values for angles $[0^\\circ, 22.5^\\circ, 45^\\circ, 67.5^\\circ]$: $E(0^\\circ, 22.5^\\circ) = -\\frac{\\sqrt{2}}{2}$, $E(0^\\circ, 67.5^\\circ) = \\frac{\\sqrt{2}}{2}$, $E(45^\\circ, 22.5^\\circ) = -\\frac{\\sqrt{2}}{2}$, $E(45^\\circ, 67.5^\\circ) = -\\frac{\\sqrt{2}}{2}$. Step 5: $S = |E(a,b) - E(a,b')| + |E(a',b) + E(a',b')| = \\left| -\\frac{\\sqrt{2}}{2} - \\frac{\\sqrt{2}}{2} \\right| + \\left| -\\frac{\\sqrt{2}}{2} - \\frac{\\sqrt{2}}{2} \\right| = \\sqrt{2} + \\sqrt{2} = 2\\sqrt{2}$. Step 6: $2\\sqrt{2} \\approx 2.8284271247461903$."}
+{"value": 2.8284271247461903}
+```

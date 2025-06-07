@@ -1,0 +1,85 @@
+### Analysis of the Experiment Using Quantum-Holmen Theory
+
+The experiment involves an electron interference pattern formed using a biprism (analogous to a double slit), with fringe visibility as the observable. Quantum-Holmen theory combines stochastic wavefunction collapse (à la GRW) with Bohmian guidance. Key elements:
+- **Stochastic collapses**: Occur at rate \(\lambda = 10^{-16} \, \text{s}^{-1}\) per particle, localizing the wavefunction with width \(\sigma = 10^{-7} \, \text{m}\).
+- **Bohmian guidance**: Between collapses, particles follow deterministic trajectories guided by the wavefunction's phase.
+- **Fringe visibility**: Measures interference contrast, \(V = (I_{\text{max}} - I_{\text{min}}) / (I_{\text{max}} + I_{\text{min}})\), and is reduced by collapses that decohere superpositions.
+
+**Derivation of Fringe Visibility**:
+
+**Step 1: Compute electron momentum and de Broglie wavelength**  
+The electron is accelerated by \(V = 50 \, \text{kV}\). Kinetic energy \(K = eV\), with \(e = 1.602 \times 10^{-19} \, \text{C}\):  
+\[
+K = 50,\!000 \times 1.602 \times 10^{-19} = 8.01 \times 10^{-15} \, \text{J}.
+\]  
+Relativistic effects are significant (electron rest energy \(m_e c^2 = 511 \, \text{keV}\)). Total energy \(E = K + m_e c^2 = 50 + 511 = 561 \, \text{keV}\). Momentum:  
+\[
+p = \frac{1}{c} \sqrt{E^2 - (m_e c^2)^2} = \frac{1}{c} \sqrt{(561,\!000)^2 - (511,\!000)^2} \, \text{eV/c}.
+\]  
+Converting to SI units:  
+\[
+p = \frac{\sqrt{(561^2 - 511^2) \times 10^6}}{c} \times e \approx 1.236 \times 10^{-22} \, \text{kg·m/s}.
+\]  
+De Broglie wavelength \(\lambda_{\text{dB}} = h / p\):  
+\[
+\lambda_{\text{dB}} = \frac{6.626 \times 10^{-34}}{1.236 \times 10^{-22}} = 5.361 \times 10^{-12} \, \text{m}.
+\]
+
+**Step 2: Compute time of flight \(t\)**  
+Electron speed \(v = p c^2 / E\):  
+\[
+v = \frac{(1.236 \times 10^{-22}) \times (3 \times 10^8)^2}{561,\!000 \times 1.602 \times 10^{-19}} = 1.237 \times 10^8 \, \text{m/s}.
+\]  
+Time to travel screen distance \(L = 1.5 \, \text{m}\):  
+\[
+t = \frac{L}{v} = \frac{1.5}{1.237 \times 10^8} = 1.212 \times 10^{-8} \, \text{s}.
+\]
+
+**Step 3: Estimate effective path separation \(D\)**  
+Fringe spacing \(\Delta y\) relates to \(\lambda_{\text{dB}}\), \(L\), and biprism-induced path separation \(D\):  
+\[
+\Delta y = \frac{\lambda_{\text{dB}} L}{D}.
+\]  
+Assuming a typical observable fringe spacing \(\Delta y = 1 \, \mu\text{m} = 10^{-6} \, \text{m}\):  
+\[
+D = \frac{\lambda_{\text{dB}} L}{\Delta y} = \frac{(5.361 \times 10^{-12}) \times 1.5}{10^{-6}} = 8.042 \times 10^{-6} \, \text{m}.
+\]
+
+**Step 4: Compute decoherence rate \(\Gamma\)**  
+Collapses suppress coherence between paths separated by \(D\). Decoherence rate:  
+\[
+\Gamma = \lambda \left[ 1 - \exp\left(-\frac{D^2}{4\sigma^2}\right) \right].
+\]  
+Substitute \(\lambda = 10^{-16} \, \text{s}^{-1}\), \(\sigma = 10^{-7} \, \text{m}\):  
+\[
+\frac{D^2}{4\sigma^2} = \frac{(8.042 \times 10^{-6})^2}{4 \times (10^{-7})^2} = 1616.75 \gg 1 \implies \exp\left(-\frac{D^2}{4\sigma^2}\right) \approx 0.
+\]  
+Thus,  
+\[
+\Gamma \approx \lambda = 10^{-16} \, \text{s}^{-1}.
+\]
+
+**Step 5: Compute fringe visibility \(V\)**  
+Visibility decays exponentially with decoherence over time \(t\):  
+\[
+V = V_0 \exp(-\Gamma t) = 1 \cdot \exp\left(- (10^{-16}) \times (1.212 \times 10^{-8}) \right) = \exp(-1.212 \times 10^{-24}).
+\]  
+Since \(1.212 \times 10^{-24}\) is negligible:  
+\[
+\exp(-1.212 \times 10^{-24}) \approx 1 - 1.212 \times 10^{-24} \approx 1.000.
+\]
+
+**Physical Interpretation**:  
+- The extremely low collapse rate (\(\lambda\)) and short time of flight (\(t\)) result in minimal decoherence (\(\Gamma t \sim 10^{-24}\)).
+- Bohmian guidance between collapses maintains the interference pattern.
+- The wavefunction remains coherent, yielding near-perfect visibility as in standard quantum mechanics.
+
+**Final Value**:  
+The predicted fringe visibility is \(1.00\) (or 100%), as collapses have negligible effect under the given parameters.
+
+{
+  "derivation": "Step 1: Compute de Broglie wavelength. $K = eV = 50,\\!000 \\times 1.602 \\times 10^{-19} = 8.01 \\times 10^{-15} \\, \\text{J}$, $E = K + m_e c^2 = 561 \\, \\text{keV}$, $p = \\frac{1}{c} \\sqrt{E^2 - (m_e c^2)^2} \\approx 1.236 \\times 10^{-22} \\, \\text{kg·m/s}$, $\\lambda_{\\text{dB}} = h / p = 5.361 \\times 10^{-12} \\, \\text{m}$. Step 2: Compute time of flight. $v = p c^2 / E = 1.237 \\times 10^8 \\, \\text{m/s}$, $t = L / v = 1.5 / 1.237 \\times 10^8 = 1.212 \\times 10^{-8} \\, \\text{s}$. Step 3: Estimate path separation $D$. Assume $\\Delta y = 1 \\, \\mu\\text{m}$, $D = \\lambda_{\\text{dB}} L / \\Delta y = (5.361 \\times 10^{-12} \\times 1.5) / 10^{-6} = 8.042 \\times 10^{-6} \\, \\text{m}$. Step 4: Compute decoherence rate. $\\Gamma = \\lambda \\left[ 1 - \\exp\\left(-D^2/(4\\sigma^2)\\right) \\right]$, $D^2/(4\\sigma^2) = (8.042 \\times 10^{-6})^2 / (4 \\times (10^{-7})^2) = 1616.75 \\gg 1 \\implies \\Gamma \\approx \\lambda = 10^{-16} \\, \\text{s}^{-1}$. Step 5: Compute visibility. $V = \\exp(-\\Gamma t) = \\exp(-10^{-16} \\times 1.212 \\times 10^{-8}) = \\exp(-1.212 \\times 10^{-24}) \\approx 1.000$."
+}
+{
+  "value": 1.00
+}

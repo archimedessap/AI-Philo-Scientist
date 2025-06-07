@@ -1,0 +1,16 @@
+### Analysis using Relational Becoming Interpretation (Variant 3)
+
+The experiment involves electron interference through a biprism (double-slit analog), where fringe visibility quantifies wave-like behavior. The theory's timeless constraint satisfaction framework (τ=0) and global relational constraints (κ→∞) are essential for deriving the interference pattern.
+
+**Derivation:**
+
+```json
+{"derivation": "Step 1: Apply timeless constraint equation (τ=0). The state |Ψ(ℰ)⟩ satisfies $\\sum_{i<j} \\hat{C}_{ij}(\\kappa)|\\Psi(\\mathcal{E})\\rangle = 0$, where $\\hat{C}_{ij}$ enforces phase coherence between path events. For κ→∞ (global constraints), this ensures non-local phase relations are preserved.\\n\\nStep 2: Model electron paths as relational events. The detection amplitude at screen position x is $\\psi(x) = \\langle x | \\Psi(\\mathcal{E}) \\rangle = \\psi_1(x) + \\psi_2(x)$, where $\\psi_1$ and $\\psi_2$ are amplitudes for paths via the biprism. The global constraint $\\hat{C}_{12}(\\kappa\\to\\infty)$ fixes the relative phase $\\Delta\\phi(x)$ between paths.\\n\\nStep 3: Intensity at x is $I(x) = |\\psi(x)|^2 = |\\psi_1|^2 + |\\psi_2|^2 + 2|\\psi_1||\\psi_2|\\cos(\\Delta\\phi(x))$. For symmetric paths, $|\\psi_1| = |\\psi_2| = \\sqrt{I_0}/\\sqrt{2}$, giving $I(x) = I_0 [1 + \\cos(\\Delta\\phi(x))]$.\\n\\nStep 4: Phase difference $\\Delta\\phi(x) = \\frac{2\\pi}{\\lambda} \\frac{x d}{L}$, where $\\lambda$ is de Broglie wavelength, d is effective slit separation, L = 1.5 m is screen distance.\\n\\nStep 5: Calculate λ for 50 keV electrons. Kinetic energy $E_k = 50\\ \\text{kV} \\times e = 8.01 \\times 10^{-15}\\ \\text{J}$. Momentum $p = \\sqrt{2m_e E_k} = \\sqrt{2 \\times 9.11 \\times 10^{-31} \\times 8.01 \\times 10^{-15}} = 1.21 \\times 10^{-22}\\ \\text{kg·m/s}$. Thus $\\lambda = h/p = \\frac{6.63 \\times 10^{-34}}{1.21 \\times 10^{-22}} = 5.48 \\times 10^{-12}\\ \\text{m}$.\\n\\nStep 6: Maxima when $\\cos(\\Delta\\phi) = 1$: $I_{\\max} = 2I_0$. Minima when $\\cos(\\Delta\\phi) = -1$: $I_{\\min} = 0$. Fringe visibility $V = \\frac{I_{\\max} - I_{\\min}}{I_{\\max} + I_{\\min}} = \\frac{2I_0 - 0}{2I_0 + 0} = 1$.\\n\\nStep 7: Physical justification: Global constraints (κ→∞) enforce perfect coherence between paths. Event actualization at the screen selects configurations satisfying the phase relation without decoherence, yielding ideal visibility."}
+{"value": 1.00}
+```
+
+**Explanation:**
+- **Step 1-2:** The timeless constraint ($\tau=0$) and global relational operator $\hat{C}_{ij}(\kappa\to\infty)$ encode path coherence, making $|\Psi(\mathcal{E})\rangle$ a superposition of biprism paths with fixed phase relationship.
+- **Step 3-4:** Intensity follows from the interference term $2|\psi_1||\psi_2|\cos(\Delta\phi)$, where $\Delta\phi$ depends on the electron wavelength and geometry.
+- **Step 5:** The de Broglie wavelength $\lambda = 5.48\ \text{pm}$ is derived from the electron's kinetic energy.
+- **Step 6-7:** Perfect coherence (enforced by global constraints) ensures $I_{\min} = 0$ and $V=1$, consistent with high-visibility experiments like Tonomura's. The actualization probability rule $P(e) \propto |\langle \Psi_{\text{final}}|\hat{P}_e|\Psi_{\text{initial}}\rangle|^2$ selects screen events satisfying the interference constraint.

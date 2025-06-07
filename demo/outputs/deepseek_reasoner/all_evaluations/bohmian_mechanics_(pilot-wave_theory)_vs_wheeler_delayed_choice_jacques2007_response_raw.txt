@@ -1,0 +1,66 @@
+### Analysis using Bohmian Mechanics
+
+In Bohmian mechanics, particles have definite positions guided by the wavefunction. The wavefunction evolves unitarily via the Schrödinger equation, and particle velocities are determined by the phase gradient of the wavefunction. For the Wheeler delayed-choice experiment with single photons, we treat the photon as a particle guided by an effective wavefunction in the interferometer. The delayed choice (inserting/removing the output beam splitter via a quantum RNG) influences the wavefunction's evolution, which subsequently guides the particle trajectory. The statistical outcomes align with the Born rule when initial conditions satisfy quantum equilibrium.
+
+#### Derivation of Fringe Visibility
+
+**Step 1: Initial wavefunction after first beam splitter**  
+The photon enters the Mach-Zehnder interferometer (MZI) and encounters the first beam splitter (BS1). The wavefunction splits into a superposition of the upper ($|u\rangle$) and lower ($|l\rangle$) paths:  
+\[
+|\psi(t_0)\rangle = \frac{1}{\sqrt{2}} \left( |u\rangle + i |l\rangle \right)
+\]  
+Here, $|u\rangle$ and $|l\rangle$ are orthogonal states representing the photon in the upper or lower arm. The factor $i$ arises from the $\pi/2$ phase shift upon reflection. The particle position (photon) is in one arm (e.g., $q = u$ or $q = l$), but its trajectory is guided by the full wavefunction.
+
+**Step 2: Wavefunction evolution before choice**  
+As the photon propagates, the wavefunction acquires relative phase shifts. For symmetric MZI arms (no path-length difference):  
+\[
+|\psi(t_1)\rangle = \frac{1}{\sqrt{2}} \left( e^{i\phi_u} |u\rangle + i e^{i\phi_l} |l\rangle \right)
+\]  
+With $\phi_u = \phi_l$, this simplifies to $|\psi(t_1)\rangle = \frac{1}{\sqrt{2}} \left( |u\rangle + i |l\rangle \right)$. The particle position $q(t_1)$ remains definite (e.g., $u$ or $l$) but unknown to the experimenter.
+
+**Step 3: Delayed choice and wavefunction branching**  
+At time $t_1 > t_0$ (after photon entry), a quantum RNG determines whether to insert (case A) or remove (case B) the second beam splitter (BS2). The wavefunction evolves unitarily under the chosen Hamiltonian:  
+
+- **Case A (BS2 inserted):**  
+  BS2 mixes $|u\rangle$ and $|l\rangle$:  
+  \[
+  |u\rangle \mapsto \frac{1}{\sqrt{2}} (|d_1\rangle + i |d_2\rangle), \quad
+  |l\rangle \mapsto \frac{1}{\sqrt{2}} (i |d_1\rangle + |d_2\rangle)
+  \]  
+  The final wavefunction is:  
+  \[
+  |\psi_A\rangle = \frac{1}{\sqrt{2}} \left[ \frac{1}{\sqrt{2}} (|d_1\rangle + i |d_2\rangle) + i \cdot \frac{1}{\sqrt{2}} (i |d_1\rangle + |d_2\rangle) \right] = i |d_2\rangle
+  \]  
+  Thus, $|\psi_A\rangle = i |d_2\rangle$, meaning the wavefunction concentrates at detector $d_2$.  
+
+- **Case B (BS2 removed):**  
+  Paths do not mix. $|u\rangle$ goes to $d_1$ and $|l\rangle$ to $d_2$:  
+  \[
+  |\psi_B\rangle = \frac{1}{\sqrt{2}} \left( |d_1\rangle + i |d_2\rangle \right)
+  \]  
+
+**Step 4: Bohmian trajectory guidance**  
+The particle velocity $\dot{q}$ follows the guiding equation $\dot{\mathbf{q}} = \frac{\hbar}{m} \Im \left( \frac{\nabla \psi}{\psi} \right)$. For discrete paths, we use the probability current:  
+- **Case A:** The wavefunction $|\psi_A\rangle = i |d_2\rangle$ guides *all* particles to $d_2$, regardless of initial path ($q(t_1) = u$ or $l$). The current flows solely to $d_2$.  
+- **Case B:** The wavefunction $|\psi_B\rangle = \frac{1}{\sqrt{2}} ( |d_1\rangle + i |d_2\rangle )$ guides particles to $d_1$ or $d_2$ based on $q(t_1)$: if $q(t_1) = u$, it goes to $d_1$; if $q(t_1) = l$, to $d_2$.  
+
+**Step 5: Fringe visibility calculation**  
+Fringe visibility $V$ quantifies interference contrast when BS2 is inserted (case A). For an ideal MZI, $V = \frac{I_{\max} - I_{\min}}{I_{\max} + I_{\min}}$, where $I$ is intensity at a detector.  
+- In case A, all particles reach $d_2$: $I_{d_1} = 0$, $I_{d_2} = 1$.  
+- Introducing a variable phase shift $\phi = \phi_u - \phi_l$ (e.g., via a waveplate) modulates the output:  
+  \[
+  |\psi_A(\phi)\rangle = \frac{1}{\sqrt{2}} \left( |d_1\rangle (e^{i\phi} - 1) + i |d_2\rangle (e^{i\phi} + 1) \right)
+  \]  
+  Intensity at $d_2$ is $I_{d_2}(\phi) = | \langle d_2 | \psi_A \rangle |^2 = \frac{1}{2} (1 + \cos \phi)$. Thus, $I_{\max} = 1$ (at $\phi = 0$), $I_{\min} = 0$ (at $\phi = \pi$).  
+  \[
+  V = \frac{I_{\max} - I_{\min}}{I_{\max} + I_{\min}} = \frac{1 - 0}{1 + 0} = 1
+  \]  
+  This matches the wave-like behavior.  
+
+**Conclusion**  
+Bohmian mechanics predicts full fringe visibility ($V = 1$) when BS2 is inserted, as the wavefunction guides all particles to constructively interfere at $d_2$. The delayed choice influences the wavefunction's evolution, which retroactively determines whether the particle exhibits wave (interference) or particle (which-path) behavior. Statistical outcomes obey the Born rule due to quantum equilibrium in initial conditions.
+
+### Output JSON
+
+{"derivation": "Step 1: Initial wavefunction after BS1: $|\\psi(t_0)\\rangle = \\frac{1}{\\sqrt{2}} ( |u\\rangle + i |l\\rangle )$. Particle has definite position $q(t_0)$ in $u$ or $l$. Step 2: Wavefunction before choice (symmetric arms): $|\\psi(t_1)\\rangle = \\frac{1}{\\sqrt{2}} ( |u\\rangle + i |l\\rangle )$. Step 3a (Case A, BS2 inserted): Final wavefunction $|\\psi_A\\rangle = i |d_2\\rangle$. Step 3b (Case B, BS2 removed): Final wavefunction $|\\psi_B\\rangle = \\frac{1}{\\sqrt{2}} ( |d_1\\rangle + i |d_2\\rangle )$. Step 4: Guiding equation steers all particles to $d_2$ in Case A; in Case B, particles go to $d_1$ or $d_2$ based on $q(t_1)$. Step 5: Fringe visibility for Case A with phase shift $\\phi$: $I_{d_2}(\\phi) = \\frac{1}{2}(1 + \\cos\\phi)$, so $I_{\\max} = 1$, $I_{\\min} = 0$, and $V = \\frac{1 - 0}{1 + 0} = 1$."}  
+{"value": 1.00}
