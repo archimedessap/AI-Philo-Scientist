@@ -69,12 +69,16 @@ class RevolutionaryGenerator:
                 print(f"[ERROR] 无法解析LLM响应为有效JSON")
                 return {"error": "无法解析响应", "raw_response": response}
             
-            # 添加元数据
-            revolutionary_theory["generated_from"] = {
+            # 添加元数据 (Schema v2.1)
+            if "metadata" not in revolutionary_theory:
+                revolutionary_theory["metadata"] = {}
+            
+            revolutionary_theory["metadata"]["generation_info"] = {
+                "source": "systemic_synthesis",
                 "breakthrough_target": breakthrough_target.get("target_name", ""),
-                "generation_time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "generation_time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                 "generation_parameters": generation_params,
-                "method": "systemic_synthesis"
+                "method": "revolutionary_generation"
             }
             
             # 保存生成的理论
@@ -90,7 +94,7 @@ class RevolutionaryGenerator:
     
     def _build_generation_prompt(self, breakthrough_target: Dict, params: Dict) -> str:
         """
-        构建革命性理论生成提示
+        构建革命性理论生成提示 (Schema v2.1)
         
         Args:
             breakthrough_target: 突破目标
@@ -103,129 +107,71 @@ class RevolutionaryGenerator:
         target_description = breakthrough_target.get("target_description", "")
         current_limitation = breakthrough_target.get("current_limitation", "")
         
-        # 提取具体的突破策略
-        conceptual_reorg = breakthrough_target.get("conceptual_reorganization", {})
-        framework_trans = breakthrough_target.get("framework_transcendence", {})
-        math_innovation = breakthrough_target.get("mathematical_innovation", {})
-        experimental_access = breakthrough_target.get("experimental_accessibility", {})
-        
         prompt = f"""
-# Task: Revolutionary Quantum Theory Generation
+# TASK
+You are a visionary physicist creating a **revolutionary quantum theory** to overcome fundamental limitations in current physics. Your theory must directly address the following breakthrough target.
 
-You are a visionary theoretical physicist tasked with creating a **truly revolutionary quantum theory** that addresses fundamental limitations in current quantum mechanical frameworks.
+# BREAKTHROUGH TARGET
+- **Target Name**: {target_name}
+- **Description**: {target_description}
+- **Current Limitation to Transcend**: {current_limitation}
 
-## Breakthrough Target
-**Target**: {target_name}
-**Description**: {target_description}
-**Current Limitation**: {current_limitation}
+# INSTRUCTIONS
+Invent a new theory that is bold, coherent, and testable. Your output **MUST** be a single, valid JSON object that strictly adheres to the "Quantum Theory Schema v2.1".
 
-## Breakthrough Strategies
+## Quantum Theory Schema v2.1
 
-### Conceptual Reorganization
-{json.dumps(conceptual_reorg, indent=2)}
-
-### Framework Transcendence
-{json.dumps(framework_trans, indent=2)}
-
-### Mathematical Innovation
-{json.dumps(math_innovation, indent=2)}
-
-### Experimental Accessibility
-{json.dumps(experimental_access, indent=2)}
-
-## Generation Requirements
-
-### (a) Conceptual Reorganization
-- **Radically reorganize** the fundamental concepts identified in the breakthrough target
-- **Create novel conceptual networks** that transcend traditional quantum mechanical thinking
-- **Establish new relationships** between previously unconnected concepts
-
-### (b) Framework Transcendence  
-- **Break the boundaries** of current quantum theoretical frameworks
-- **Propose genuinely new approaches** to quantum phenomena
-- **Question and replace fundamental assumptions** rather than modifying existing ones
-
-### (c) Mathematical-Physical Classification
-- **Clearly specify** whether your theory is:
-  - **Pure interpretational** (same mathematical formalism, new physical meaning)
-  - **Dynamically modified** (changes to the evolution equations)
-- **If dynamically modified**, provide:
-  - **Exact mathematical form** of the modifications
-  - **Physical justification** for the changes
-  - **Experimental consequences** of the modifications
-
-## Output Requirements
-
-Provide a **comprehensive revolutionary theory** in the following JSON format:
-
+```json
 {{
-  "name": "Revolutionary theory name",
-  "summary": "Concise description of the revolutionary approach (max 100 words)",
-  "theory_type": {{
-    "classification": "pure_interpretational OR dynamically_modified",
-    "modification_level": "none/minimal/moderate/radical",
-    "justification": "Why this level of modification is necessary"
-  }},
-  "philosophy": {{
-    "ontological_revolution": "How this theory revolutionizes what we consider 'real'",
-    "epistemological_breakthrough": "How this changes what/how we can know about quantum systems",
-    "measurement_reconceptualization": "Completely new understanding of measurement"
-  }},
-  "conceptual_innovations": {{
-    "new_fundamental_concepts": ["concept1", "concept2", ...],
-    "reorganized_relationships": "How existing concepts are radically reorganized",
-    "transcended_limitations": ["limitation1", "limitation2", ...]
-  }},
-  "mathematical_formulation": {{
-    "core_hamiltonian": "LaTeX expression for the fundamental Hamiltonian",
-    "evolution_equation": "LaTeX expression for time evolution (if modified)",
-    "measurement_rule": "Mathematical description of measurement process",
-    "novel_mathematical_tools": ["tool1", "tool2", ...]
-  }},
-  "dynamical_modifications": {{
-    "has_modifications": true/false,
-    "modification_details": {{
-      "original_equation": "Standard quantum equation being modified",
-      "modified_equation": "Your revolutionary modification",
-      "modification_explanation": "Physical reasoning for the modification",
-      "new_parameters": {{
-        "param1": {{"value": "...", "unit": "...", "physical_meaning": "..."}},
-        "param2": {{"value": "...", "unit": "...", "physical_meaning": "..."}}
-      }}
+  "name": "string (A clear, descriptive name for the new theory)",
+  "metadata": {{
+    "uid": "string (A unique identifier, e.g., 'THEORY-YYYYMMDD-01')",
+    "schema_version": "2.1",
+    "author": "AI Physicist",
+    "tags": ["array of strings (e.g., 'quantum gravity', 'emergent spacetime', 'consciousness')"],
+    "lineage": {{
+      "method": "Revolutionary Generation from Systemic Weakness",
+      "parents": ["Collective body of standard QM interpretations"],
+      "inspiration": "string (Explain how the theory addresses the '{target_name}' by overcoming '{current_limitation}')"
     }}
   }},
-  "experimental_predictions": {{
-    "novel_phenomena": ["phenomenon1", "phenomenon2", ...],
-    "distinguishing_experiments": ["experiment1", "experiment2", ...],
-    "technological_implications": ["implication1", "implication2", ...]
+  "mathematical_relation_to_sqm": "string (Choose one: 'Interpretation', 'Modification', 'Extension')",
+  "summary": "string (A concise, one-paragraph summary of the theory's main idea)",
+  "core_principles": {{
+    "ontological_commitments": "string (What new fundamental entities or structures does this theory propose?)",
+    "epistemological_stances": "string (How does this theory change our understanding of knowledge and observation?)",
+    "key_postulates": ["array of strings (List the revolutionary new axioms)"]
   }},
-  "semantics": {{
-    "key_symbols": {{
-      "symbol1": "Complete physical and mathematical meaning",
-      "symbol2": "Complete physical and mathematical meaning"
-    }},
-    "conceptual_framework": "How all concepts work together in this revolutionary approach",
-    "departure_from_standard_qm": "Specific ways this differs from standard quantum mechanics"
+  "formalism": {{
+    "mathematical_objects": "string (List novel mathematical objects, e.g., 'causal sets', 'spin networks')",
+    "governing_equations": ["array of strings (Provide key equations in LaTeX, showcasing the new physics)"],
+    "comparison_with_sqm": {{
+      "agreements": "string (What parts of SQM are retained, if any?)",
+      "modifications": "string (What parts of SQM are fundamentally changed?)",
+      "extensions": "string (What new mathematical structures are added that SQM lacks?)"
+    }}
   }},
-  "revolutionary_assessment": {{
-    "paradigm_shift_level": "incremental/significant/revolutionary",
-    "fundamental_assumptions_challenged": ["assumption1", "assumption2", ...],
-    "potential_impact": "Assessment of potential scientific impact"
+  "predictions_and_verifiability": {{
+    "reproduces_sqm_predictions": "string (Explain the conditions under which the theory reduces to SQM's predictions)",
+    "deviations_from_sqm": [
+      {{
+        "prediction_name": "string (e.g., 'Lorentz Violation at Planck Scale')",
+        "description": "string (Describe a novel, testable prediction unique to this theory)",
+        "mathematical_derivation": "string (Briefly show how this prediction arises from the new formalism)",
+        "experimental_setup": "string (Suggest a high-concept experiment to test this, e.g., using gravitational wave detectors, particle colliders)"
+      }}
+    ],
+    "unanswered_questions": "string (What new puzzles or research directions does this theory introduce?)"
   }}
 }}
+```
 
-## Critical Requirements:
-1. **Be genuinely revolutionary** - don't just modify existing approaches
-2. **Provide mathematical precision** - include exact equations where relevant  
-3. **Maintain internal consistency** - ensure all parts work together coherently
-4. **Address experimental testability** - specify how the theory can be validated
-5. **Clearly indicate any dynamical modifications** with exact mathematical forms
-
-Revolutionary boldness level: {params['revolutionary_boldness'] * 10}/10
-Mathematical innovation level: {params['mathematical_innovation'] * 10}/10  
-Experimental grounding level: {params['experimental_grounding'] * 10}/10
-
-**Focus on creating something that could genuinely transform our understanding of quantum mechanics, not just provide another interpretation.**
+**CRITICAL**:
+- Your theory must be **genuinely revolutionary**, not just an incremental change.
+- Populate **every field** of the JSON schema. Be specific and detailed.
+- The `lineage.inspiration` field is crucial: connect your theory directly to the breakthrough target.
+- Ensure all LaTeX expressions are correctly escaped for JSON (e.g., `\\\\` for a single backslash).
+- Do not add any text or explanation outside the single JSON object.
 """
         return prompt
     
@@ -301,17 +247,25 @@ Experimental grounding level: {params['experimental_grounding'] * 10}/10
             synthesis_theory = self.llm.extract_json(response)
             
             if not synthesis_theory:
-                return {"error": "无法解析综合理论响应"}
+                print("[ERROR] 无法解析综合理论的LLM响应为JSON")
+                return {"error": "无法解析响应", "raw_response": response}
             
-            # 添加元数据
-            synthesis_theory["generated_from"] = {
-                "multiple_targets": [t.get("target_name", "") for t in multiple_targets],
-                "generation_time": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "method": "systemic_synthesis_unified"
+            # 添加元数据 (Schema v2.1)
+            if "metadata" not in synthesis_theory:
+                synthesis_theory["metadata"] = {}
+
+            synthesis_theory["metadata"]["generation_info"] = {
+                "source": "systemic_synthesis",
+                "breakthrough_targets": [t.get("target_name", "") for t in multiple_targets],
+                "generation_time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "method": "synthesis_of_revolutions"
             }
             
+            # 保存到类属性中
             self.generated_theories.append(synthesis_theory)
             
+            theory_name = synthesis_theory.get("name", "未命名综合理论")
+            print(f"[INFO] 成功创建综合理论: {theory_name}")
             return synthesis_theory
             
         except Exception as e:
@@ -320,77 +274,81 @@ Experimental grounding level: {params['experimental_grounding'] * 10}/10
     
     def _build_synthesis_prompt(self, multiple_targets: List[Dict]) -> str:
         """
-        构建综合性理论生成提示
-        
+        构建综合多个革命性目标的统一理论的提示 (Schema v2.1)
+
         Args:
             multiple_targets: 多个突破目标
-            
+
         Returns:
-            str: 综合提示
+            str: 统一理论生成提示
         """
-        targets_summary = ""
-        for i, target in enumerate(multiple_targets[:3]):  # 最多使用前3个目标
-            targets_summary += f"\n### Target {i+1}: {target.get('target_name', '')}\n"
-            targets_summary += f"Description: {target.get('target_description', '')}\n"
-            targets_summary += f"Current Limitation: {target.get('current_limitation', '')}\n"
-        
+        targets_text = ""
+        for i, target in enumerate(multiple_targets, 1):
+            targets_text += f"\n- **Target {i}: {target.get('target_name', '')}** - {target.get('target_description', '')}"
+
         prompt = f"""
-# Task: Unified Revolutionary Quantum Theory
+# TASK
+You are a grand unifier of physics, a modern-day Einstein, tasked with creating a **Unified Quantum Framework**. This framework must synthesize and resolve multiple, distinct breakthrough targets into a single, cohesive theory.
 
-Create a **single, unified revolutionary quantum theory** that simultaneously addresses multiple fundamental limitations in current quantum mechanics.
+# BREAKTHROUGH TARGETS TO UNIFY
+{targets_text}
 
-## Multiple Breakthrough Targets to Address
-{targets_summary}
+# INSTRUCTIONS
+Your goal is not just to combine these ideas, but to find a deeper, underlying principle from which all target resolutions emerge naturally. Your output **MUST** be a single, valid JSON object that strictly adheres to the "Quantum Theory Schema v2.1".
 
-## Synthesis Requirements
+## Quantum Theory Schema v2.1
 
-You must create **one coherent theory** that:
-1. **Addresses ALL the above targets simultaneously**
-2. **Unifies the breakthrough strategies** into a single consistent framework
-3. **Provides a mathematically coherent formulation** that handles all identified limitations
-4. **Maintains experimental testability** across all domains
-
-## Output Format
-
+```json
 {{
-  "name": "Unified Revolutionary Quantum Theory name",
-  "summary": "How this single theory addresses multiple fundamental limitations",
-  "unified_approach": {{
-    "synthesis_strategy": "How you unified multiple breakthrough targets",
-    "addressed_targets": ["target1", "target2", "target3"],
-    "unified_conceptual_framework": "The overarching conceptual innovation"
-  }},
-  "theory_type": {{
-    "classification": "pure_interpretational OR dynamically_modified",
-    "modification_level": "none/minimal/moderate/radical",
-    "unification_level": "multiple frameworks unified into one"
-  }},
-  "philosophy": {{
-    "ontological_revolution": "Unified view of quantum reality",
-    "epistemological_breakthrough": "Unified approach to quantum knowledge",
-    "measurement_reconceptualization": "Single coherent measurement theory"
-  }},
-  "mathematical_formulation": {{
-    "unified_hamiltonian": "Single Hamiltonian addressing all targets",
-    "unified_evolution": "Single evolution equation handling all cases",
-    "unified_measurement": "Single measurement rule for all scenarios"
-  }},
-  "dynamical_modifications": {{
-    "has_modifications": true/false,
-    "unified_modifications": {{
-      "comprehensive_equation": "Single equation replacing multiple standard ones",
-      "unified_parameters": {{
-        "param1": {{"value": "...", "role": "how it addresses multiple targets"}}
-      }}
+  "name": "string (A name for the unified framework, e.g., 'Dynamic Causal Set Quantum Theory')",
+  "metadata": {{
+    "uid": "string (A unique identifier, e.g., 'UNIFIED-YYYYMMDD-01')",
+    "schema_version": "2.1",
+    "author": "AI Grand Unifier",
+    "tags": ["array of strings (e.g., 'unified theory', 'quantum gravity', 'cosmology')"],
+    "lineage": {{
+      "method": "Synthesis of Revolutionary Concepts",
+      "parents": ["array of strings (List the names of the breakthrough targets)"],
+      "inspiration": "string (Describe the single, powerful underlying principle that unifies all the targets.)"
     }}
   }},
-  "semantics": {{
-    "unified_concepts": "How all concepts work together in one framework",
-    "multi_target_resolution": "How this single theory resolves multiple limitations"
+  "mathematical_relation_to_sqm": "string (Choose one: 'Interpretation', 'Modification', 'Extension')",
+  "summary": "string (A concise, one-paragraph summary of the unified framework's core idea)",
+  "core_principles": {{
+    "ontological_commitments": "string (What is the ultimate nature of reality according to this unified view?)",
+    "epistemological_stances": "string (How does this framework change what is knowable in principle?)",
+    "key_postulates": ["array of strings (List the foundational axioms of the unified framework)"]
+  }},
+  "formalism": {{
+    "mathematical_objects": "string (List the core mathematical objects of the unified framework)",
+    "governing_equations": ["array of strings (Provide the central equations in LaTeX)"],
+    "comparison_with_sqm": {{
+      "agreements": "string (Does it retain any part of SQM's formalism?)",
+      "modifications": "string (How does it fundamentally alter SQM?)",
+      "extensions": "string (What entirely new mathematical structures does it introduce?)"
+    }}
+  }},
+  "predictions_and_verifiability": {{
+    "reproduces_sqm_predictions": "string (Explain how the framework recovers SQM in a specific limit or domain)",
+    "deviations_from_sqm": [
+      {{
+        "prediction_name": "string (e.g., 'Early Universe Anisotropies')",
+        "description": "string (Describe a critical prediction that emerges from the unification)",
+        "mathematical_derivation": "string (Show how this prediction is a direct consequence of the unified postulates)",
+        "experimental_setup": "string (Suggest a crucial experiment or observational signature, e.g., in CMB data, gravitational waves)"
+      }}
+    ],
+    "unanswered_questions": "string (What new grand challenges or puzzles does this framework present?)"
   }}
 }}
+```
 
-**Create a genuine unified breakthrough - not just a collection of separate solutions, but one coherent theory that elegantly addresses multiple fundamental problems simultaneously.**
+**CRITICAL**:
+- The `lineage.inspiration` field is the most important. You must articulate the **single unifying idea**.
+- Do not just list features. Show how they emerge from a more fundamental concept.
+- Populate **every field** of the JSON schema with deep, consistent, and specific content.
+- Ensure all LaTeX expressions are correctly escaped for JSON (e.g., `\\\\` for a single backslash).
+- Do not add any text or explanation outside the single JSON object.
 """
         return prompt
     

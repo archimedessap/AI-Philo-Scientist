@@ -23,13 +23,14 @@ from theory_generation.llm_interface import LLMInterface
 from theory_generation.systemic_synthesis.common_assumption_analyzer import CommonAssumptionAnalyzer
 from theory_generation.systemic_synthesis.revolutionary_generator import RevolutionaryGenerator
 
-def load_theories_from_sources(theories_dir: str, theories_json_file: str = None) -> Dict[str, Dict]:
+def load_theories_from_sources(theories_dir: str, theories_json_file: str = None, schema_version: str = "2.1") -> Dict[str, Dict]:
     """
     从多个来源加载理论数据
     
     Args:
         theories_dir: 理论目录
         theories_json_file: 可选的理论JSON文件
+        schema_version: 要求加载的理论schema版本
         
     Returns:
         Dict[str, Dict]: 理论名称到理论数据的映射
@@ -45,6 +46,13 @@ def load_theories_from_sources(theories_dir: str, theories_json_file: str = None
             try:
                 with open(theory_file, 'r', encoding='utf-8') as f:
                     theory = json.load(f)
+                
+                # 检查schema版本
+                file_schema_version = theory.get("metadata", {}).get("schema_version")
+                if schema_version and file_schema_version != schema_version:
+                    print(f"[WARN] 跳过文件 {os.path.basename(theory_file)}: schema版本不匹配 (需要 {schema_version}, 文件为 {file_schema_version})")
+                    continue
+
                 theory_name = theory.get("name", os.path.basename(theory_file))
                 theories[theory_name] = theory
             except Exception as e:
@@ -79,17 +87,19 @@ async def main():
     
     # LLM接口参数
     parser.add_argument("--model_source", type=str, default="deepseek",
-                        choices=["openai", "deepseek"],
+                        choices=["openai", "deepseek", "google"],
                         help="模型来源")
     parser.add_argument("--model_name", type=str, default="deepseek-chat",
                         help="模型名称")
     
     # 输入参数
     parser.add_argument("--theories_dir", type=str, 
-                        default="data/generated_theories",
+                        default="data/theories_v2.1",
                         help="理论文件目录")
     parser.add_argument("--additional_theories_json", type=str, default=None,
                         help="额外的理论JSON文件（包含理论数组）")
+    parser.add_argument("--schema_version", type=str, default="2.1",
+                        help="要加载的理论schema版本，设置为'any'可加载所有版本")
     parser.add_argument("--theory_subset", type=str, default=None,
                         help="要分析的理论子集，逗号分隔，如'copenhagen,many_worlds'")
     
@@ -127,7 +137,12 @@ async def main():
     
     # 1. 加载理论数据
     print(f"\n[步骤1] 加载理论数据")
-    theories = load_theories_from_sources(args.theories_dir, args.additional_theories_json)
+    load_schema_version = None if args.schema_version.lower() == 'any' else args.schema_version
+    theories = load_theories_from_sources(
+        args.theories_dir, 
+        args.additional_theories_json,
+        schema_version=load_schema_version
+    )
     
     if not theories:
         print("[ERROR] 未加载到理论数据，程序终止")
@@ -219,20 +234,8 @@ async def main():
     ensure_directory_exists(eval_theories_dir)
     
     for theory in generator.generated_theories:
-        # 转换为标准评估格式
-        eval_theory = {
-            "name": theory.get("name", ""),
-            "summary": theory.get("summary", ""),
-            "philosophy": theory.get("philosophy", {}),
-            "parameters": {},  # 从dynamical_modifications中提取参数
-            "formalism": theory.get("mathematical_formulation", {}),
-            "semantics": theory.get("semantics", {})
-        }
-        
-        # 提取参数信息
-        if theory.get("dynamical_modifications", {}).get("has_modifications"):
-            new_params = theory.get("dynamical_modifications", {}).get("modification_details", {}).get("new_parameters", {})
-            eval_theory["parameters"] = new_params
+        # Schema v2.1: 直接保存完整的理论对象，因为它已经符合新格式
+        eval_theory = theory
         
         # 保存标准格式文件
         theory_name = theory.get("name", "未命名理论")

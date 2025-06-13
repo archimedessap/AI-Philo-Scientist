@@ -12,6 +12,7 @@ import sys
 import json
 import argparse
 import asyncio
+from typing import List, Dict, Any
 
 # 添加路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -19,90 +20,59 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from theory_validation.agent_validation.theory_evaluator import TheoryEvaluator
 from theory_generation.llm_interface import LLMInterface
 
-async def auto_role_evaluation(ranking_file, theories_file, output_dir, 
-                              success_threshold=0.8, model_source="deepseek", 
-                              model_name="deepseek-chat"):
+async def run_role_evaluation_for_theories(
+    high_success_theories: List[Dict[str, Any]],
+    all_theories_definitions: Dict[str, Any],
+    output_dir: str,
+    model_source: str = "deepseek",
+    model_name: str = "deepseek-chat"
+):
     """
-    基于实验评估排名结果进行自动角色评估
-    
+    对给定的高成功率理论列表进行角色评估。
+
     Args:
-        ranking_file: 理论排名文件路径 (theory_rankings.json)
-        theories_file: 理论定义文件路径
-        output_dir: 输出目录
-        success_threshold: 成功率阈值 (默认0.8即80%)
-        model_source: LLM模型来源
-        model_name: LLM模型名称
+        high_success_theories: 经实验评估筛选出的高成功率理论信息列表。
+                                (e.g., [{'theory_name': 'T1', 'success_rate': 0.9, ...}, ...])
+        all_theories_definitions: 包含所有理论定义的字典。
+                                (e.g., {'T1': {'name': 'T1', 'philosophy': ...}, ...})
+        output_dir: 角色评估结果的输出目录。
+        model_source: LLM模型来源。
+        model_name: LLM模型名称。
     """
-    print(f"[INFO] 使用{model_source}模型: {model_name}")
-    print(f"[INFO] 成功率阈值: {success_threshold*100:.0f}%")
-    
-    # 1. 读取理论排名结果
-    try:
-        with open(ranking_file, 'r', encoding='utf-8') as f:
-            theory_rankings = json.load(f)
-        print(f"[INFO] 已加载 {len(theory_rankings)} 个理论的排名结果")
-    except Exception as e:
-        print(f"[ERROR] 读取排名文件失败: {str(e)}")
-        return
-    
-    # 2. 筛选高成功率理论
-    high_success_theories = [
-        rank for rank in theory_rankings 
-        if rank['success_rate'] >= success_threshold
-    ]
-    
-    if not high_success_theories:
-        print(f"[INFO] 没有理论达到{success_threshold*100:.0f}%成功率阈值")
-        return
-    
-    print(f"[INFO] 发现 {len(high_success_theories)} 个成功率≥{success_threshold*100:.0f}%的理论:")
-    for theory in high_success_theories:
-        print(f"  - {theory['theory_name']}: {theory['success_rate']*100:.1f}%")
-    
-    # 3. 读取理论定义
-    try:
-        with open(theories_file, 'r', encoding='utf-8') as f:
-            theories_data = json.load(f)
-        
-        # 转换为字典格式
-        if isinstance(theories_data, list):
-            theories = {theory['name']: theory for theory in theories_data}
-        else:
-            theories = theories_data
-            
-        print(f"[INFO] 已加载 {len(theories)} 个理论定义")
-    except Exception as e:
-        print(f"[ERROR] 读取理论文件失败: {str(e)}")
-        return
-    
-    # 4. 初始化LLM和角色评估器
+    print("\n" + "="*50)
+    print("🚀 开始进行多角色评估...")
+    print("="*50)
+    print(f"[INFO] 收到 {len(high_success_theories)} 个理论进行角色评估。")
+    print(f"[INFO] 使用模型: {model_source}/{model_name}")
+
+    # 1. 初始化LLM和角色评估器
     try:
         llm = LLMInterface(model_name=model_name, model_source=model_source)
         role_evaluator = TheoryEvaluator(llm)
         print(f"[INFO] 已初始化角色评估器")
     except Exception as e:
-        print(f"[ERROR] 初始化评估器失败: {str(e)}")
+        print(f"[ERROR] 初始化角色评估器失败: {str(e)}")
         return
-    
-    # 5. 创建输出目录
+
+    # 2. 创建输出目录
     role_output_dir = os.path.join(output_dir, "role_evaluations")
     os.makedirs(role_output_dir, exist_ok=True)
-    
-    # 6. 执行角色评估
+
+    # 3. 执行角色评估
     role_results = []
-    
-    for rank in high_success_theories:
-        theory_name = rank['theory_name']
-        
-        if theory_name not in theories:
-            print(f"[WARNING] 未找到理论 '{theory_name}' 的定义，跳过")
+
+    for rank_info in high_success_theories:
+        theory_name = rank_info['theory_name']
+
+        if theory_name not in all_theories_definitions:
+            print(f"[WARNING] 未找到理论 '{theory_name}' 的定义，跳过角色评估")
             continue
-            
-        theory_data = theories[theory_name]
-        
+
+        theory_data = all_theories_definitions[theory_name]
+
         print(f"\n[INFO] 正在对理论 '{theory_name}' 进行角色评估...")
-        print(f"       实验成功率: {rank['success_rate']*100:.1f}%, 平均χ²: {rank['average_chi2']:.4f}")
-        
+        print(f"       实验成功率: {rank_info['success_rate']*100:.1f}%, 平均χ²: {rank_info['average_chi2']:.4f}")
+
         try:
             # 执行角色评估
             # 将理论数据适配为角色评估器期望的格式
@@ -145,9 +115,9 @@ async def auto_role_evaluation(ranking_file, theories_file, output_dir,
                 role_result['summary'] = summary
             
             # 添加实验成功率信息
-            role_result['experiment_success_rate'] = rank['success_rate']
-            role_result['average_chi2'] = rank['average_chi2']
-            role_result['experiments_count'] = rank['experiments_count']
+            role_result['experiment_success_rate'] = rank_info['success_rate']
+            role_result['average_chi2'] = rank_info['average_chi2']
+            role_result['experiments_count'] = rank_info['experiments_count']
             
             role_results.append(role_result)
             
@@ -163,8 +133,8 @@ async def auto_role_evaluation(ranking_file, theories_file, output_dir,
             
         except Exception as e:
             print(f"[ERROR] 评估理论 '{theory_name}' 的角色时出错: {str(e)}")
-    
-    # 7. 保存综合结果和排名
+            
+    # 4. 保存综合结果和排名
     if role_results:
         # 保存角色评估汇总
         role_summary_file = os.path.join(role_output_dir, "role_evaluation_summary.json")
@@ -207,8 +177,7 @@ async def auto_role_evaluation(ranking_file, theories_file, output_dir,
                 'experiments_count': role_result['experiments_count'],
                 'average_role_score': avg_role_score,
                 'combined_score': combined_score,
-                'role_details': role_details,
-                'role_evaluation_status': role_result.get('status', 'unknown')
+                'role_details': role_details
             })
         
         # 按综合评分排序
@@ -226,16 +195,17 @@ async def auto_role_evaluation(ranking_file, theories_file, output_dir,
         print("\n" + "="*120)
         print("🏆 综合排名（实验成功率 60% + 角色评估 40%）")
         print("="*120)
-        print(f"{'排名':<4} {'理论名称':<30} {'实验成功率':<12} {'角色平均分':<12} {'综合评分':<12} {'详细角色评分'}")
+        print(f"{'排名':<4} {'理论名称':<40} {'实验成功率':<12} {'角色平均分':<12} {'综合评分':<12} {'详细角色评分'}")
         print("-"*120)
         
         for i, rank in enumerate(combined_rankings, 1):
-            role_detail = ", ".join([f"{role}:{score:.1f}" for role, score in rank['role_details'].items() if score > 0])
-            print(f"{i:<4} {rank['theory_name']:<30} {rank['experiment_success_rate']*100:>8.1f}% "
-                  f"{rank['average_role_score']:>10.1f} {rank['combined_score']:>10.3f} {role_detail}")
+            role_detail_items = rank.get('role_details', {}).items()
+            role_detail = ", ".join([f"{role_evaluator.evaluation_roles.get(role, {}).get('name', '未知')}:{score:.1f}" for role, score in role_detail_items if score > 0])
+            print(f"{i:<4} {rank['theory_name']:<40} {rank['experiment_success_rate']*100:>8.1f}% "
+                  f"{rank['average_role_score']:>10.1f} {rank['combined_score']:>10.3f}    {role_detail}")
         
         print("-"*120)
-        print(f"共评估了 {len(combined_rankings)} 个高成功率理论")
+        print(f"共完成 {len(combined_rankings)} 个理论的角色评估。")
         
         # 输出最佳理论的详细信息
         if combined_rankings:
@@ -246,43 +216,112 @@ async def auto_role_evaluation(ranking_file, theories_file, output_dir,
             print(f"   角色评估平均分: {best_theory['average_role_score']:.1f}/10")
             print(f"   综合评分: {best_theory['combined_score']:.3f}")
         
+        return combined_ranking_file
     else:
         print("[WARNING] 没有成功完成的角色评估结果")
+        return None
+
+async def standalone_auto_role_evaluation(ranking_files: List[str], theories_dir: str, output_dir: str, 
+                              success_threshold: float = 0.8, model_source: str = "deepseek", 
+                              model_name: str = "deepseek-chat"):
+    """
+    基于实验评估排名结果进行自动角色评估 (独立运行模式)
+    
+    Args:
+        ranking_files: 一个或多个理论排名文件路径的列表
+        theories_dir: 包含理论定义文件的目录路径
+        output_dir: 输出目录
+        success_threshold: 成功率阈值 (默认0.8即80%)
+        model_source: LLM模型来源
+        model_name: LLM模型名称
+    """
+    print(f"[INFO] 以独立模式运行角色评估...")
+    print(f"[INFO] 成功率阈值: {success_threshold*100:.0f}%")
+    
+    # 1. 读取并合并所有理论排名结果
+    all_rankings = []
+    for rank_file in ranking_files:
+        try:
+            with open(rank_file, 'r', encoding='utf-8') as f:
+                all_rankings.extend(json.load(f))
+            print(f"[INFO] 已加载排名文件: {rank_file}")
+        except Exception as e:
+            print(f"[ERROR] 读取排名文件 {rank_file} 失败: {str(e)}")
+            continue
+    
+    if not all_rankings:
+        print("[ERROR] 未加载任何排名数据，程序退出。")
+        return
+
+    # 2. 读取理论定义
+    all_theories_definitions = {}
+    try:
+        theory_files = [f for f in os.listdir(theories_dir) if f.endswith('.json')]
+        print(f"[INFO] 在目录 '{theories_dir}' 中找到 {len(theory_files)} 个理论定义文件。")
+        for file_name in theory_files:
+            file_path = os.path.join(theories_dir, file_name)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                theory_data = json.load(f)
+                theory_name = theory_data.get('name')
+                if theory_name:
+                    all_theories_definitions[theory_name] = theory_data
+                else:
+                    print(f"[WARN] 文件 {file_name} 中缺少理论名称 'name'。")
+    except Exception as e:
+        print(f"[ERROR] 读取理论定义目录 '{theories_dir}' 失败: {str(e)}")
+        return
+
+    # 3. 去重并筛选高成功率理论
+    seen_theories = set()
+    high_success_theories = []
+    for rank in all_rankings:
+        t_name = rank.get('theory_name')
+        s_rate = rank.get('success_rate')
+
+        if t_name and s_rate is not None and t_name not in seen_theories:
+            if s_rate >= success_threshold:
+                high_success_theories.append(rank)
+            seen_theories.add(t_name)
+    
+    # 按成功率和χ²排序
+    high_success_theories.sort(key=lambda x: (-x['success_rate'], x.get('average_chi2', float('inf'))))
+
+    # 4. 如果有符合条件的理论，则运行角色评估
+    if high_success_theories:
+        await run_role_evaluation_for_theories(
+            high_success_theories=high_success_theories,
+            all_theories_definitions=all_theories_definitions,
+            output_dir=output_dir,
+            model_source=model_source,
+            model_name=model_name
+        )
+    else:
+        print(f"[INFO] 没有理论达到 {success_threshold*100:.0f}% 的成功率阈值，角色评估结束。")
 
 def main():
-    parser = argparse.ArgumentParser(description="基于实验评估结果的自动角色评估")
-    parser.add_argument("--ranking_file", required=True, 
-                       help="理论排名文件路径 (theory_rankings.json)")
-    parser.add_argument("--theories_file", required=True,
-                       help="理论定义文件路径")
-    parser.add_argument("--output_dir", required=True,
-                       help="输出目录路径")
-    parser.add_argument("--success_threshold", type=float, default=0.8,
-                       help="成功率阈值 (默认0.8即80%)")
-    parser.add_argument("--model_source", default="deepseek",
-                       help="LLM模型来源 (例如: openai, deepseek)")
-    parser.add_argument("--model_name", default="deepseek-chat",
-                       help="LLM模型名称 (例如: gpt-4, deepseek-chat)")
+    parser = argparse.ArgumentParser(description="自动进行多角色评估")
+    parser.add_argument('ranking_files', nargs='+', help="一个或多个实验评估排名文件的路径 (JSON格式)")
+    parser.add_argument('--theories_dir', required=True, help="包含所有理论定义文件的目录路径")
+    parser.add_argument('--output_dir', default="data/role_evaluation_results", help="评估结果的输出目录")
+    parser.add_argument('--threshold', type=float, default=0.6, help="进行角色评估的实验成功率阈值 (例如 0.6 表示 60%)")
+    
+    # LLM 相关参数
+    parser.add_argument("--model_source", type=str, default="openai", choices=['openai', 'google', 'deepseek'], help="LLM API的服务商")
+    parser.add_argument("--model_name", type=str, default="gpt-4o-mini", help="具体的LLM模型名称")
     
     args = parser.parse_args()
+
+    # 确保输出目录存在
+    os.makedirs(args.output_dir, exist_ok=True)
     
-    # 验证输入文件
-    if not os.path.exists(args.ranking_file):
-        print(f"[ERROR] 排名文件不存在: {args.ranking_file}")
-        return
-    
-    if not os.path.exists(args.theories_file):
-        print(f"[ERROR] 理论文件不存在: {args.theories_file}")
-        return
-    
-    asyncio.run(auto_role_evaluation(
-        args.ranking_file,
-        args.theories_file,
-        args.output_dir,
-        args.success_threshold,
-        args.model_source,
-        args.model_name
+    asyncio.run(standalone_auto_role_evaluation(
+        ranking_files=args.ranking_files,
+        theories_dir=args.theories_dir,
+        output_dir=args.output_dir,
+        success_threshold=args.threshold,
+        model_source=args.model_source,
+        model_name=args.model_name
     ))
 
 if __name__ == "__main__":
-    main() 
+    main()

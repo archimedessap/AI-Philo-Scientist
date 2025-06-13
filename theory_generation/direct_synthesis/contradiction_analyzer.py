@@ -38,12 +38,13 @@ class ContradictionAnalyzer:
             "quantum_classical_boundary"   # 量子经典边界
         ]
     
-    def load_theories(self, theories_dir: str) -> None:
+    def load_theories(self, theories_dir: str, schema_version: str = None) -> None:
         """
         从目录加载理论详情
         
         Args:
             theories_dir: 理论JSON文件所在目录
+            schema_version: 要求加载的理论schema版本
         """
         if not os.path.exists(theories_dir):
             print(f"[ERROR] 目录不存在: {theories_dir}")
@@ -57,6 +58,13 @@ class ContradictionAnalyzer:
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     theory_data = json.load(f)
+                    
+                # 检查schema版本
+                if schema_version:
+                    file_schema_version = theory_data.get("metadata", {}).get("schema_version")
+                    if file_schema_version != schema_version:
+                        print(f"[INFO] 跳过文件 {file_name}: schema版本不匹配 (需要 {schema_version}, 文件为 {file_schema_version})")
+                        continue
                     
                 if isinstance(theory_data, list):
                     # 处理包含多个理论的文件

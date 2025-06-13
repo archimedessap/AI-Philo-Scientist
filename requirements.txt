@@ -2,6 +2,7 @@
 # LLM API接口
 openai>=1.0.0
 deepseek-ai>=0.0.1
+google-generativeai>=0.5.4
 groq>=0.4.0
 anthropic>=0.8.0
 

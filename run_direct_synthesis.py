@@ -28,19 +28,21 @@ async def main():
     
     # LLM接口参数
     parser.add_argument("--model_source", type=str, default="openai",
-                        choices=["openai", "deepseek"],
+                        choices=["openai", "deepseek", "google"],
                         help="模型来源")
     parser.add_argument("--model_name", type=str, default="gpt-4o-mini",
                         help="模型名称")
     
     # 输入参数
     parser.add_argument("--theories_dir", type=str, 
-                        default="data/generated_theories",
+                        default="data/theories_v2.1",
                         help="理论文件目录")
     parser.add_argument("--specific_pair", type=str, default=None,
                         help="特定理论对，格式为'理论1,理论2'")
     parser.add_argument("--max_pairs", type=int, default=3,
                         help="最大比较对数，默认为3")
+    parser.add_argument("--schema_version", type=str, default="2.1",
+                        help="要加载的理论schema版本，设置为'any'可加载所有版本")
     
     # 生成参数
     parser.add_argument("--variants_per_contradiction", type=int, default=3,
@@ -72,7 +74,9 @@ async def main():
     # 1. 加载理论数据
     print(f"\n[步骤1] 从 {args.theories_dir} 加载理论数据")
     analyzer = ContradictionAnalyzer(llm)
-    analyzer.load_theories(args.theories_dir)
+    
+    load_schema_version = None if args.schema_version.lower() == 'any' else args.schema_version
+    analyzer.load_theories(args.theories_dir, schema_version=load_schema_version)
     
     if not analyzer.theories:
         print("[ERROR] 未加载到理论数据，程序终止")
@@ -183,16 +187,8 @@ async def main():
             theory_name = hypothesis.get("name", "未命名理论")
             safe_name = theory_name.replace(" ", "_").replace("/", "_").lower()
             
-            # 确保文件可以用于评估器
-            # 复制理论内容，保留所需部分
-            eval_theory = {
-                "name": hypothesis.get("name", ""),
-                "summary": hypothesis.get("summary", ""),
-                "philosophy": hypothesis.get("philosophy", {}),
-                "parameters": hypothesis.get("parameters", {}),
-                "formalism": hypothesis.get("formalism", {}),
-                "semantics": hypothesis.get("semantics", {})
-            }
+            # Schema v2.1: 直接保存完整的假说对象，因为它已经符合新格式
+            eval_theory = hypothesis
             
             # 保存标准格式的理论文件
             eval_file = os.path.join(eval_theories_dir, f"{safe_name}.json")

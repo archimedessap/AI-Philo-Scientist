@@ -18,6 +18,7 @@ import re
 import time
 import openai
 import asyncio
+import google.generativeai as genai
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 
@@ -45,39 +46,47 @@ class LLMInterface:
         # 从环境变量获取API密钥
         self.api_key_openai = os.environ.get("OPENAI_API_KEY")
         self.api_key_deepseek = os.environ.get("DEEPSEEK_API_KEY")
+        self.api_key_google = os.environ.get("GOOGLE_API_KEY")
+
+        self.openai_client = None
+        self.genai_model = None
         
         # 初始化客户端
-        if self.model_source.lower() == 'openai':
-            print(f"[INFO] 使用OpenAI模型: {model_name}")
-            self.openai_client = openai.AsyncOpenAI(api_key=self.api_key_openai)
-        elif self.model_source.lower() == 'deepseek':
-            print(f"[INFO] 使用DeepSeek模型: {model_name}")
-            self.openai_client = openai.AsyncOpenAI(
-                api_key=self.api_key_deepseek,
-                base_url="https://api.deepseek.com/v1"
-            )
+        self._initialize_client()
         
         # 其他属性
         self.enable_fallback = False
         self.raise_api_error = False
     
-    def set_model(self, model_source, model_name):
-        """设置模型来源和名称"""
-        self.model_source = model_source
-        self.model_name = model_name
-        
-        # 重新初始化客户端
-        if model_source.lower() == 'openai':
-            print(f"[INFO] 使用OpenAI模型: {model_name}")
+    def _initialize_client(self):
+        """根据模型来源初始化客户端"""
+        source = self.model_source.lower()
+        if source == 'openai':
+            print(f"[INFO] 使用OpenAI模型: {self.model_name}")
             self.openai_client = openai.AsyncOpenAI(api_key=self.api_key_openai)
-        elif model_source.lower() == 'deepseek':
-            print(f"[INFO] 使用DeepSeek模型: {model_name}")
+            self.genai_model = None
+        elif source == 'deepseek':
+            print(f"[INFO] 使用DeepSeek模型: {self.model_name}")
             self.openai_client = openai.AsyncOpenAI(
                 api_key=self.api_key_deepseek,
                 base_url="https://api.deepseek.com/v1"
             )
+            self.genai_model = None
+        elif source == 'google':
+            print(f"[INFO] 使用Google Gemini模型: {self.model_name}")
+            if not self.api_key_google:
+                raise ValueError("GOOGLE_API_KEY 环境变量未设置")
+            genai.configure(api_key=self.api_key_google)
+            self.genai_model = genai.GenerativeModel(self.model_name)
+            self.openai_client = None
         else:
-            print(f"[WARN] 未知模型来源: {model_source}")
+            print(f"[WARN] 未知模型来源: {self.model_source}, 将不初始化客户端。")
+    
+    def set_model(self, model_source, model_name):
+        """设置模型来源和名称"""
+        self.model_source = model_source
+        self.model_name = model_name
+        self._initialize_client()
     
     async def _wait_for_rate_limit(self):
         """等待请求间隔，避免速率限制"""
@@ -111,15 +120,36 @@ class LLMInterface:
         # 等待速率限制
         await self._wait_for_rate_limit()
         
+        # 确保客户端已针对当前模型正确设置
+        if source != self.model_source or name != self.model_name:
+             self.set_model(source, name)
+        
         try:
             print(f"[INFO] 调用API: {source}/{name}")
-            response = await self.openai_client.chat.completions.create(
-                model=name,
-                messages=messages,
-                temperature=temperature
-            )
-            return response.choices[0].message.content
-                
+
+            if source.lower() in ['openai', 'deepseek']:
+                if not self.openai_client:
+                    raise ValueError(f"{source} 客户端未初始化。")
+                response = await self.openai_client.chat.completions.create(
+                    model=name,
+                    messages=messages,
+                    temperature=temperature
+                )
+                return response.choices[0].message.content
+            
+            elif source.lower() == 'google':
+                if not self.genai_model:
+                    raise ValueError("Google Gemini 模型未初始化。")
+                # Gemini API 使用不同的消息格式
+                gemini_messages = [m['content'] for m in messages if m['role'] == 'user']
+                response = await self.genai_model.generate_content_async(
+                    gemini_messages,
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=temperature
+                    )
+                )
+                return response.text
+
         except Exception as e:
             error_message = f"调用 {source}-{name} API失败: {str(e)}"
             print(f"[ERROR] {error_message}")
@@ -145,26 +175,40 @@ class LLMInterface:
         source = model_source if model_source else self.model_source
         name = model_name if model_name else self.model_name
         
-        # 创建同步客户端
-        if source.lower() == 'openai':
-            client = openai.OpenAI(api_key=self.api_key_openai)
-        elif source.lower() == 'deepseek':
-            client = openai.OpenAI(
-                api_key=self.api_key_deepseek,
-                base_url="https://api.deepseek.com/v1"
-            )
-        else:
-            raise ValueError(f"不支持的模型来源: {source}")
-        
         try:
             print(f"[INFO] 同步调用API: {source}/{name}")
-            response = client.chat.completions.create(
-                model=name,
-                messages=messages,
-                temperature=temperature
-            )
-            return response.choices[0].message.content
+
+            if source.lower() in ['openai', 'deepseek']:
+                # 创建同步客户端
+                if source.lower() == 'openai':
+                    client = openai.OpenAI(api_key=self.api_key_openai)
+                else: # deepseek
+                    client = openai.OpenAI(
+                        api_key=self.api_key_deepseek,
+                        base_url="https://api.deepseek.com/v1"
+                    )
                 
+                response = client.chat.completions.create(
+                    model=name,
+                    messages=messages,
+                    temperature=temperature
+                )
+                return response.choices[0].message.content
+            
+            elif source.lower() == 'google':
+                if not self.api_key_google:
+                    raise ValueError("GOOGLE_API_KEY 环境变量未设置")
+                genai.configure(api_key=self.api_key_google)
+                model = genai.GenerativeModel(name)
+                gemini_messages = [m['content'] for m in messages if m['role'] == 'user']
+                response = model.generate_content(
+                    gemini_messages,
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=temperature
+                    )
+                )
+                return response.text
+
         except Exception as e:
             error_message = f"调用 {source}-{name} API失败: {str(e)}"
             print(f"[ERROR] {error_message}")

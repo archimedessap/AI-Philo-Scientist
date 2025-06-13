@@ -78,10 +78,17 @@ class HypothesisGenerator:
                 return {"error": "无法解析响应", "raw_response": response}
             
             # 添加元数据
-            new_hypothesis["generated_from"] = {
-                "theory1": theory1,
-                "theory2": theory2,
-                "generation_time": time.strftime("%Y-%m-%d %H:%M:%S"),
+            # 确保metadata字段存在
+            if "metadata" not in new_hypothesis:
+                new_hypothesis["metadata"] = {}
+            
+            new_hypothesis["metadata"]["generation_info"] = {
+                "source": "direct_synthesis",
+                "contradiction_base": {
+                    "theory1": theory1,
+                    "theory2": theory2,
+                },
+                "generation_time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                 "generation_parameters": generation_params
             }
             
@@ -97,7 +104,7 @@ class HypothesisGenerator:
     def _build_generation_prompt(self, theory1: str, theory2: str, contradictions: List[Dict], 
                                params: Dict) -> str:
         """
-        构建生成新假说的提示
+        构建生成新假说的提示 (Schema v2.1)
         
         Args:
             theory1: 第一个理论名称
@@ -127,64 +134,75 @@ class HypothesisGenerator:
             core = c.get("core_tension", "")
             
             contradictions_text += f"""
-Contradiction {i}: {dimension}
-- {theory1}'s position: {theory1_pos}
-- {theory2}'s position: {theory2_pos}
-- Core tension: {core}
+### Contradiction {i}: {dimension}
+- **{theory1}'s Position**: {theory1_pos}
+- **{theory2}'s Position**: {theory2_pos}
+- **Core Tension**: {core}
 """
         
         # 构建完整提示
         prompt = f"""
-# Task
-You are a theorist in the interdisciplinary field of quantum mechanics and philosophy. Based on the given analysis of contradictions between theories, propose a new interpretation of quantum mechanics. The theory should:
+# TASK
+As a theoretical physicist and philosopher of science, your task is to invent a novel quantum theory. This new theory must resolve or transcend the core contradictions identified between **{theory1}** and **{theory2}**.
 
-1. Have clear ontological or epistemological claims;
-2. Provide a precise mathematical formulation (Hamiltonian or evolution equations), noting any "new physics" parameters (if any);
-3. Include at least one state update/measurement rule (can be the Born rule or a modification);
-4. Reconcile or transcend the contradictions described below.
-5. Include detailed explanations of the meanings of all symbols and terms used (semantics).
-
-# Contradiction Analysis
-Theory comparison: {theory1} vs {theory2}
-
+# CONTRADICTION ANALYSIS
 {contradictions_text}
 
-# Evaluation Criteria
-1. Philosophical depth: {params["philosophical_depth"] * 10}/10
-2. Mathematical rigor: {params["mathematical_rigor"] * 10}/10
-3. Innovation level: {params["creativity_level"] * 10}/10
+# INSTRUCTIONS
+Based on the analysis, construct a new theory. Your output **MUST** be a single, valid JSON object that strictly adheres to the "Quantum Theory Schema v2.1" provided below.
 
-# Output Format
-Output only a JSON object, without code blocks or any additional text. Follow this exact format:
+## Quantum Theory Schema v2.1
 
+```json
 {{
-  "name": "<theory name>",
-  "summary": "<brief summary in less than 100 words>",
-  "philosophy": {{
-    "ontology": "<core ontological claims>",
-    "measurement": "<view on measurement>"
+  "name": "string (A clear, descriptive name for the new theory)",
+  "metadata": {{
+    "uid": "string (A unique identifier, e.g., 'THEORY-YYYYMMDD-01')",
+    "schema_version": "2.1",
+    "author": "AI Physicist",
+    "tags": ["array of strings (e.g., 'quantum interpretation', 'stochastic dynamics', 'non-local')"],
+    "lineage": {{
+      "method": "Direct Synthesis from Contradiction",
+      "parents": ["{theory1}", "{theory2}"],
+      "inspiration": "string (Briefly describe how the new theory resolves the core tensions)"
+    }}
   }},
-  "parameters": {{
-    "<symbol>": {{ "value": <number>, "unit": "<unit or empty string>", "role": "<brief explanation>" }},
-    // If needed, add more parameters with the same structure
-    // If no new parameters, use empty object {{}}
+  "mathematical_relation_to_sqm": "string (Choose one: 'Interpretation', 'Modification', 'Extension')",
+  "summary": "string (A concise, one-paragraph summary of the theory's main idea)",
+  "core_principles": {{
+    "ontological_commitments": "string (What does the theory claim exists fundamentally? e.g., wave function, particles, information)",
+    "epistemological_stances": "string (What can be known and how? Role of the observer.)",
+    "key_postulates": ["array of strings (List the core axioms or postulates of the theory)"]
   }},
   "formalism": {{
-    "hamiltonian": "<LaTeX equation or text>",
-    "state_equation": "<LaTeX equation or text>",
-    "measurement_rule": "<one sentence>"
+    "mathematical_objects": "string (List the primary mathematical objects, e.g., Hilbert space, configuration space)",
+    "governing_equations": ["array of strings (Provide key equations in LaTeX, e.g., evolution equation, collapse dynamics)"],
+    "comparison_with_sqm": {{
+      "agreements": "string (What parts of SQM's formalism are retained?)",
+      "modifications": "string (What parts are changed? e.g., adding non-linear terms to Schrödinger's equation)",
+      "extensions": "string (What new mathematical structures are added?)"
+    }}
   }},
-  "semantics": {{
-    "<symbol/term>": "<detailed explanation of what this symbol/term means in the theory>",
-    "<symbol/term>": "<detailed explanation of what this symbol/term means in the theory>",
-    // Add explanations for all important symbols in the Hamiltonian and state equations
-    // Also explain any key concepts specific to this theory
-    "overall_picture": "<concise description of how all the elements work together>"
+  "predictions_and_verifiability": {{
+    "reproduces_sqm_predictions": "string (Explain how the theory reproduces standard predictions in the appropriate limit)",
+    "deviations_from_sqm": [
+      {{
+        "prediction_name": "string (e.g., 'Modified Double-Slit Interference')",
+        "description": "string (Describe the new, testable prediction)",
+        "mathematical_derivation": "string (Briefly explain how this deviation is derived from the new formalism)",
+        "experimental_setup": "string (Suggest a feasible experimental setup to test this prediction)"
+      }}
+    ],
+    "unanswered_questions": "string (What questions does this new theory open up?)"
   }}
 }}
+```
 
-Ensure all mathematical expressions are properly escaped for JSON (e.g., \\\\ for a backslash in LaTeX).
-Include detailed semantic explanations for all mathematical symbols and key concepts in your theory.
+**CRITICAL**: 
+- Populate every field of the JSON schema with detailed, scientifically-grounded content.
+- Ensure all LaTeX expressions are correctly escaped for JSON (e.g., use `\\\\` for a single backslash).
+- The `lineage.inspiration` field is crucial: explicitly state how your new theory's postulates resolve the specific contradictions listed.
+- Do not add any text or explanation outside the single JSON object.
 """
         return prompt
     
