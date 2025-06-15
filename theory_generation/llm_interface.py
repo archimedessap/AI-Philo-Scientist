@@ -57,6 +57,13 @@ class LLMInterface:
         # 其他属性
         self.enable_fallback = False
         self.raise_api_error = False
+        # 最大重试次数
+        self.max_retries = 3
+        # fallback 模型 (当 enable_fallback=True 且主模型失败时触发)
+        self._fallback_conf = {
+            "model_source": "openai",
+            "model_name": "gpt-3.5-turbo"
+        }
     
     def _initialize_client(self):
         """根据模型来源初始化客户端"""
@@ -124,39 +131,50 @@ class LLMInterface:
         if source != self.model_source or name != self.model_name:
              self.set_model(source, name)
         
-        try:
-            print(f"[INFO] 调用API: {source}/{name}")
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                print(f"[INFO] (尝试 {attempt}) 调用API: {source}/{name}")
 
-            if source.lower() in ['openai', 'deepseek']:
-                if not self.openai_client:
-                    raise ValueError(f"{source} 客户端未初始化。")
-                response = await self.openai_client.chat.completions.create(
-                    model=name,
-                    messages=messages,
-                    temperature=temperature
-                )
-                return response.choices[0].message.content
-            
-            elif source.lower() == 'google':
-                if not self.genai_model:
-                    raise ValueError("Google Gemini 模型未初始化。")
-                # Gemini API 使用不同的消息格式
-                gemini_messages = [m['content'] for m in messages if m['role'] == 'user']
-                response = await self.genai_model.generate_content_async(
-                    gemini_messages,
-                    generation_config=genai.types.GenerationConfig(
+                if source.lower() in ['openai', 'deepseek']:
+                    if not self.openai_client:
+                        raise ValueError(f"{source} 客户端未初始化。")
+                    response = await self.openai_client.chat.completions.create(
+                        model=name,
+                        messages=messages,
                         temperature=temperature
                     )
-                )
-                return response.text
+                    return response.choices[0].message.content
+                
+                elif source.lower() == 'google':
+                    if not self.genai_model:
+                        raise ValueError("Google Gemini 模型未初始化。")
+                    # Gemini API 使用不同的消息格式
+                    gemini_messages = [m['content'] for m in messages if m['role'] == 'user']
+                    response = await self.genai_model.generate_content_async(
+                        gemini_messages,
+                        generation_config=genai.types.GenerationConfig(
+                            temperature=temperature
+                        )
+                    )
+                    return response.text
 
-        except Exception as e:
-            error_message = f"调用 {source}-{name} API失败: {str(e)}"
-            print(f"[ERROR] {error_message}")
-            
-            if self.raise_api_error:
-                raise Exception(error_message)
-            return f"错误: {error_message}"
+            except Exception as e:
+                print(f"[WARN] 第 {attempt} 次调用失败: {e}")
+                if attempt == self.max_retries and self.enable_fallback:
+                    print("[INFO] 尝试使用 fallback 模型...")
+                    return await self.query_async(
+                        messages,
+                        temperature=temperature,
+                        model_source=self._fallback_conf["model_source"],
+                        model_name=self._fallback_conf["model_name"],
+                    )
+                elif attempt == self.max_retries:
+                    error_message = f"调用 {source}-{name} API失败: {str(e)}"
+                    if self.raise_api_error:
+                        raise Exception(error_message)
+                    return f"错误: {error_message}"
+                # 等待指数退避
+                await asyncio.sleep(2 ** attempt * 0.5)
     
     def query(self, messages, temperature=0.7, model_source=None, model_name=None):
         """
@@ -175,47 +193,58 @@ class LLMInterface:
         source = model_source if model_source else self.model_source
         name = model_name if model_name else self.model_name
         
-        try:
-            print(f"[INFO] 同步调用API: {source}/{name}")
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                print(f"[INFO] (尝试 {attempt}) 同步调用API: {source}/{name}")
 
-            if source.lower() in ['openai', 'deepseek']:
-                # 创建同步客户端
-                if source.lower() == 'openai':
-                    client = openai.OpenAI(api_key=self.api_key_openai)
-                else: # deepseek
-                    client = openai.OpenAI(
-                        api_key=self.api_key_deepseek,
-                        base_url="https://api.deepseek.com/v1"
-                    )
-                
-                response = client.chat.completions.create(
-                    model=name,
-                    messages=messages,
-                    temperature=temperature
-                )
-                return response.choices[0].message.content
-            
-            elif source.lower() == 'google':
-                if not self.api_key_google:
-                    raise ValueError("GOOGLE_API_KEY 环境变量未设置")
-                genai.configure(api_key=self.api_key_google)
-                model = genai.GenerativeModel(name)
-                gemini_messages = [m['content'] for m in messages if m['role'] == 'user']
-                response = model.generate_content(
-                    gemini_messages,
-                    generation_config=genai.types.GenerationConfig(
+                if source.lower() in ['openai', 'deepseek']:
+                    # 创建同步客户端
+                    if source.lower() == 'openai':
+                        client = openai.OpenAI(api_key=self.api_key_openai)
+                    else:  # deepseek
+                        client = openai.OpenAI(
+                            api_key=self.api_key_deepseek,
+                            base_url="https://api.deepseek.com/v1"
+                        )
+                    
+                    response = client.chat.completions.create(
+                        model=name,
+                        messages=messages,
                         temperature=temperature
                     )
-                )
-                return response.text
+                    return response.choices[0].message.content
+                
+                elif source.lower() == 'google':
+                    if not self.api_key_google:
+                        raise ValueError("GOOGLE_API_KEY 环境变量未设置")
+                    genai.configure(api_key=self.api_key_google)
+                    model = genai.GenerativeModel(name)
+                    gemini_messages = [m['content'] for m in messages if m['role'] == 'user']
+                    response = model.generate_content(
+                        gemini_messages,
+                        generation_config=genai.types.GenerationConfig(
+                            temperature=temperature
+                        )
+                    )
+                    return response.text
 
-        except Exception as e:
-            error_message = f"调用 {source}-{name} API失败: {str(e)}"
-            print(f"[ERROR] {error_message}")
-            
-            if self.raise_api_error:
-                raise Exception(error_message)
-            return f"错误: {error_message}"
+            except Exception as e:
+                print(f"[WARN] 第 {attempt} 次同步调用失败: {e}")
+                if attempt == self.max_retries and self.enable_fallback:
+                    print("[INFO] 尝试使用 fallback 模型...")
+                    return self.query(
+                        messages,
+                        temperature=temperature,
+                        model_source=self._fallback_conf["model_source"],
+                        model_name=self._fallback_conf["model_name"],
+                    )
+                elif attempt == self.max_retries:
+                    error_message = f"调用 {source}-{name} API失败: {str(e)}"
+                    if self.raise_api_error:
+                        raise Exception(error_message)
+                    return f"错误: {error_message}"
+                # 退避等待
+                time.sleep(2 ** attempt * 0.5)
     
     def extract_json(self, text):
         """
@@ -237,13 +266,34 @@ class LLMInterface:
                 except json.JSONDecodeError:
                     continue
 
-        # 方式 2：正则搜索整段 {...}
-        m = re.search(r"\{.*\}", text, flags=re.S)
-        if m:
+        # 方式 2：处理 ```json ... ``` 代码块
+        code_block = re.search(r"```json[\s\S]*?```", text, flags=re.I)
+        if code_block:
+            block = code_block.group()
+            block = re.sub(r"```json|```", "", block, flags=re.I).strip()
             try:
-                return json.loads(m.group())
+                return json.loads(block)
             except json.JSONDecodeError:
-                pass
+                # 尝试去掉尾随逗号
+                block2 = re.sub(r",([\s]*[}\]])", r"\1", block)
+                try:
+                    return json.loads(block2)
+                except json.JSONDecodeError:
+                    pass
+
+        # 方式 3：正则搜索最大括号段 {...}
+        m = re.search(r"\{[\s\S]*\}", text)
+        if m:
+            candidate = m.group()
+            try:
+                return json.loads(candidate)
+            except json.JSONDecodeError:
+                # 去尾逗号重试
+                candidate2 = re.sub(r",([\s]*[}\]])", r"\1", candidate)
+                try:
+                    return json.loads(candidate2)
+                except json.JSONDecodeError:
+                    pass
 
         print(f"[WARN] 无法从文本中提取JSON: {text[:100]}...")
         return None
@@ -523,3 +573,38 @@ class LLMInterface:
         except Exception as e:
             print(f"[ERROR] 比较理论失败: {str(e)}")
             return {"error": str(e)}
+
+    # ------------------------------------------------------------------
+    # 资源释放
+    # ------------------------------------------------------------------
+
+    async def aclose(self):
+        """异步关闭底层客户端，避免事件循环关闭警告"""
+        try:
+            if self.openai_client is not None:
+                # 兼容 openai >=1.0.0
+                async_close = getattr(self.openai_client, "aclose", None)
+                if async_close is not None:
+                    await async_close()
+                else:
+                    close_fn = getattr(self.openai_client, "close", None)
+                    if close_fn:
+                        if asyncio.iscoroutinefunction(close_fn):
+                            await close_fn()
+                        else:
+                            close_fn()
+        except Exception:
+            pass
+
+    def close(self):
+        """同步关闭底层客户端"""
+        try:
+            if self.openai_client is not None:
+                close_fn = getattr(self.openai_client, "close", None)
+                if close_fn:
+                    try:
+                        close_fn()
+                    except Exception:
+                        pass
+        except Exception:
+            pass

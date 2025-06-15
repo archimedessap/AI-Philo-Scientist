@@ -92,7 +92,7 @@ def main():
     # --- 理论评估参数 (Evaluation Parameters) ---
     evaluation_group = parser.add_argument_group('Phase 2: Theory Evaluation')
     evaluation_group.add_argument("--experiment_dir", type=str, default="demo/experiments/", help="用于评估的实验数据目录")
-    evaluation_group.add_argument("--use_instrument_correction", action='store_true', help="在实验评估中启用仪器修正模型")
+    evaluation_group.add_argument("--use_instrument_correction", action='store_true', default=True, help="在实验评估中启用仪器修正模型（默认启用）")
     evaluation_group.add_argument("--evaluation_model_source", type=str, default="openai", choices=["openai", "deepseek", "google"], help="用于理论评估的LLM来源")
     evaluation_group.add_argument("--evaluation_model_name", type=str, default="gpt-4o-mini", help="用于理论评估的具体模型名称")
     evaluation_group.add_argument("--role_eval_threshold", type=float, default=0.6, help="实验成功率阈值，超过该值的理论将进行多角色评估")
