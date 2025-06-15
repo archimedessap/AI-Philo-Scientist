@@ -1,0 +1,11 @@
+{
+    "id": "wheeler_delayed_choice_jacques2007",
+    "category": "delayed_choice",
+    "observable": "fringe_visibility",
+    "setup": {
+      "particle": "single photons",
+      "interferometer": "Mach–Zehnder",
+      "choice_device": "electro-optic modulator inserting/removing output beam splitter",
+      "choice_timing": "quantum RNG after photon enters interferometer"
+    }
+}

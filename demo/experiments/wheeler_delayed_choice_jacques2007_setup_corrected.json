@@ -1,0 +1,23 @@
+{
+    "id": "wheeler_delayed_choice_jacques2007",
+    "category": "delayed_choice",
+    "observable": "fringe_visibility",
+    "setup": {
+      "particle": "single photons",
+      "interferometer": "Mach–Zehnder",
+      "choice_device": "electro-optic modulator inserting/removing output beam splitter",
+      "choice_timing": "quantum RNG after photon enters interferometer"
+    },
+    "instrument_corrections": {
+      "detection_efficiency": 0.93,
+      "background_noise": 0.008,
+      "systematic_bias": 0.002,
+      "resolution_smearing": 0.008,
+      "calibration_source": "Jacques2007_Science_supplementary",
+      "calibration_uncertainty": {
+        "detection_efficiency_sigma": 0.038,
+        "background_noise_sigma": 0.003,
+        "systematic_bias_sigma": 0.012
+      }
+    }
+} 

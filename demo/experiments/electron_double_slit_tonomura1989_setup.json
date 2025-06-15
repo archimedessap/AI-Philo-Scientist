@@ -1,0 +1,11 @@
+{
+    "id": "electron_double_slit_tonomura1989",
+    "category": "interference",
+    "observable": "fringe_visibility",
+    "setup": {
+      "particle": "electron",
+      "acceleration_voltage_kV": 50,
+      "screen_distance_m": 1.5,
+      "interferometer": "electron biprism (double-slit analog)"
+    }
+}

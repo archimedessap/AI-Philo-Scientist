@@ -1,0 +1,23 @@
+{
+    "id": "electron_double_slit_tonomura1989",
+    "category": "interference",
+    "observable": "fringe_visibility",
+    "setup": {
+      "particle": "electron",
+      "acceleration_voltage_kV": 50,
+      "screen_distance_m": 1.5,
+      "interferometer": "electron biprism (double-slit analog)"
+    },
+    "instrument_corrections": {
+      "detection_efficiency": 0.950,
+      "background_noise": 0.003,
+      "systematic_bias": -0.002,
+      "resolution_smearing": 0.005,
+      "calibration_source": "Tonomura1989_paper_table2",
+      "calibration_uncertainty": {
+        "detection_efficiency_sigma": 0.03,
+        "background_noise_sigma": 0.002,
+        "systematic_bias_sigma": 0.01
+      }
+    }
+} 

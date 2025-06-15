@@ -1,0 +1,11 @@
+{
+    "id": "fullerene_decoherence_hornberger2003",
+    "category": "decoherence",
+    "observable": "fringe_visibility",
+    "setup": {
+      "particle": "C70 fullerene (840 amu)",
+      "interferometer": "Talbot–Lau (grating period 990 nm)",
+      "average_velocity_m_per_s": 100,
+      "environment": "high vacuum; thermal source 900 K"
+    }
+}

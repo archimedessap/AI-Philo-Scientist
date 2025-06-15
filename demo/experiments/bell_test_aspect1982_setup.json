@@ -1,0 +1,12 @@
+{
+    "id": "bell_test_aspect1982",
+    "category": "entanglement",
+    "observable": "CHSH_S_value",
+    "setup": {
+      "particles": "polarization-entangled photon pairs",
+      "source": "Ca-atom cascade emission",
+      "detector_separation_m": 6.5,
+      "polarizer_angles_deg": [0, 22.5, 45, 67.5],
+      "basis_switching": "acousto-optic modulators (random)"
+    }
+} 

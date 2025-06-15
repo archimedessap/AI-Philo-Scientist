@@ -1,0 +1,12 @@
+{
+    "id": "quantum_eraser_kim_et_al2013",
+    "category": "quantum_eraser",
+    "observable": "fringe_visibility",
+    "setup": {
+      "particles": "polarization-entangled photon pairs",
+      "double_slit": "slits tagged by orthogonal polarizations",
+      "eraser_method": "delayed-choice measurement of partner polarization (EOM controlled)",
+      "which_path_information": "present (no eraser) vs erased (interference restored)"
+    }
+   
+}

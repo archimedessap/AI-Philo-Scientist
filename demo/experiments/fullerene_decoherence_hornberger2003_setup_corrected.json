@@ -1,0 +1,23 @@
+{
+    "id": "fullerene_decoherence_hornberger2003",
+    "category": "decoherence",
+    "observable": "fringe_visibility",
+    "setup": {
+      "particle": "C70 fullerene (840 amu)",
+      "interferometer": "Talbot–Lau (grating period 990 nm)",
+      "average_velocity_m_per_s": 100,
+      "environment": "high vacuum; thermal source 900 K"
+    },
+    "instrument_corrections": {
+      "detection_efficiency": 0.455,
+      "background_noise": 0.010,
+      "systematic_bias": -0.005,
+      "resolution_smearing": 0.012,
+      "calibration_source": "Hornberger2003_PRL_supplementary",
+      "calibration_uncertainty": {
+        "detection_efficiency_sigma": 0.035,
+        "background_noise_sigma": 0.004,
+        "systematic_bias_sigma": 0.012
+      }
+    }
+} 
