@@ -50,6 +50,7 @@ temp/
 
 # 数据文件（不包括项目示例数据）
 data/*
+!data/theories_v2.1/
 !data/examples/
 *.csv
 *.xlsx
