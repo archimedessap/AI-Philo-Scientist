@@ -1,0 +1,117 @@
+{
+  "name": "Consistent Histories",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "ch-1984-griffiths",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Copenhagen Interpretation", "Logic"],
+      "generation_prompt_summary": "Developed by Robert Griffiths in 1984, and later extended by Gell-Mann and Hartle, to provide a more logically coherent formulation of quantum mechanics without observers or collapse."
+    },
+    "tags": ["no-collapse", "probabilistic", "logical-framework", "histories", "decoherence"]
+  },
+  "summary": "The Consistent Histories approach reformulates quantum mechanics in terms of 'histories,' which are sequences of properties at different points in time. It provides a formal criterion (the consistency condition) to determine which sets of histories can be assigned classical probabilities. Within a consistent set (or 'framework'), standard logic and probability theory apply. The theory asserts that it is meaningless to combine or compare histories from different, incompatible frameworks. There is no wave function collapse, and the framework chosen for analysis depends on the questions being asked.",
+  
+  "core_principles": [
+    {
+      "principle": "Primacy of Histories",
+      "statement": "The fundamental objects of description are 'histories,' defined as time-ordered sequences of quantum properties (projection operators).",
+      "implication": "Shifts the focus from the state at a single time (the wave function) to the entire history of a system."
+    },
+    {
+      "principle": "Consistency Condition",
+      "statement": "Probabilities can only be assigned to a set of histories if they are 'consistent,' meaning there is negligible interference between different histories in the set.",
+      "implication": "Quantum mechanics is a new kind of probability theory where not all questions can be simultaneously answered or assigned probabilities. This formalizes and replaces the vague notion of 'complementarity'."
+    },
+    {
+      "principle": "Framework Rule",
+      "statement": "All physical reasoning must be conducted within a single, self-consistent framework (a consistent set of histories). It is forbidden to combine results from incompatible frameworks.",
+      "implication": "There is no single, universally true description of reality. Different, equally valid but mutually exclusive descriptions (frameworks) can exist. This is a form of logical perspectivalism."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["The formalism is deliberately ontologically minimalist. It can be applied to different underlying ontologies (e.g., Many-Worlds, or a purely informational view)."],
+      "nature_of_spacetime": "Assumes a standard spacetime background."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer has no fundamental role. A 'measurement' is just one type of physical interaction, and the choice of framework is a choice of which questions to ask about the system, not an act that influences reality.",
+      "nature_of_probability": "Probabilities are fundamental (ontic) properties of consistent histories."
+    },
+    "key_questions": {
+      "determinism": "Fundamentally non-deterministic.",
+      "locality": "Can be formulated in a time-symmetric way that avoids some paradoxes, but non-local correlations are still present within any given framework that describes them.",
+      "realism": "It is realist about the probabilities assigned within a chosen framework, but anti-realist about properties belonging to an incompatible framework. It advocates for a form of 'framework realism'."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "Uses the standard mathematical machinery of SQM but reorganizes it into a logical framework based on histories and projection operators. It aims to make the probabilistic structure of SQM more explicit.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "When a framework corresponding to a classical measurement is chosen, the theory reproduces the Born rule predictions of SQM exactly.",
+      "conditions_for_consistency": "N/A. It's a reformulation."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "A history is a sequence of projection operators P_k at times t_k: Y = (P_1, P_2, ..., P_n)."},
+      {"axiom": "The 'chain operator' for a history Y is C_Y = T[P_n(t_n) ... P_2(t_2)P_1(t_1)], where T is the time-ordering operator."},
+      {"axiom": "A set of histories {Y_a} is consistent if Tr(C_Ya ρ C_Yb^†) ≈ 0 for all a ≠ b, where ρ is the initial density matrix."},
+      {"axiom": "If a set is consistent, the probability of history Y_a is given by P(Y_a) = Tr(C_Ya ρ C_Ya^†)."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "Probabilistic Structure",
+            "sqm": "Probabilities are defined via the Born rule, applied at the moment of measurement.",
+            "this_theory": "Probabilities are defined for entire histories, subject to a consistency condition, without reference to measurement.",
+            "difference_type": "conceptual_reframing"
+        }
+    ],
+    "equations": {
+      "state_evolution": "The standard Heisenberg picture evolution for projection operators is used: P(t) = U(t,t₀)† P(t₀) U(t,t₀).",
+      "additional_dynamics": "N/A",
+      "born_rule_status": "Derived as a special case for histories that include a measurement outcome projection."
+    },
+    "constants_and_parameters": {
+       "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "History (Y)": {
+        "description": "A proposition about the properties of a system at a sequence of times. The primary object of study.",
+        "ontological_status": "mathematical_tool"
+      },
+       "Framework": {
+        "description": "A consistent set of histories that represents a complete, self-contained logical viewpoint of the system. It is a choice of which questions are meaningful.",
+        "ontological_status": "mathematical_tool"
+      }
+    },
+    "operators_and_functions": {
+       "C_Y": {
+        "description": "The Class Operator or Chain Operator, which represents a specific history Y.",
+        "maps_from": "Initial Density Matrix",
+        "maps_to": "Final Density Matrix"
+      }
+    }
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "A framework describing 'which-path' information is inconsistent with a framework describing the interference pattern. One can use the 'which-path' framework to say the particle went through one slit, or the 'interference' framework to say it went through both, but it is forbidden to mix these statements. Both frameworks are valid but mutually exclusive ways of describing the physics.",
+      "epr_paradox": "A framework can be constructed to show the perfect correlations between Alice's and Bob's measurement outcomes. The non-locality is a feature of the logical framework itself, reflecting the properties of the initial entangled state."
+    }
+  }
+} 

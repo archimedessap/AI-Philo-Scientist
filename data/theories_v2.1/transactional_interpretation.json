@@ -1,0 +1,114 @@
+{
+  "name": "Transactional Interpretation (TI)",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "ti-1986-cramer",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Wheeler-Feynman Absorber Theory", "Copenhagen Interpretation"],
+      "generation_prompt_summary": "Proposed by John G. Cramer in 1986, TI describes quantum interactions as a 'handshake' process occurring across spacetime, involving retarded (forward-in-time) and advanced (backward-in-time) waves."
+    },
+    "tags": ["time-symmetry", "retrocausality", "no-collapse", "realism", "wave-realism"]
+  },
+  "summary": "The Transactional Interpretation views a quantum event as the result of a 'transaction' between an emitter and an absorber. The emitter sends out a retarded 'offer wave' (the standard wave function Ψ) forward in time. Potential absorbers respond with an advanced 'confirmation wave' (the complex conjugate Ψ*) backward in time. A transaction is completed, leading to the exchange of energy and momentum, only when the offer and confirmation waves create a 'handshake' that satisfies the boundary conditions. This process happens outside of normal time, in a 'pseudo-time'.",
+  
+  "core_principles": [
+    {
+      "principle": "Offer and Confirmation Waves",
+      "statement": "Any quantum emission involves both a retarded wave (Ψ) moving forward in time and an advanced wave (Ψ*) moving backward in time.",
+      "implication": "The standard wave function is only half the story. Its complex conjugate has an equal physical reality, propagating into the past."
+    },
+    {
+      "principle": "The Transaction",
+      "statement": "A quantum event (e.g., photon absorption) is finalized through a 'handshake' between the offer wave from the emitter and the confirmation wave from the absorber.",
+      "implication": "This explains the Born rule: the strength of the confirmation wave from an absorber is proportional to the amplitude of the offer wave at that absorber, so the probability of a transaction completing is |Ψ*Ψ| = |Ψ|²."
+    },
+    {
+      "principle": "Acausal Handshake",
+      "statement": "The formation of a transaction is a global, atemporal process that stands outside of the usual temporal sequence of events.",
+      "implication": "It resolves non-locality paradoxes by making the entire interaction, including its future boundary conditions (the absorbers), a single, indivisible event."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["The quantum fields, which can produce both retarded and advanced waves. The transaction itself is the real physical event."],
+      "nature_of_spacetime": "Assumes a standard spacetime, but allows for physical influences to propagate both forward and backward in time."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer's measurement apparatus is simply one possible 'absorber'. The observer does not cause collapse, but their presence provides a boundary condition that enables a transaction to complete.",
+      "nature_of_probability": "Objective. The probability of a transaction is determined by the wave amplitudes, reflecting the 'strength' of the potential handshake."
+    },
+    "key_questions": {
+      "determinism": "Non-deterministic, as there may be multiple potential absorbers, and the transaction probabilistically 'chooses' one.",
+      "locality": "Non-local, but explains it via a direct, albeit atemporal, connection between emitter and absorber through the transaction.",
+      "realism": "Realist about both the waves and the transaction process. The waves are real physical fields."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "TI uses the standard wave mechanics of SQM but provides a physical story for the mathematical formalism, particularly for the Born rule |Ψ|². It gives a real, physical meaning to the advanced solutions of relativistic wave equations, which are usually discarded.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "It is constructed to reproduce all the predictions of SQM exactly.",
+      "conditions_for_consistency": "N/A."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "An emitter produces a retarded offer wave Ψ."},
+      {"axiom": "A potential absorber responds with an advanced confirmation wave Ψ*."},
+      {"axiom": "A transaction occurs with probability proportional to |Ψ*Ψ|, transferring energy and momentum."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "Born Rule",
+            "sqm": "Postulated as P = |Ψ|².",
+            "this_theory": "Explained as the result of a 'handshake' between an offer wave (Ψ) and a confirmation wave (Ψ*), making the probability proportional to the echo strength |Ψ*Ψ|.",
+            "difference_type": "conceptual_reframing"
+        }
+    ],
+    "equations": {
+      "state_evolution": "The offer wave Ψ obeys the standard Schrödinger equation (or a relativistic equivalent like the Klein-Gordon equation).",
+      "additional_dynamics": "The confirmation wave Ψ* obeys the complex conjugate (time-reversed) version of the wave equation.",
+      "born_rule_status": "Derived from the handshake mechanism."
+    },
+    "constants_and_parameters": {
+       "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "Offer Wave (Ψ)": {
+        "description": "A retarded wave propagating from the emitter forward in time.",
+        "ontological_status": "real_field"
+      },
+      "Confirmation Wave (Ψ*)": {
+        "description": "An advanced wave propagating from an absorber backward in time.",
+        "ontological_status": "real_field"
+      },
+      "Transaction": {
+        "description": "The completed handshake event, resulting in energy/momentum exchange.",
+        "ontological_status": "primary_beable"
+      }
+    },
+    "operators_and_functions": {}
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "The emitter sends an offer wave through both slits. The screen acts as a collection of potential absorbers. A transaction is formed between the emitter and one specific point on the screen. The probability distribution of these transactions forms the interference pattern, as the offer wave's amplitude is high in the bright fringes.",
+      "epr_paradox": "The emitter of the entangled pair sends out offer waves. Alice and Bob are potential absorbers. A transaction forms across spacetime, linking the emitter, Alice, and Bob in a single event, which establishes the correlated outcomes without needing a superluminal signal."
+    }
+  }
+} 

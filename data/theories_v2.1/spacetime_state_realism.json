@@ -1,0 +1,116 @@
+{
+  "name": "Spacetime State Realism (SSR)",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "ssr-2013-wallace-timpson",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Many-Worlds Interpretation", "Special Relativity"],
+      "generation_prompt_summary": "Developed by David Wallace and Christopher Timpson as a way to ground the ontology of the Many-Worlds Interpretation in a more familiar 4D spacetime picture, avoiding the abstractness of configuration space."
+    },
+    "tags": ["realism", "no-collapse", "many-worlds-variant", "spacetime-ontology", "field-ontology"]
+  },
+  "summary": "Spacetime State Realism is a modern development of the Many-Worlds Interpretation. It posits that the fundamental ontology of the world is a field defined on the four-dimensional spacetime manifold. This field, often called the 'mass-energy density' or similar, is what is 'real'. The quantum state is a mathematical object that describes the properties and dynamics of this spacetime-based ontology. The 'branching' of worlds is interpreted as the decoherence of this field into a complex pattern of quasi-classical, branching structures within spacetime.",
+  
+  "core_principles": [
+    {
+      "principle": "Spacetime Ontology",
+      "statement": "The fundamental 'stuff' of the world exists in 4D spacetime, not in an abstract high-dimensional configuration space.",
+      "implication": "This makes the theory's ontology more compatible with other areas of physics like General Relativity and Quantum Field Theory, and more intuitive."
+    },
+    {
+      "principle": "Quantum State as Descriptive",
+      "statement": "The quantum state is a tool that describes the behavior of the real stuff in spacetime. The state itself is not the fundamental ontology.",
+      "implication": "This reverses the standard MWI view. Instead of the wave function being primary and worlds emerging from it, the spacetime fields are primary and the wave function describes them."
+    },
+    {
+      "principle": "Emergent Branching",
+      "statement": "The branching structure of MWI is an emergent, large-scale feature of the dynamics of the spacetime fields, made stable by decoherence.",
+      "implication": "There is no literal 'splitting' of universes, but rather a continuous process where a complex field pattern evolves into distinct, non-interacting braids or branches."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["A scalar or tensor field defined at every point in spacetime, representing local properties like mass/energy density."],
+      "nature_of_spacetime": "Spacetime is the fundamental arena in which the ontology resides."
+    },
+    "epistemology": {
+      "role_of_observer": "An observer is a complex, persistent pattern within the spacetime fields. Their experiences are determined by the local state of the fields that constitute their brain and body.",
+      "nature_of_probability": "Similar to MWI, probabilities are subjective and relate to an observer's self-location within the branching structure of the spacetime fields."
+    },
+    "key_questions": {
+      "determinism": "Fully deterministic, as the underlying fields evolve according to a deterministic law.",
+      "locality": "The dynamics are local. Apparent non-locality is explained by correlations within the branching structure of the fields across spacetime.",
+      "realism": "Strongly realist about the state of fields in spacetime."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "SSR is a specific ontological proposal for the Many-Worlds Interpretation. It uses the exact same mathematics but provides a different answer to the question 'What is the wave function about?'.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "As a version of MWI, it is designed to reproduce all predictions of SQM perfectly within any given branch.",
+      "conditions_for_consistency": "N/A."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "The fundamental ontology is a set of fields Φ(x) on a 4D spacetime manifold M."},
+      {"axiom": "The dynamics of Φ(x) are determined by a quantum state |Ψ⟩ via a 'bridging' law, e.g., ⟨Ψ|$\\hat{Φ}$(x)|Ψ⟩ = Φ(x)."},
+      {"axiom": "The quantum state |Ψ⟩ always evolves unitarily according to the Schrödinger equation."},
+      {"axiom": "Branching is an emergent phenomenon of the dynamics of Φ(x) under the influence of decoherence."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "State Description",
+            "sqm": "State is fully described by the wave function Ψ in configuration space.",
+            "this_theory": "The wave function Ψ describes the dynamics of a more fundamental field Φ(x) in spacetime.",
+            "difference_type": "ontological_shift"
+        },
+        {
+            "aspect": "Dynamics",
+            "sqm": "Dualistic evolution: unitary and collapse.",
+            "this_theory": "Strictly unitary evolution for Ψ. Collapse is an illusion created by the branching of the spacetime field Φ(x).",
+            "difference_type": "removes_collapse"
+        }
+    ],
+    "equations": {
+      "state_evolution": "iħ(d/dt)|Ψ(t)⟩ = H|Ψ(t)⟩",
+      "additional_dynamics": "⟨Ψ|$\\hat{Φ}$(x)|Ψ⟩ = Φ(x)",
+      "born_rule_status": "Derived. The squared amplitude of a branch of Ψ corresponds to the 'measure of existence' or intensity of the corresponding branch of the spacetime field."
+    },
+    "constants_and_parameters": {}
+  },
+
+  "semantics": {
+    "entities": {
+      "Φ(x)": {
+        "description": "The fundamental field ontology defined on spacetime. This is what is 'real'.",
+        "ontological_status": "physical_field"
+      },
+      "|Ψ⟩": {
+        "description": "The quantum state. It is a nomological entity, a law or tool that governs the behavior of Φ(x).",
+        "ontological_status": "nomological (law-like)"
+      }
+    },
+    "operators_and_functions": {
+      "$\\hat{Φ}$(x)": {
+        "description": "The quantum operator corresponding to the spacetime field. Its expectation value gives the value of the physical field.",
+        "maps_from": "Hilbert Space",
+        "maps_to": "A value in the field at spacetime point x"
+      }
+    }
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "SSR aims to reproduce all standard predictions by showing that within any given branch of the spacetime field, the results will be consistent with the Born rule as applied to the governing wave function.",
+      "cosmology": "SSR is often argued to be more compatible with general relativity, providing a more natural framework for quantum cosmology where one can talk about the state of fields in the early universe spacetime."
+    }
+  }
+} 

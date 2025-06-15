@@ -1,0 +1,135 @@
+{
+  "name": "de Broglie-Bohm Theory",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "dbb-1927-1952",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Classical Mechanics", "Copenhagen Interpretation"],
+      "generation_prompt_summary": "Originally proposed by de Broglie in the 1920s and rediscovered and extended by David Bohm in 1952 as a deterministic, hidden-variables alternative to the Copenhagen interpretation."
+    },
+    "tags": ["realism", "no-collapse", "deterministic", "hidden-variables", "pilot-wave", "non-local"]
+  },
+  "summary": "De Broglie-Bohm theory, or pilot-wave theory, is a deterministic interpretation of quantum mechanics. It posits that in addition to the wave function, every particle has a definite, real position at all times. The wave function, evolving according to the Schrödinger equation, acts as a 'pilot wave' that guides the motion of the particles via a guidance equation. There is no wave function collapse; all measurement outcomes are predetermined by the initial positions of the particles and the wave function.",
+  
+  "core_principles": [
+    {
+      "principle": "Ontological Duality",
+      "statement": "The complete state of a system is described by two fundamental entities: the wave function Ψ and the actual configuration of particles Q.",
+      "implication": "The wave function is not a complete description of reality. Particles are real and have positions, even when not observed."
+    },
+    {
+      "principle": "Deterministic Guidance",
+      "statement": "The particles' motion is deterministically governed by a guidance equation, where their velocity is derived from the phase of the wave function.",
+      "implication": "Quantum probabilities are not fundamental but arise from our ignorance of the precise initial positions of the particles (epistemic probability)."
+    },
+    {
+      "principle": "Unbroken Unitary Evolution",
+      "statement": "The wave function always evolves smoothly and deterministically according to the Schrödinger equation. There is no measurement-induced collapse.",
+      "implication": "The 'measurement problem' is solved by asserting that measurements simply reveal the pre-existing positions of particles in the measurement apparatus."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["The wave function Ψ, which is a real physical field in configuration space.", "A configuration of point particles Q, which always have definite positions."],
+      "nature_of_spacetime": "Assumes a classical, pre-existing spacetime background."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer is a complex physical system like any other. Measurement is an interaction that reveals the pre-existing position of the system's particles, with the outcome being deterministic.",
+      "nature_of_probability": "Probabilities are epistemic, reflecting our inability to know or prepare the exact initial positions of the particles. Given a distribution of initial positions that matches |Ψ(Q, t₀)|² (the 'quantum equilibrium hypothesis'), the theory reproduces the Born rule predictions for all subsequent times."
+    },
+    "key_questions": {
+      "determinism": "Fully deterministic. The future state of the particles and wave function is uniquely determined by their initial state.",
+      "locality": "Explicitly non-local. The velocity of any given particle depends on the instantaneous positions of all other particles via the wave function, which lives in the multi-particle configuration space.",
+      "realism": "Strongly realist about both the wave function and the particles."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "extension",
+    "summary": "This theory extends the mathematics of SQM by adding a new dynamical law (the guidance equation) for a new ontological entity (the particle configuration Q).",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "Its statistical predictions are identical to SQM's, provided that the initial distribution of particle positions satisfies the 'quantum equilibrium hypothesis' (ρ = |Ψ|²).",
+      "conditions_for_consistency": "The quantum equilibrium hypothesis must be assumed. If systems in 'quantum non-equilibrium' exist, their statistical predictions would differ from SQM."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "The state of a system is described by the pair (Ψ(q,t), Q(t)), where Ψ is the wave function and Q are the particle positions."},
+      {"axiom": "Ψ evolves according to the Schrödinger equation: iħ(∂Ψ/∂t) = HΨ."},
+      {"axiom": "The particle positions Q evolve according to the guidance equation: dQ_k/dt = (ħ/m_k) * Im(∇_kΨ / Ψ)."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "State Description",
+            "sqm": "State is fully described by Ψ.",
+            "this_theory": "State is described by the pair (Ψ, Q).",
+            "difference_type": "ontological_addition"
+        },
+        {
+            "aspect": "Dynamics",
+            "sqm": "Dualistic evolution: unitary + collapse.",
+            "this_theory": "Unitary evolution for Ψ, plus a new deterministic guidance equation for Q. No collapse.",
+            "difference_type": "dynamical_addition"
+        }
+    ],
+    "equations": {
+      "state_evolution": "iħ(∂Ψ/∂t) = HΨ",
+      "additional_dynamics": "v_k = dQ_k/dt = (ħ/m_k) * Im( (∇_k Ψ(q,t)) / Ψ(q,t) ) |_{q=Q(t)}",
+      "born_rule_status": "Derived. It is shown that if the initial particle distribution ρ(Q,t₀) equals |Ψ(Q,t₀)|², then ρ(Q,t) = |Ψ(Q,t)|² for all later times t."
+    },
+    "constants_and_parameters": {
+       "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "Ψ": {
+        "description": "The 'pilot wave' or guiding wave. A real physical field in configuration space that determines particle velocities.",
+        "ontological_status": "real_field"
+      },
+       "Q(t)": {
+        "description": "The configuration of all particles in the system, which have definite positions at all times.",
+        "ontological_status": "primary_beable"
+      }
+    },
+    "operators_and_functions": {
+       "v_k": {
+        "description": "The velocity of the k-th particle. It is determined by the phase of the wave function at the particle's actual position.",
+        "maps_from": "(Ψ, Q)",
+        "maps_to": "Velocity Vector"
+      }
+    }
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [
+      {
+        "phenomenon": "Existence of 'Quantum Non-Equilibrium'",
+        "derivation_from_formalism": "The theory allows for the logical possibility of initial particle distributions ρ(Q) ≠ |Ψ(Q)|². Such systems would produce statistical outcomes different from the Born rule.",
+        "experimental_signature": "Finding or creating a system where measurement statistics violate the Born rule predictions. For example, detecting particles in a region where Ψ is zero, or not finding them where Ψ is non-zero.",
+        "feasibility": "Speculative. It is argued that interactions cause any non-equilibrium distribution to rapidly relax to equilibrium, making it extremely hard to detect."
+      },
+      {
+        "phenomenon": "Unique Particle Trajectories",
+        "derivation_from_formalism": "The guidance equation defines a unique, deterministic trajectory for each particle given its initial position.",
+        "experimental_signature": "Weak measurement techniques that could, in principle, track the path of a particle through an interferometer without collapsing the wave function. The measured trajectories should match those predicted by the theory.",
+        "feasibility": "Technologically_challenging. The act of measuring a trajectory typically constitutes a strong measurement that would alter the pilot wave and thus the trajectory itself."
+      }
+    ],
+    "crucial_experiments": {
+      "double_slit": "The wave function passes through both slits and creates a complex interference landscape. The particle itself has a definite trajectory that passes through only one slit, but its path is bent by the complex structure of the pilot wave, guiding it to land in the bright fringes and avoid the dark fringes.",
+      "epr_paradox": "The non-local correlation is explicitly explained by the non-local guidance equation. When Alice measures her particle, she learns its position. This act does not change Bob's particle or the wave function, but because the velocity of Bob's particle depends on the instantaneous configuration of the *entire system* (including Alice's particle), their outcomes are correlated in a non-local way."
+    }
+  }
+} 

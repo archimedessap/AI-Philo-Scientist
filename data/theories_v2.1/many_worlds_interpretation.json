@@ -1,0 +1,122 @@
+{
+  "name": "Many-Worlds Interpretation",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "mwi-1957-everett",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Copenhagen Interpretation"],
+      "generation_prompt_summary": "Formulated by Hugh Everett III in 1957 as a reaction to the measurement problem and collapse postulate of the Copenhagen Interpretation."
+    },
+    "tags": ["realism", "no-collapse", "deterministic", "universal-wave-function", "many-worlds"]
+  },
+  "summary": "The Many-Worlds Interpretation (MWI) posits that the universal wave function is objectively real and there is no wave function collapse. Instead, every quantum measurement leads to a splitting of the universe into a multitude of parallel universes, one for each possible outcome of the measurement. All possible outcomes of a quantum measurement are realized, but in different, non-communicating 'worlds' or branches of the universal wave function.",
+  
+  "core_principles": [
+    {
+      "principle": "Universal Wave Function Realism",
+      "statement": "The entire universe is described by a single, all-encompassing wave function Ψ_U which is objectively real.",
+      "implication": "The wave function is not just a tool for calculation; it *is* the fundamental reality."
+    },
+    {
+      "principle": "Unitary Evolution Only",
+      "statement": "The universal wave function evolves deterministically at all times according to the Schrödinger equation. There is no separate, non-unitary collapse process.",
+      "implication": "Eliminates the measurement problem and the need for a 'Heisenberg cut' between the quantum and classical realms. Measurement is just another quantum interaction."
+    },
+    {
+      "principle": "Branching Worlds",
+      "statement": "During an interaction that constitutes a measurement, the wave function decoheres into stable, non-interacting branches, each representing a consistent, classical-like world with a definite measurement outcome.",
+      "implication": "The universe is constantly splitting. All possible outcomes occur, but observers in any given branch only experience one specific outcome."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["The universal wave function, which constitutes the entirety of existence."],
+      "nature_of_spacetime": "Spacetime itself is part of the quantum state and branches along with the contents of the universe. The multiverse exists in a vast Hilbert space, not in parallel physical spacetimes."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer is a complex quantum system, fully described by the wave function. The observer's state becomes entangled with the measured system, leading to the observer's consciousness also branching.",
+      "nature_of_probability": "Probability is interpreted as the subjective uncertainty of an observer about which branch they will find themselves in post-measurement. The Born rule probabilities are proposed to arise from self-locating uncertainty or counting measures over branches, though this is a point of contention (the 'preferred basis problem')."
+    },
+    "key_questions": {
+      "determinism": "Fully deterministic at the level of the universal wave function's evolution.",
+      "locality": "Local, as the Schrödinger equation is a local differential equation. Apparent non-locality (EPR) is explained by pre-existing correlations that are revealed across different branches.",
+      "realism": "Strongly realist. The wave function is real, and all its components (branches) are equally real."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "MWI claims to be SQM taken literally, without the ad-hoc collapse postulate. It uses the same mathematical machinery but provides a different ontological story.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "MWI's predictions for any single observer are identical to SQM's, as the Born rule probabilities are recovered for the subjective experience within a branch. Decoherence explains the emergence of a classical-like world.",
+      "conditions_for_consistency": "Requires a successful derivation of the Born rule from within the theory, which is an active area of research."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "The state of the universe is completely described by a state vector |Ψ_U⟩ in a Hilbert space."},
+      {"axiom": "Observables are represented by Hermitian operators acting on the Hilbert space."},
+      {"axiom": "The time evolution of the entire universe is governed by the Schrödinger equation: iħ(d/dt)|Ψ_U⟩ = H|Ψ_U⟩, and this is the *only* law of evolution."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "State Description",
+            "sqm": "State is fully described by the wave function Ψ.",
+            "this_theory": "The entire universe's state is described by a single wave function Ψ_U.",
+            "difference_type": "ontological_extension"
+        },
+        {
+            "aspect": "Dynamics",
+            "sqm": "Dualistic evolution: unitary + collapse.",
+            "this_theory": "Purely unitary evolution. The collapse postulate is rejected.",
+            "difference_type": "process_removal"
+        }
+    ],
+    "equations": {
+      "state_evolution": "iħ(d/dt)|Ψ_U(t)⟩ = H|Ψ_U(t)⟩",
+      "additional_dynamics": "N/A",
+      "born_rule_status": "Derived (or attempted to be derived). Decoherence leads to branching, and the probability of being in a branch with outcome a_n is argued to be proportional to the squared magnitude of that branch's amplitude, |c_n|²."
+    },
+    "constants_and_parameters": {
+       "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "|Ψ_U⟩": {
+        "description": "The universal wave function, or 'multiverse' state vector. A real, physical field that contains all branches (worlds).",
+        "ontological_status": "primary_beable"
+      },
+      "Branch": {
+        "description": "A component of the universal wave function that is dynamically isolated due to decoherence and corresponds to a consistent, classical-like world.",
+        "ontological_status": "emergent_property"
+      }
+    },
+    "operators_and_functions": {
+      "H": {
+        "description": "The Hamiltonian of the entire universe.",
+        "maps_from": "Universal Hilbert Space",
+        "maps_to": "Universal Hilbert Space"
+      }
+    }
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "The wave function passes through both slits. The particle, as part of the wave function, also goes through both. Upon interaction with a detector, the universe branches. In one branch, the particle was detected at the left slit; in another, at the right slit. All branches exist.",
+      "epr_paradox": "The initial state of the entangled pair is a superposition. When Alice measures her particle, the universe branches. In the 'spin-up' branch for Alice, Bob's particle is now and always has been 'spin-down' within that branch. The correlation is baked into the structure of the universal wave function across branches."
+    }
+  }
+} 

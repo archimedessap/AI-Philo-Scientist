@@ -1,0 +1,120 @@
+{
+  "name": "Copenhagen Interpretation",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "copenhagen-1927-std",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Classical Mechanics", "Early Quantum Theory"],
+      "generation_prompt_summary": "Standard historical formulation by Bohr, Heisenberg, and Born in the 1920s."
+    },
+    "tags": ["instrumentalism", "wave-function-collapse", "complementarity", "probabilistic", "orthodox"]
+  },
+  "summary": "The Copenhagen interpretation is the orthodox view of quantum mechanics, asserting that quantum systems are described by a wave function which provides probabilities for measurement outcomes. The act of measurement causes an instantaneous, non-deterministic 'collapse' of the wave function, and properties like position or momentum do not have definite values until measured. It emphasizes the principle of complementarity and the essential role of the classical measurement apparatus.",
+  
+  "core_principles": [
+    {
+      "principle": "Wave Function Completeness",
+      "statement": "The wave function Ψ provides a complete probabilistic description of a quantum system.",
+      "implication": "Rejects the existence of 'hidden variables' or a deeper, deterministic reality."
+    },
+    {
+      "principle": "Wave Function Collapse",
+      "statement": "Upon measurement by a classical apparatus, the wave function undergoes an instantaneous, non-unitary, and probabilistic collapse to an eigenstate corresponding to the measured value.",
+      "implication": "Introduces a fundamental division between quantum evolution (Schrödinger equation) and measurement evolution (collapse)."
+    },
+    {
+      "principle": "Complementarity",
+      "statement": "Certain pairs of properties (e.g., position and momentum) are complementary and cannot be simultaneously known or have definite values. The experimental context determines which property can be observed.",
+      "implication": "A single, classical picture of reality is impossible. Both wave-like and particle-like aspects are necessary for a full description, but they are mutually exclusive in any single experiment."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["The wave function Ψ, representing a state of potentiality or information.", "Classical measurement apparatuses, which are not described by quantum mechanics."],
+      "nature_of_spacetime": "Assumes a classical, pre-existing spacetime background (Newtonian or Relativistic) in which quantum phenomena occur."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer (via their measurement apparatus) plays an active role in resolving quantum indefiniteness into classical certainty. The 'Heisenberg cut' separates the quantum system from the classical observer.",
+      "nature_of_probability": "Probability is fundamental and irreducible (ontic). It reflects the intrinsic indeterminism of the measurement process, not just observer ignorance."
+    },
+    "key_questions": {
+      "determinism": "Fundamentally non-deterministic due to the probabilistic nature of wave function collapse.",
+      "locality": "Considered local in its original formulation, but the instantaneous collapse of the wave function implies a form of non-locality, which was later highlighted by the EPR paradox.",
+      "realism": "Anti-realist about the properties of a quantum system before measurement. It is meaningless to ask about the position of a particle until it is measured."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "This is the 'standard' interpretation, so its mathematics *are* the mathematics of Standard Quantum Mechanics. It provides the philosophical framework for the standard textbook formulation.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "It *is* SQM. Its predictions are the baseline against which other interpretations are compared.",
+      "conditions_for_consistency": "N/A"
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "The state of a system is completely described by a state vector |Ψ⟩ in a Hilbert space."},
+      {"axiom": "Observables are represented by Hermitian operators acting on the Hilbert space."},
+      {"axiom": "The time evolution of a closed system is governed by the Schrödinger equation: iħ(d/dt)|Ψ⟩ = H|Ψ⟩."},
+      {"axiom": "The measurement of an observable A will yield one of the eigenvalues of A. The probability of obtaining eigenvalue a_n is given by |⟨φ_n|Ψ⟩|², where |φ_n⟩ is the corresponding eigenvector (Born Rule)."},
+      {"axiom": "Immediately after the measurement yields result a_n, the state of the system collapses to the corresponding eigenstate |φ_n⟩ (Collapse Postulate)."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "State Description",
+            "sqm": "State is fully described by the wave function Ψ.",
+            "this_theory": "State is fully described by the wave function Ψ.",
+            "difference_type": "no_difference"
+        },
+        {
+            "aspect": "Dynamics",
+            "sqm": "Dualistic evolution: unitary evolution via Schrödinger equation, and non-unitary collapse during measurement.",
+            "this_theory": "Accepts and postulates this dualism as fundamental.",
+            "difference_type": "no_difference"
+        }
+    ],
+    "equations": {
+      "state_evolution": "iħ(d/dt)|Ψ(t)⟩ = H|Ψ(t)⟩",
+      "additional_dynamics": "N/A",
+      "born_rule_status": "Postulated. P(a_n) = |⟨φ_n|Ψ⟩|²"
+    },
+    "constants_and_parameters": {
+      "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "|Ψ⟩": {
+        "description": "The state vector or wave function. It is a complete description of the system's potential properties.",
+        "ontological_status": "mathematical_tool (represents knowledge or potentiality, not a physical field)"
+      }
+    },
+    "operators_and_functions": {
+      "H": {
+        "description": "The Hamiltonian operator, representing the total energy of the system.",
+        "maps_from": "Hilbert Space",
+        "maps_to": "Hilbert Space"
+      }
+    }
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "The wave function passes through both slits, creating an interference pattern. When a 'which-path' measurement is made, the wave function collapses, and the interference pattern is destroyed, demonstrating complementarity.",
+      "epr_paradox": "The non-local correlations are accepted as a feature of quantum mechanics, but a detailed explanation is often avoided by emphasizing that no information can be sent faster than light. The correlation is revealed upon measurement."
+    }
+  }
+} 

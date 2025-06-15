@@ -1,0 +1,110 @@
+{
+  "name": "Modal Interpretations",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "modal-1972-vanfraassen",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Copenhagen Interpretation", "Bohr-Heisenberg Philosophy"],
+      "generation_prompt_summary": "A family of interpretations originating with Bas van Fraassen in 1972, with significant versions developed by Kochen, Dieks, and others. They aim to specify which properties of a quantum system are definite or 'actual' at any given time, without invoking collapse."
+    },
+    "tags": ["no-collapse", "property-realism", "perspectival-properties", "superposition"]
+  },
+  "summary": "Modal interpretations propose a distinction between a system's 'dynamical state' (the wave function Ψ), which describes its possible properties, and its 'value state', which describes its actual, definite properties. The wave function always evolves unitarily according to the Schrödinger equation, so there is no collapse. At any given time, a system possesses a set of definite properties, determined by a 'property-ascription rule' based on the instantaneous state of the wave function (e.g., its spectral decomposition). This provides a form of realism without contradicting the Kochen-Specker theorem, which forbids assigning definite values to all properties simultaneously.",
+  
+  "core_principles": [
+    {
+      "principle": "Dual State Description",
+      "statement": "A system is described by two states: the dynamical state (Ψ), which evolves unitarily and determines what *can* be, and the value state, which specifies what properties the system *actually has* at a given moment.",
+      "implication": "The wave function is not a complete description of what is actual, only what is possible."
+    },
+    {
+      "principle": "No Collapse Dynamics",
+      "statement": "The dynamical state Ψ always evolves according to the Schrödinger equation. The 'measurement problem' is dissolved because measurements simply reveal the pre-existing, actual properties of the system.",
+      "implication": "This avoids the conceptual difficulties of the collapse postulate."
+    },
+    {
+      "principle": "Property Ascription Rule",
+      "statement": "There is a specific rule, based on the mathematical form of the wave function (e.g., the Schmidt decomposition for bipartite systems), that selects which observables have definite values.",
+      "implication": "Realism is selective. Only a subset of a system's properties are definite at any time, in a way that is compatible with the quantum formalism."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["The wave function Ψ (dynamical state) and the actual properties (value state). Different versions of the theory assign different ontological weight to each."],
+      "nature_of_spacetime": "Assumes a standard classical spacetime."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer has no special role. A measurement is an interaction that allows us to learn about the pre-existing value state of a system.",
+      "nature_of_probability": "Probabilities relate to the possible outcomes of a measurement, given the dynamical state, and which properties might become actual in the future."
+    },
+    "key_questions": {
+      "determinism": "Generally non-deterministic regarding the evolution of the value state.",
+      "locality": "This is a major challenge. Most modal interpretations are explicitly non-local to account for EPR-type correlations.",
+      "realism": "It is a realist interpretation, but only for a specific, preferred set of properties. It denies that all observables have definite values at all times."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "Modal interpretations use the standard SQM formalism but supplement it with a rule to map the quantum state to a set of definite classical properties. They provide a 'hidden variable' theory for properties, not particles.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "By design, the statistical predictions of the possessed properties match the Born rule predictions of SQM.",
+      "conditions_for_consistency": "The property-ascription rule must be chosen carefully to ensure consistency with SQM's predictions in all measurement contexts."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "A system is described by a pair (|Ψ⟩, M), where |Ψ⟩ is the state vector and M is the set of definite-valued observables."},
+      {"axiom": "|Ψ⟩ evolves according to the Schrödinger equation."},
+      {"axiom": "The set M is determined at each instant by |Ψ⟩ via a specific mapping rule (e.g., based on the spectral or Schmidt decomposition of the state)." }
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "Real Properties",
+            "sqm": "Properties are generally indefinite until measured.",
+            "this_theory": "A subset of properties is definite and real at all times, independent of measurement.",
+            "difference_type": "ontological_addition"
+        }
+    ],
+    "equations": {
+      "state_evolution": "iħ(d/dt)|Ψ(t)⟩ = H|Ψ(t)⟩",
+      "additional_dynamics": "No new dynamics, but adds a 'property ascription rule', e.g., for a system S in state |Ψ⟩, the definite properties are those corresponding to projectors onto the subspaces in the spectral decomposition of the density matrix of S, Tr_E(|Ψ⟩⟨Ψ|).",
+      "born_rule_status": "Postulated or derived, depending on the version. It gives the probability that a certain property will be actualized."
+    },
+    "constants_and_parameters": {
+       "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "Dynamical State (|Ψ⟩)": {
+        "description": "Represents the possibilities of the system; the 'propensities' for certain properties to become actual.",
+        "ontological_status": "real_field"
+      },
+      "Value State": {
+        "description": "The set of properties that are actually definite for the system at a given time.",
+        "ontological_status": "primary_beable"
+      }
+    },
+    "operators_and_functions": {}
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "The wave function passes through both slits. The property-ascription rule determines which properties are definite. If the setup allows for path detection, the 'position' property becomes definite. If not, properties related to interference become definite.",
+      "epr_paradox": "The non-local correlation is encoded in the property-ascription rule, which depends on the total state of the entangled pair. When Alice performs a measurement, the set of definite properties for Bob's system can change instantaneously, reflecting the correlation."
+    }
+  }
+} 

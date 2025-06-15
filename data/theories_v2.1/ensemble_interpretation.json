@@ -1,0 +1,115 @@
+{
+  "name": "Ensemble Interpretation",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "ensemble-1950s-einstein",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Statistical Mechanics", "Copenhagen Interpretation"],
+      "generation_prompt_summary": "Championed by Albert Einstein and formally developed by Leslie Ballentine, the Ensemble Interpretation posits that the wave function does not describe a single system, but only the statistical properties of an ensemble of similarly prepared systems."
+    },
+    "tags": ["statistical", "anti-realism", "no-collapse", "hidden-variables-friendly"]
+  },
+  "summary": "The Ensemble Interpretation, or Statistical Interpretation, asserts that the wave function Ψ does not apply to an individual quantum system but only to an 'ensemble' of many similarly prepared systems. The probabilistic predictions of quantum mechanics are therefore interpreted as standard statistical frequencies within this ensemble. This view resolves many paradoxes by denying that a single particle has a wave function, thus there is no collapse for a single system and no concept of a particle being in a superposition.",
+  
+  "core_principles": [
+    {
+      "principle": "Ensemble-Only Description",
+      "statement": "The quantum state (wave function) is a mathematical description of a conceptual ensemble of identically prepared systems, not a description of a single system.",
+      "implication": "A single particle does not have a wave function. It is meaningless to ask about the state of a single particle beyond its actual, possessed properties."
+    },
+    {
+      "principle": "Statistical Probabilities",
+      "statement": "Quantum probabilities are standard statistical probabilities, representing the frequency of obtaining a certain measurement result over the ensemble.",
+      "implication": "This removes the 'special' status of quantum probability. The Born rule is simply a statement about statistical distributions."
+    },
+    {
+      "principle": "Realism about Particles",
+      "statement": "Individual particles are real and always possess definite (though perhaps unknown) properties. Quantum mechanics is simply incomplete as a description of a single system.",
+      "implication": "The theory is inherently compatible with the idea of 'hidden variables' that would, if known, provide a complete, deterministic description of the individual system."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["Individual physical systems (e.g., particles) which possess definite properties at all times.", "The experimental preparation device, which defines the ensemble."],
+      "nature_of_spacetime": "Assumes a standard classical spacetime."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer's role is to perform measurements on members of the ensemble to verify the statistical predictions of the theory.",
+      "nature_of_probability": "Epistemic. Probabilities reflect the statistical distribution of pre-existing properties within the prepared ensemble."
+    },
+    "key_questions": {
+      "determinism": "The theory is agnostic about the determinism of the underlying reality of single systems. It is compatible with, and often implicitly assumes, an underlying deterministic hidden-variable theory.",
+      "locality": "Can be local, if the underlying hidden variable theory is local (which was later shown by Bell's theorem to be incompatible with quantum predictions). Thus, a consistent version must be non-local.",
+      "realism": "Realist about the properties of individual systems, but anti-realist about the wave function as a description of a single system."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "It uses the full mathematical formalism of SQM but restricts its domain of applicability to statistical ensembles, denying its relevance to individual events.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "It is designed to reproduce the statistical predictions of SQM perfectly, as it accepts the formalism for ensembles.",
+      "conditions_for_consistency": "N/A."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "A quantum state |Ψ⟩ represents the procedure used to prepare an ensemble of systems."},
+      {"axiom": "The formalism of quantum mechanics correctly predicts the statistical outcomes of measurements performed on this ensemble."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "Applicability of Ψ",
+            "sqm": "Ψ describes a single quantum system.",
+            "this_theory": "Ψ describes a statistical ensemble of systems.",
+            "difference_type": "conceptual_reframing"
+        },
+        {
+            "aspect": "Completeness",
+            "sqm": "Copenhagen version claims Ψ is a complete description.",
+            "this_theory": "Asserts Ψ is an incomplete description of any single system within the ensemble.",
+            "difference_type": "conceptual_reframing"
+        }
+    ],
+    "equations": {
+      "state_evolution": "The Schrödinger equation describes the evolution of the statistical properties of the ensemble over time.",
+      "additional_dynamics": "N/A",
+      "born_rule_status": "Postulated as the rule giving the distribution of measured values over the ensemble."
+    },
+    "constants_and_parameters": {
+       "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "|Ψ⟩": {
+        "description": "A mathematical object that summarizes the statistical properties of an ensemble of similarly prepared systems.",
+        "ontological_status": "mathematical_tool"
+      },
+      "Ensemble": {
+        "description": "A conceptual (or actual) collection of a very large number of physical systems, all prepared via the same experimental procedure.",
+        "ontological_status": "primary_beable"
+      }
+    },
+    "operators_and_functions": {}
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "For the ensemble of particles, the interference pattern is the predicted statistical distribution of final positions. The interpretation refuses to answer the question of how a single particle 'knows' about both slits, as it considers quantum mechanics to be silent on individual events.",
+      "epr_paradox": "The non-local correlation is a statistical correlation between the properties of particles in the entangled ensemble. The interpretation does not provide a mechanism for this correlation for a single pair, but simply accepts it as a predicted statistical fact."
+    }
+  }
+} 

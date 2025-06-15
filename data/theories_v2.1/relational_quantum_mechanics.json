@@ -1,0 +1,110 @@
+{
+  "name": "Relational Quantum Mechanics (RQM)",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "rqm-1996-rovelli",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Copenhagen Interpretation", "Special Relativity"],
+      "generation_prompt_summary": "Proposed by Carlo Rovelli in 1996, RQM is an interpretation that treats the quantum state of a system as a relation between the system and an observer, rather than an absolute property of the system itself."
+    },
+    "tags": ["relational", "informational", "no-collapse", "anti-realism", "perspectival"]
+  },
+  "summary": "Relational Quantum Mechanics (RQM) asserts that the state of a quantum system is observer-dependent. That is, the state is a relation between an observer and the system. A system's properties only become definite during an interaction with another system (the observer), and this description is only valid for that specific observer. There is no absolute, universal wave function or state. All systems are quantum systems, and 'measurement' is just a standard physical interaction between two such systems.",
+  
+  "core_principles": [
+    {
+      "principle": "State is Relational",
+      "statement": "The state of a system S is always relative to an observer O. It is meaningless to speak of the absolute state of S.",
+      "implication": "Different observers can give different, correct accounts of the state of the same system. The wave function is a description of the correlation between a system and an observer."
+    },
+    {
+      "principle": "Observer is any System",
+      "statement": "Any physical system can be an 'observer'. There is no fundamental distinction between observer and observed.",
+      "implication": "This eliminates the need for a 'Heisenberg cut' and avoids the paradoxes associated with conscious observers (like Wigner's Friend)."
+    },
+    {
+      "principle": "Information via Interaction",
+      "statement": "All physical facts are established through interactions. A system acquires properties relative to another system only when they interact.",
+      "implication": "A system has no definite properties in isolation. The 'collapse' of the wave function is simply the updating of an observer's information about a system after an interaction."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["Physical systems and the interactions between them. Properties are not primary but are relational attributes of these interactions."],
+      "nature_of_spacetime": "Compatible with a relational view of spacetime, as in Loop Quantum Gravity."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer is any system that interacts with the system of interest. The description of the world is a network of relations.",
+      "nature_of_probability": "Probabilities arise from the inherent indeterminacy of future interactions. They quantify the likelihood of a system actualizing a property relative to an observer in a future interaction."
+    },
+    "key_questions": {
+      "determinism": "Non-deterministic. The outcome of any interaction is fundamentally probabilistic.",
+      "locality": "Local. Interactions are local events. Non-local correlations (EPR) are resolved by recognizing that there is no shared, absolute set of facts. Alice's interaction with her particle establishes a fact relative to her, and Bob's interaction does the same relative to him. The correlation lies in the consistency of their relational descriptions.",
+      "realism": "A form of 'relational realism'. It is realist about the network of relations and the information obtained in interactions, but anti-realist about observer-independent states or properties."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "RQM uses the standard mathematical formalism of SQM but reinterprets its meaning. The state vector |Ψ⟩ is not an absolute description of a system, but a book-keeping device for the correlations between that system and an observer.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "The predictions for any given observer are identical to those of standard quantum mechanics.",
+      "conditions_for_consistency": "N/A. It's a reinterpretation."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "The state |Ψ⟩ of system S relative to observer O describes the possible outcomes of future interactions between S and O."},
+      {"axiom": "All systems are equivalent; there is no a priori distinction between observer and observed."},
+      {"axiom": "The probability for an interaction to actualize a value q_k for a variable Q is given by the Born rule, P(q_k) = |⟨q_k|Ψ⟩|²."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "Wave Function Ψ",
+            "sqm": "An absolute description of the objective state.",
+            "this_theory": "A description of the relationship and correlations between a system and a specific observer.",
+            "difference_type": "conceptual_reframing"
+        }
+    ],
+    "equations": {
+      "state_evolution": "The Schrödinger equation describes the evolution of the correlations between the system and the observer between interactions.",
+      "additional_dynamics": "N/A.",
+      "born_rule_status": "Postulated as the rule governing the probability of actualization of a property in an interaction."
+    },
+    "constants_and_parameters": {
+       "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "|Ψ⟩_S|O": {
+        "description": "The state of system S relative to observer O. Encodes the information O has about S.",
+        "ontological_status": "mathematical_tool"
+      },
+      "Interaction": {
+        "description": "A physical event where two systems, S and O, couple. In this event, a property of S becomes definite relative to O.",
+        "ontological_status": "primary_beable"
+      }
+    },
+    "operators_and_functions": {}
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "Relative to the screen (the observer), the electron's position becomes definite upon interaction. Before that, relative to the experimenter, the electron is in a superposition of passing through both slits.",
+      "epr_paradox": "Alice's measurement establishes a fact relative to her. Bob's measurement establishes a fact relative to him. There is no super-observer for whom both facts are simultaneously definite. The correlation is a consistency check between their two descriptions. A third observer, Catherine, who measures the entire Alice-Bob system, would describe them as remaining in a superposition until her own measurement."
+    }
+  }
+} 

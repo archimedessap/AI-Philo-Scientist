@@ -1,0 +1,131 @@
+{
+  "name": "Objective Collapse Theory (GRW)",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "grw-1986-collapse",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Copenhagen Interpretation"],
+      "generation_prompt_summary": "Formulated by Ghirardi, Rimini, and Weber in 1986 to solve the measurement problem by unifying the dynamics of wave function evolution and collapse into a single, modified stochastic equation."
+    },
+    "tags": ["realism", "stochastic-collapse", "non-deterministic", "modified-dynamics", "macro-realism"]
+  },
+  "summary": "Objective Collapse theories, exemplified by the GRW model, propose that wave function collapse is a real, physical process that happens spontaneously and randomly for all particles, independent of measurement or observers. The Schrödinger equation is modified to include a non-linear, stochastic term that causes the wave function of any single particle to spontaneously localize in space at a certain rate. For microscopic systems, this is exceedingly rare, but for macroscopic objects (containing billions of particles), the collective effect ensures an almost instantaneous collapse, thus explaining the emergence of a classical world.",
+  
+  "core_principles": [
+    {
+      "principle": "Unified Dynamics",
+      "statement": "There is only one universal dynamical law that governs all physical systems, microscopic and macroscopic. This law is a stochastic modification of the Schrödinger equation.",
+      "implication": "Rejects the dualism of unitary evolution and measurement collapse from the Copenhagen interpretation. The 'measurement problem' is solved because the measurement apparatus, being macroscopic, is forced to a definite state by the dynamics itself."
+    },
+    {
+      "principle": "Spontaneous Localization",
+      "statement": "Every elementary particle has a tiny, constant probability per unit time of spontaneously having its wave function multiplied by a Gaussian function, localizing it in space.",
+      "implication": "Collapse is a fundamental physical process, not an emergent one. This introduces two new fundamental constants of nature: the collapse rate (λ) and the localization width (r_c)."
+    },
+    {
+      "principle": "Amplification Mechanism",
+      "statement": "For a composite system of many particles, the collapse rate of the system as a whole is the sum of the rates of its constituents. This means macroscopic objects collapse almost instantaneously.",
+      "implication": "Provides a dynamical explanation for why macroscopic objects are always in definite states, while microscopic objects can remain in superposition for long periods."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["The wave function Ψ, which is considered a real, physical field representing the density of matter in space."],
+      "nature_of_spacetime": "Assumes a classical, pre-existing spacetime background."
+    },
+    "epistemology": {
+      "role_of_observer": "The observer has no special role. They are a macroscopic system subject to the same universal dynamical laws as everything else. Their brain/mind simply registers the definite state of the world that the dynamics has produced.",
+      "nature_of_probability": "Probability is fundamental and objective (ontic), arising from the stochastic nature of the collapse process itself."
+    },
+    "key_questions": {
+      "determinism": "Fundamentally non-deterministic due to the random nature of spontaneous collapses.",
+      "locality": "Non-local. The spontaneous collapse of a particle's wave function is an instantaneous, spatially extended event that can affect entangled particles simultaneously.",
+      "realism": "Strongly realist. The wave function describes the 'density of stuff' in the universe, and it is always in a definite (though perhaps spread-out) state."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "modification",
+    "summary": "This theory modifies the Schrödinger equation by adding a non-linear and stochastic term, resulting in a new universal dynamical equation.",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "Its predictions are statistically indistinguishable from SQM for all experiments conducted to date, provided the new constants (λ and r_c) are chosen appropriately (λ very small, r_c not too large or small).",
+      "conditions_for_consistency": "In the limit where the collapse rate λ approaches zero, the theory's dynamical equation reverts to the standard Schrödinger equation."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "The state of a system is described by a wave function Ψ in configuration space."},
+      {"axiom": "At random times, the wave function undergoes a spontaneous localization (collapse) process."},
+      {"axiom": "Between collapses, the wave function evolves according to the standard Schrödinger equation."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "Dynamics",
+            "sqm": "Dualistic evolution: deterministic, linear Schrödinger equation + postulated, non-linear collapse at measurement.",
+            "this_theory": "A single, unified, non-linear, and stochastic evolution equation that incorporates both aspects.",
+            "difference_type": "dynamical_modification"
+        }
+    ],
+    "equations": {
+      "state_evolution": "d|Ψ(t)⟩ = [-i/ħ * H dt + Σ_k (L_k - ⟨L_k⟩) dN_k(t)] |Ψ(t)⟩",
+      "additional_dynamics": "This is the unified equation. L_k is the localization operator (a Gaussian), and dN_k is a Poisson process with rate λ.",
+      "born_rule_status": "Derived. The probability of a measurement outcome is a consequence of the probability of collapses occurring in the corresponding region of space."
+    },
+    "constants_and_parameters": {
+       "lambda": {
+        "description": "Collapse Rate. The probability per unit time for a single particle to undergo a spontaneous localization.",
+        "type": "new_parameter",
+        "value": "≈ 10⁻¹⁶ s⁻¹ (Adler's proposed value)",
+        "constraint": "Empirically determined, must be small enough to not contradict observations of microscopic interference."
+      },
+       "r_c": {
+        "description": "Localization Width. The spatial width of the Gaussian function that localizes the wave function.",
+        "type": "new_parameter",
+        "value": "≈ 10⁻⁷ m",
+        "constraint": "Empirically determined."
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "Ψ": {
+        "description": "A real physical field. Its squared amplitude |Ψ(x)|² is interpreted as the density of matter or 'stuff' at location x.",
+        "ontological_status": "primary_beable"
+      }
+    },
+    "operators_and_functions": {
+       "L_k": {
+        "description": "The localization operator, which is a narrowly peaked Gaussian function centered at a random position k.",
+        "maps_from": "Hilbert Space",
+        "maps_to": "Hilbert Space"
+      }
+    }
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [
+      {
+        "phenomenon": "Violation of Energy Conservation",
+        "derivation_from_formalism": "The stochastic collapse process involves a random 'kick' to the wave function's momentum, which is not unitary and does not conserve energy. This leads to a tiny, constant rate of energy increase for any physical system.",
+        "experimental_signature": "Measuring a slight, spontaneous heating of any piece of matter, even if perfectly isolated in a vacuum. This could be detected as anomalous Brownian motion or radiation from charged particles.",
+        "feasibility": "Technologically_challenging, but several experiments are actively searching for this effect (e.g., by monitoring the temperature of ultra-cold cantilevers or looking for unexpected X-ray emissions from bulk matter)."
+      },
+      {
+        "phenomenon": "Breakdown of Superposition for Mesoscopic Objects",
+        "derivation_from_formalism": "The theory predicts that it should be impossible to maintain a spatial superposition for an object above a certain size for a significant amount of time, as the spontaneous collapse rate becomes too high.",
+        "experimental_signature": "Future interference experiments with increasingly large objects (e.g., heavy molecules, nanoparticles, nano-mirrors) should eventually find a point where interference fringes can no longer be produced, no matter how well the system is isolated. This would falsify the Schrödinger equation and support GRW.",
+        "feasibility": "Near_future. Experiments are getting very close to the parameter space where GRW predicts a deviation."
+      }
+    ],
+    "crucial_experiments": {
+      "double_slit": "For a single particle like an electron, the collapse rate is so low that it passes through the slits in superposition and creates an interference pattern, just like in SQM. For a large object, it would be localized before it even reached the slits, passing through one or the other like a classical bullet.",
+      "epr_paradox": "The non-local correlation is explained by the non-local nature of the collapse mechanism itself. When one particle is localized, the wave function of the entire entangled system collapses, instantaneously affecting the state of the other particle."
+    }
+  }
+} 

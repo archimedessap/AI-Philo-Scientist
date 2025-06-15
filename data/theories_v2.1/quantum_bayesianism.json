@@ -1,0 +1,118 @@
+{
+  "name": "Quantum Bayesianism (QBism)",
+  "metadata": {
+    "schema_version": "2.1",
+    "theory_id": "qbism-2010-fuchs",
+    "status": "validated",
+    "lineage": {
+      "method": "human_authored",
+      "parents": ["Copenhagen Interpretation", "Bayesian Probability Theory"],
+      "generation_prompt_summary": "Developed by Carlton Caves, Christopher Fuchs, and Rüdiger Schack, QBism is a radically subjectivist interpretation that treats quantum mechanics as a tool for agents to manage their expectations about the world."
+    },
+    "tags": ["anti-realism", "subjective-probability", "informational", "local", "single-agent"]
+  },
+  "summary": "QBism argues that quantum mechanics is not a direct description of an objective reality, but rather a normative theory that any rational agent should use to update their personal beliefs about the outcomes of future experiences. The wave function Ψ is not real; it is a mathematical object encoding an agent's subjective degrees of belief (credences) about the consequences of their actions on a system. The 'collapse' is simply the agent updating their beliefs based on a new experience (a measurement outcome), in accordance with Bayesian probability rules.",
+  
+  "core_principles": [
+    {
+      "principle": "Subjective Bayesian Probability",
+      "statement": "All probabilities, including those in quantum mechanics, are subjective degrees of belief held by an agent. They do not represent objective features of the world.",
+      "implication": "The Born rule is not a law of nature, but a normative rule for how an agent should assign probabilities to the outcomes of their interventions."
+    },
+    {
+      "principle": "Primacy of the Agent",
+      "statement": "Quantum mechanics is a 'single-user' theory. Its formulas are tools for a single agent to navigate their world. The wave function is specific to the agent who assigns it.",
+      "implication": "Paradoxes like Wigner's Friend are dissolved, as there is no single, shared 'fact of the matter'. Wigner and his friend simply have different subjective beliefs, and neither is more 'correct' than the other."
+    },
+    {
+      "principle": "Experience as Fundamental",
+      "statement": "The outcome of a measurement is a personal experience for the agent. The world presents a source of novelty and unpredictability that the agent responds to.",
+      "implication": "QBism is non-solipsistic. It posits a real world external to the agent, but claims quantum mechanics only describes the agent's interaction with it, not the world itself."
+    }
+  ],
+
+  "philosophy": {
+    "ontology": {
+      "fundamental_entities": ["The only fundamental entity is the agent's experience. The external world is a postulate, but its nature is beyond the scope of quantum mechanics."],
+      "nature_of_spacetime": "Assumes a classical spacetime as the stage for the agent's actions and experiences."
+    },
+    "epistemology": {
+      "role_of_observer": "The agent/observer is the central subject of the theory. Quantum mechanics is a user's manual for observers.",
+      "nature_of_probability": "Purely subjective (epistemic). A probability of 1 or 0 represents an agent's certainty about a future experience."
+    },
+    "key_questions": {
+      "determinism": "The theory is silent on the determinism of the external world. It is non-deterministic from the agent's perspective, as the world can always surprise them.",
+      "locality": "Radically local. The 'collapse' of a wave function happens only in the mind of the agent who made the measurement. Since the wave function was never a real, physical field spread across space, its update does not imply any non-local physical influence.",
+      "realism": "Anti-realist about the wave function and quantum states. It is realist only about the agent's personal experiences."
+    }
+  },
+
+  "mathematical_relation_to_sqm": {
+    "type": "interpretation",
+    "summary": "QBism uses the standard mathematics of SQM, but reinterprets every element in terms of an agent's subjective beliefs. It particularly focuses on a formulation using Symmetric Informationally Complete POVMs (SIC-POVMs).",
+    "consistency_with_sqm": {
+      "is_consistent_in_limit": true,
+      "limit_description": "It is designed to reproduce all the standard predictions of SQM, as it views SQM as the correct normative guide for belief updating.",
+      "conditions_for_consistency": "N/A. It's a reinterpretation of the existing formalism."
+    }
+  },
+  
+  "formalism": {
+    "axioms": [
+      {"axiom": "An agent's beliefs about the outcomes of a measurement on a system are encoded in a quantum state |Ψ⟩, which is personal to that agent."},
+      {"axiom": "When an agent performs a measurement and gets an outcome, they update their beliefs about the system's future behavior using a quantum instrument, which is a generalization of the collapse rule."},
+      {"axiom": "The probabilities for measurement outcomes should be calculated using the Born rule, interpreted as a normative coherence condition on the agent's beliefs."}
+    ],
+    "comparison_with_sqm": [
+        {
+            "aspect": "Wave Function Ψ",
+            "sqm": "A description of the objective state of a physical system.",
+            "this_theory": "A mathematical representation of an agent's subjective beliefs about a system.",
+            "difference_type": "conceptual_reframing"
+        },
+        {
+            "aspect": "Measurement Collapse",
+            "sqm": "A physical process affecting the objective state.",
+            "this_theory": "A subjective update of an agent's beliefs after gaining a new experience, akin to Bayesian inference.",
+            "difference_type": "conceptual_reframing"
+        }
+    ],
+    "equations": {
+      "state_evolution": "The Schrödinger equation describes the evolution of an agent's beliefs about a system they are not currently interacting with.",
+      "additional_dynamics": "Belief updating is described by the formula ρ → Σ_k (K_k ρ K_k†) / Tr(K_k ρ K_k†), where K_k are the measurement operators.",
+      "born_rule_status": "A normative postulate. P(i) = Tr(ρ E_i), where E_i is a POVM element representing the agent's action."
+    },
+    "constants_and_parameters": {
+       "h_bar": {
+        "description": "Reduced Planck constant",
+        "type": "universal_constant",
+        "value": "1.0545718 × 10⁻³⁴ J·s",
+        "constraint": "N/A"
+      }
+    }
+  },
+
+  "semantics": {
+    "entities": {
+      "|Ψ⟩": {
+        "description": "A compendium of an agent's subjective beliefs (credences) about the potential outcomes of their future actions on a system.",
+        "ontological_status": "mathematical_tool"
+      }
+    },
+    "operators_and_functions": {
+       "E_i": {
+        "description": "A Positive Operator-Valued Measure (POVM) element, representing a possible outcome 'i' of an action an agent can take on the world.",
+        "maps_from": "State Space",
+        "maps_to": "Probability"
+      }
+    }
+  },
+  
+  "predictions_and_verifiability": {
+    "deviations_from_sqm": [],
+    "crucial_experiments": {
+      "double_slit": "The wave function is the agent's tool to bet on where they will detect the particle. The interference pattern reflects the agent's belief that they have no information about which slit the particle 'really' went through. Asking which slit it went through without a measurement is a meaningless question.",
+      "epr_paradox": "There is no 'spooky action at a distance' because there is no objective state to be acted upon. When Alice measures her particle, she updates her beliefs about her particle. This action also allows her to update her beliefs about what she would experience if she were to subsequently measure Bob's particle. No physical influence travels from Alice to Bob."
+    }
+  }
+} 
