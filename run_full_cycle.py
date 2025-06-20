@@ -85,16 +85,16 @@ def main():
     synthesis_group = parser.add_argument_group('Phase 1: Theory Synthesis')
     synthesis_group.add_argument("--existing_theories_dir", type=str, default="data/theories_v2.1", help="用于分析矛盾的现有理论目录")
     synthesis_group.add_argument("--max_pairs_to_analyze", type=int, default=1, help="合成阶段分析的最大理论对数")
-    synthesis_group.add_argument("--variants_per_contradiction", type=int, default=3, help="每个矛盾点生成的新理论变体数量")
+    synthesis_group.add_argument("--variants_per_contradiction", type=int, default=1, help="每个矛盾点生成的新理论变体数量")
     synthesis_group.add_argument("--synthesis_model_source", type=str, default="google", choices=["openai", "deepseek", "google"], help="用于理论合成的LLM来源")
-    synthesis_group.add_argument("--synthesis_model_name", type=str, default="gemini-1.5-pro-latest", help="用于理论合成的具体模型名称")
+    synthesis_group.add_argument("--synthesis_model_name", type=str, default="gemini-2.5-pro", help="用于理论合成的具体模型名称")
     
     # --- 理论评估参数 (Evaluation Parameters) ---
     evaluation_group = parser.add_argument_group('Phase 2: Theory Evaluation')
     evaluation_group.add_argument("--experiment_dir", type=str, default="demo/experiments/", help="用于评估的实验数据目录")
     evaluation_group.add_argument("--use_instrument_correction", action='store_true', default=True, help="在实验评估中启用仪器修正模型（默认启用）")
-    evaluation_group.add_argument("--evaluation_model_source", type=str, default="openai", choices=["openai", "deepseek", "google"], help="用于理论评估的LLM来源")
-    evaluation_group.add_argument("--evaluation_model_name", type=str, default="gpt-4o-mini", help="用于理论评估的具体模型名称")
+    evaluation_group.add_argument("--evaluation_model_source", type=str, default="google", choices=["openai", "deepseek", "google"], help="用于理论评估的LLM来源")
+    evaluation_group.add_argument("--evaluation_model_name", type=str, default="gemini-2.5-pro", help="用于理论评估的具体模型名称")
     evaluation_group.add_argument("--role_eval_threshold", type=float, default=0.6, help="实验成功率阈值，超过该值的理论将进行多角色评估")
 
     args = parser.parse_args()

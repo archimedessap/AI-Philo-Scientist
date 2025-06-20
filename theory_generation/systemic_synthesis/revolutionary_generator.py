@@ -275,17 +275,17 @@ Invent a new theory that is bold, coherent, and testable. Your output **MUST** b
     def _build_synthesis_prompt(self, multiple_targets: List[Dict]) -> str:
         """
         构建综合多个革命性目标的统一理论的提示 (Schema v2.1)
-
+        
         Args:
             multiple_targets: 多个突破目标
-
+            
         Returns:
             str: 统一理论生成提示
         """
         targets_text = ""
         for i, target in enumerate(multiple_targets, 1):
             targets_text += f"\n- **Target {i}: {target.get('target_name', '')}** - {target.get('target_description', '')}"
-
+        
         prompt = f"""
 # TASK
 You are a grand unifier of physics, a modern-day Einstein, tasked with creating a **Unified Quantum Framework**. This framework must synthesize and resolve multiple, distinct breakthrough targets into a single, cohesive theory.
@@ -336,7 +336,7 @@ Your goal is not just to combine these ideas, but to find a deeper, underlying p
         "description": "string (Describe a critical prediction that emerges from the unification)",
         "mathematical_derivation": "string (Show how this prediction is a direct consequence of the unified postulates)",
         "experimental_setup": "string (Suggest a crucial experiment or observational signature, e.g., in CMB data, gravitational waves)"
-      }}
+  }}
     ],
     "unanswered_questions": "string (What new grand challenges or puzzles does this framework present?)"
   }}

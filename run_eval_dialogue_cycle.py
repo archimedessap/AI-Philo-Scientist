@@ -1,31 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-run_eval_dialogue_cycle.py
-=========================
-实现如下闭环：
-  0) 初始：run_full_cycle.py 生成新理论并评估
-     └► 得到 eval_ready_theories + final_evaluation_summary.json
-     └► 立即执行 run_m3_auto_refinement.py 做首轮对话改写
-
-  1..N) 迭代：
-     a) demo/demo_1.py  对当前理论池重新评估，生成新的 summary
-     b) run_m3_auto_refinement.py  多轮对话改写
-     c) 用改写版本更新理论池，计算平均提升
-     d) 若 avg_delta < stop_delta (默认 0.03) 或达到最大代数则停止
-
-用法示例：
-python run_eval_dialogue_cycle.py \
-  --generations 1 \
-  --initial_theories_dir data/theories_v2.1 \
-  --output_root data/dialog_cycle_runs_test_gemini \
-  --max_pairs_to_analyze 1 \
-  --variants_per_contradiction 1 \
-  --top_n 1 --max_iters 1 --stop_delta 0.03 \
-  --role_eval_threshold 0.5 \
-  --synthesis_model_source google  --synthesis_model_name gemini-2.5-pro-preview-06-05 \
-  --evaluation_model_source google --evaluation_model_name gemini-2.5-pro-preview-06-05 \
-  --dialog_model_source google     --dialog_model_name gemini-2.5-pro-preview-06-05
+run_eval_dialogue_cycle.py (Manifest-driven)
+============================================
+Orchestrates a multi-generational evaluation and refinement cycle for
+scientific theories using a central 'manifest' to track all state,
+eliminating reliance on fragile file system paths and conventions.
 """
 
 from __future__ import annotations
@@ -37,234 +17,227 @@ import glob
 import json
 import shutil
 import time
+from typing import List
+import os
+from datetime import datetime
+
+# NEW: Import our manifest tools
+import manifest_tools
 
 
 # -----------------------------------------------------------------------------
-# 工具函数
+# 工具函数 (简化)
 # -----------------------------------------------------------------------------
 
-def run_cmd(cmd: list[str]):
+def run_cmd(cmd: list[str], **kwargs):
+    """Wraps subprocess.run for convenience."""
     print("\n$ " + " ".join(cmd))
-    ret = subprocess.call(cmd)
-    if ret != 0:
-        print(f"[FATAL] 命令失败: {' '.join(cmd)}")
-        sys.exit(ret)
-
+    # Using check=True to automatically raise an exception on non-zero exit codes.
+    subprocess.run(cmd, check=True, **kwargs)
 
 def find_unique(pattern: str) -> Path:
-    matches = glob.glob(pattern)
+    """Finds a unique file or directory, prioritizing the most recently modified."""
+    matches = sorted(list(Path().glob(pattern)), key=lambda p: p.stat().st_mtime, reverse=True)
     if not matches:
-        raise FileNotFoundError(f"未找到匹配: {pattern}")
+        raise FileNotFoundError(f"No matches found for pattern: {pattern}")
     if len(matches) > 1:
-        raise RuntimeError(f"匹配到多个路径: {matches}")
-    return Path(matches[0])
+        print(f"[WARN] Found multiple matches for {pattern}, selecting most recent: {matches[0]}")
+    return matches[0]
 
-
-def collect_improved(depth_runs_dir: Path, dest_dir: Path):
-    """复制 depth_runs 中最后 iter 的 improved_*.json 到 dest_dir，返回理论及其 delta 列表"""
-    from tools.refinement.schema_validator import is_valid_theory_json
-
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    deltas = []
-
-    for theory_dir in depth_runs_dir.iterdir():
-        if not theory_dir.is_dir():
-            continue
-        # 读取 summary
-        summary_file = theory_dir / "summary.json"
-        if not summary_file.exists():
-            continue
-        with open(summary_file, "r", encoding="utf-8") as f:
-            sdata = json.load(f)
-        baseline = sdata["scores"][0]
-        final_score = sdata["final_score"]
-        deltas.append(final_score - baseline)
-
-        # 找 improved 文件
-        iter_dirs = sorted([p for p in theory_dir.iterdir() if p.is_dir() and p.name.startswith("iter_")],
-                           key=lambda p: int(p.name.split("_")[1]))
-        last_iter = iter_dirs[-1] if iter_dirs else None
-        src_json = None
-        if last_iter:
-            improved = list(last_iter.glob("improved_*.json"))
-            if improved:
-                src_json = improved[0]
-        if src_json is None:
-            continue
-        # 校验
-        with open(src_json, "r", encoding="utf-8") as f:
-            tdata = json.load(f)
-        if not is_valid_theory_json(tdata):
-            continue
-        # 统一文件命名，避免不同阶段字符串替换规则不一致
-        try:
-            # 与 candidate_selector.slugify 保持一致
-            from tools.refinement.candidate_selector import slugify  # type: ignore
-        except ImportError:
-            # 回退：简单替换非法字符
-            import re
-
-            def slugify(text: str) -> str:
-                return re.sub(r"[^0-9a-zA-Z]+", "_", text).strip("_")[:120]
-
-        slug_name = slugify(tdata.get("name", theory_dir.name)) + ".json"
-        shutil.copy(src_json, dest_dir / slug_name)
-    # 计算平均提升
-    avg_delta = sum(deltas)/len(deltas) if deltas else 0
-    return avg_delta, len(deltas)
+# OBSOLETE FUNCTIONS `collect_best_versions` etc. are now removed.
 
 # -----------------------------------------------------------------------------
-# 主逻辑
+# 主逻辑 (最终重构版)
 # -----------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser("评估↔对话多轮循环控制脚本")
-    parser.add_argument("--generations", type=int, default=5, help="最大循环代数（含首代）")
-    parser.add_argument("--initial_theories_dir", required=True, help="初始已有理论池目录")
-    parser.add_argument("--output_root", default="data/dialog_cycle_runs", help="总输出根目录")
-
-    parser.add_argument("--stop_delta", type=float, default=0.03, help="平均提升低于该阈值则提前停止")
-
-    # --- 生成阶段参数 ---
-    parser.add_argument("--max_pairs_to_analyze", type=int, default=5, help="run_direct_synthesis.py: 分析的最大矛盾对数")
-    parser.add_argument("--variants_per_contradiction", type=int, default=1, help="run_direct_synthesis.py: 每个矛盾生成的变体数")
+    parser = argparse.ArgumentParser(description="Manifest-based Evaluation Cycle")
+    parser.add_argument('--generations', type=int, default=3, help='Number of generations to run.')
+    parser.add_argument('--initial_theories_dir', type=str, required=True, help='Directory with initial theories.')
+    parser.add_argument("--output_root", default="data/dialog_cycle_runs_manifest", help="Output root")
+    parser.add_argument("--top_n", type=int, default=1, help="Top N theories to refine")
+    parser.add_argument("--max_iters", type=int, default=2, help="Max refinement iterations")
+    parser.add_argument("--min_improve", type=float, default=0.03)
     parser.add_argument("--synthesis_model_source", default="google")
     parser.add_argument("--synthesis_model_name", default="gemini-1.5-pro-latest")
-
-    # --- 评估阶段 LLM 参数（Judge）---
-    parser.add_argument("--evaluation_model_source", default="deepseek")
-    parser.add_argument("--evaluation_model_name", default="deepseek-reasoner")
-
-    # --- 对话优化阶段 LLM 参数 ---
-    parser.add_argument("--dialog_model_source", default="deepseek")
-    parser.add_argument("--dialog_model_name", default="deepseek-reasoner")
-
-    parser.add_argument("--top_n", type=int, default=3)
-    parser.add_argument("--max_iters", type=int, default=2)
-    parser.add_argument("--min_improve", type=float, default=0.03)
-
-    # --- 角色评估阈值 ---
-    parser.add_argument("--role_eval_threshold", type=float, default=0.6, help="实验成功率达到该值才进行角色评估 (透传给 run_full_cycle.py)")
+    parser.add_argument("--evaluation_model_source", default="google")
+    parser.add_argument("--evaluation_model_name", default="gemini-2.5-pro")
+    parser.add_argument("--dialog_model_source", default="google")
+    parser.add_argument("--dialog_model_name", default="gemini-2.5-pro")
+    parser.add_argument("--role_model_source", default="openai")
+    parser.add_argument("--role_model_name", default="gpt-4o-mini")
+    parser.add_argument("--role_eval_threshold", type=float, default=0.6, help="Minimum score for a role to be considered valid.")
+    parser.add_argument("--promotion_min_score", type=float, default=0.5, help="Minimum score for a theory to be promoted to the next generation.")
+    parser.add_argument("--use_instrument_correction", action="store_true", help="Use instrument correction for evaluation.")
+    
+    # New arguments for controlling theory generation
+    parser.add_argument("--max_pairs_to_analyze", type=int, default=10, help="Max pairs of theories to analyze for contradictions during initial generation.")
+    parser.add_argument("--variants_per_contradiction", type=int, default=1, help="Number of new theory variants to generate per contradiction during initial generation.")
 
     args = parser.parse_args()
 
-    root = Path(args.output_root).resolve()
-    root.mkdir(parents=True, exist_ok=True)
+    # --- 1. Initialization ---
+    run_id = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    run_root = Path(args.output_root) / run_id
+    run_root.mkdir(parents=True, exist_ok=True)
+    
+    manifest = manifest_tools.initialize_manifest(run_id, args)
+    manifest_path = run_root / "run_manifest.json"
 
-    # ---------------- Generation 0 -----------------
-    gen0_dir = root / "generation_0"
-    gen0_dir.mkdir(exist_ok=True)
-
-    # Phase 0A: run_full_cycle
+    # --- 2. Generation 0 ---
+    print("\n" + "="*80 + "\nGeneration 0: Creation and Initial Evaluation\n" + "="*80)
+    gen0_dir = run_root / "generation_0"
+    
+    # Phase A: Create and evaluate initial theories
     full_cycle_dir = gen0_dir / "full_cycle"
     cmd_full = [
         "python", "run_full_cycle.py",
         "--existing_theories_dir", args.initial_theories_dir,
         "--base_output_dir", str(full_cycle_dir),
-        "--max_pairs_to_analyze", str(args.max_pairs_to_analyze),
-        "--variants_per_contradiction", str(args.variants_per_contradiction),
         "--synthesis_model_source", args.synthesis_model_source,
         "--synthesis_model_name", args.synthesis_model_name,
         "--evaluation_model_source", args.evaluation_model_source,
         "--evaluation_model_name", args.evaluation_model_name,
         "--role_eval_threshold", str(args.role_eval_threshold),
-        "--synthesis_model_source", args.synthesis_model_source,
-        "--synthesis_model_name", args.synthesis_model_name
+        "--max_pairs_to_analyze", str(args.max_pairs_to_analyze),
+        "--variants_per_contradiction", str(args.variants_per_contradiction),
     ]
+    if args.use_instrument_correction:
+        cmd_full.append("--use_instrument_correction")
+    
+    print(f"$ {' '.join(cmd_full)}")
     run_cmd(cmd_full)
+    
+    # Phase B: Ingest the results into the manifest
+    try:
+        # 1. 智能地寻找新理论所在的目录 (这部分之前是正确的)
+        theories_root_path = find_unique(f"{full_cycle_dir}/run_*/1_synthesis_output/*/eval_ready_theories")
+        
+        # 2. 将新理论注册到清单中
+        for theory_file in theories_root_path.glob("*.json"):
+            with open(theory_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            manifest_tools.register_theory_in_manifest(manifest, data, theory_file, generation=0)
 
-    # 定位路径
-    run_subdir = find_unique(str(full_cycle_dir / "run_*/"))
-    summary_file = find_unique(str(run_subdir / "2_evaluation_output" / "*/final_evaluation_summary.json"))
-    theories_root = find_unique(str(run_subdir / "1_synthesis_output" / "*/eval_ready_theories"))
+        # 3. [核心修复] 使用通配符智能地寻找包含最终综合评分的总结文件
+        #    这个路径现在可以正确处理由子脚本创建的、任意名称的带时间戳的子目录
+        summary_path = find_unique(f"{full_cycle_dir}/run_*/2_evaluation_output/run_*/role_evaluations/combined_rankings.json")
+        
+        # 4. 用找到的评估分数更新清单
+        manifest_tools.update_manifest_with_evaluation(manifest, str(summary_path))
+        manifest_tools.save_manifest(manifest, manifest_path)
+        
+    except FileNotFoundError as e:
+        print(f"[FATAL] 无法找到第0代周期的关键输出文件。这很可能是脚本间的路径不匹配导致。错误: {e}")
+        sys.exit(1)
 
-    # Phase 0B: 首轮对话改写
-    refinement_dir = gen0_dir / "refinement"
-    cmd_refine0 = [
-        "python", "run_m3_auto_refinement.py",
-        "--summary_file", str(summary_file),
-        "--theories_root", str(theories_root),
-        "--output_dir", str(refinement_dir),
-        "--top_n", str(args.top_n),
-        "--eval_mode", "real",
-        "--max_iters", str(args.max_iters),
-        "--min_improve", str(args.min_improve),
-        "--judge_model_source", args.evaluation_model_source,
-        "--judge_model_name", args.evaluation_model_name,
-        "--dialog_model_source", args.dialog_model_source,
-        "--dialog_model_name", args.dialog_model_name
-    ]
-    run_cmd(cmd_refine0)
+    print("\n[MANIFEST] Selecting best theories from Generation 0...")
+    promoted_ids = manifest_tools.select_best_theories_for_next_gen(
+        manifest, 
+        current_gen=0,
+        top_n=args.top_n,
+        min_score=args.promotion_min_score
+    )
 
-    # 兼容 run_m3_auto_refinement 的输出结构：可能带 run_*/
-    candidates = list(refinement_dir.glob("run_*/depth_output/depth_runs"))
-    depth_runs_dir = candidates[0] if candidates else (refinement_dir / "depth_output/depth_runs")
+    if not promoted_ids:
+        print(f"[FATAL] Gen 0 produced no theories that passed the promotion threshold of {args.promotion_min_score:.2f}. Exiting.")
+        manifest_tools.save_manifest(manifest, manifest_path)
+        return
 
-    pool_dir = gen0_dir / "theory_pool"
-    avg_delta, count = collect_improved(depth_runs_dir, pool_dir)
-    print(f"[GEN0] 收集 {count} 个改写理论，平均提升 {avg_delta:.3f}")
-
-    # ---------------- Subsequent Generations -----------------
-    theories_dir_for_next = pool_dir
-
+    # --- 3. Subsequent Generations Loop ---
     for gen in range(1, args.generations):
-        print("\n" + "="*80)
-        print(f"Generation {gen}")
-        print("="*80)
-        gen_dir = root / f"generation_{gen}"
+        print("\n" + "="*80 + f"\nGeneration {gen}: Refinement and Re-evaluation\n" + "="*80)
+        gen_dir = run_root / f"generation_{gen}"
         gen_dir.mkdir(exist_ok=True)
-
-        # Phase A: 重新评估
-        eval_dir = gen_dir / "evaluation"
-        eval_dir.mkdir(exist_ok=True)
-        cmd_eval = [
-            "python", "demo/demo_1.py",
-            "--theory_path", str(theories_dir_for_next),
-            "--experiment_dir", "demo/experiments/",
-            "--output_dir", str(eval_dir),
-            "--model_source", args.evaluation_model_source,
-            "--model_name", args.evaluation_model_name,
-            "--run_role_evaluation",
-            "--role_model_source", args.evaluation_model_source,
-            "--role_model_name", args.evaluation_model_name
-        ]
-        run_cmd(cmd_eval)
-        summary_file = find_unique(str(eval_dir / "run_*/final_evaluation_summary.json"))
-
-        # Phase B: 对话改写
+        
+        # Phase A: Refine theories from the previous generation
+        if not promoted_ids:
+            print(f"[INFO] No theories to refine for Gen {gen}. Ending run."); break
+            
+        print(f"\n--- Refining {len(promoted_ids)} theories ---")
         refinement_dir = gen_dir / "refinement"
+        
+        # NOTE: Using the arguments as defined in the user's original script version
         cmd_refine = [
-            "python", "run_m3_auto_refinement.py",
-            "--summary_file", str(summary_file),
-            "--theories_root", str(theories_dir_for_next),
-            "--output_dir", str(refinement_dir),
-            "--top_n", str(args.top_n),
-            "--eval_mode", "real",
-            "--max_iters", str(args.max_iters),
-            "--min_improve", str(args.min_improve),
-            "--judge_model_source", args.evaluation_model_source,
+            "python", "run_m3_auto_refinement.py", 
+            "--manifest-path", str(manifest_path.resolve()),
+            "--theory-ids", ",".join(promoted_ids), 
+            "--output-dir", str(refinement_dir.resolve()),
+            "--top-n", str(args.top_n), 
+            "--max-iters", str(args.max_iters), 
+            "--min-improve", str(args.min_improve),
+            "--judge_model_source", args.evaluation_model_source, 
             "--judge_model_name", args.evaluation_model_name,
-            "--dialog_model_source", args.dialog_model_source,
-            "--dialog_model_name", args.dialog_model_name
+            "--dialog_model_source", args.dialog_model_source, 
+            "--dialog_model_name", args.dialog_model_name,
         ]
         run_cmd(cmd_refine)
+        manifest = manifest_tools.load_manifest(manifest_path) # Reload manifest to see new variants
 
-        # 查找 depth_runs 目录
-        candidates = list(refinement_dir.glob("run_*/depth_output/depth_runs"))
-        depth_runs_dir = candidates[0] if candidates else (refinement_dir / "depth_output/depth_runs")
-
-        next_pool = gen_dir / "theory_pool"
-        avg_delta, count = collect_improved(depth_runs_dir, next_pool)
-        print(f"[GEN{gen}] 收集 {count} 个改写理论，平均提升 {avg_delta:.3f}")
-
-        if avg_delta < args.stop_delta:
-            print(f"[STOP] 平均提升 {avg_delta:.3f} < stop_delta {args.stop_delta}, 提前结束循环")
+        # Phase B: Evaluate all candidates for this generation.
+        # This now uses a standard evaluation script. Let's assume demo_1.py is the one.
+        # We gather ALL theories currently marked 'untested' in the manifest.
+        ids_to_evaluate = [tid for tid, data in manifest['theories'].items() if data.get('status') == 'untested']
+        
+        if not ids_to_evaluate:
+            print(f"\n[INFO] No new theory variants were created in Gen {gen}. Nothing to evaluate. Ending run.")
             break
-        theories_dir_for_next = next_pool
-        time.sleep(1)
+            
+        print(f"\n--- Evaluating a pool of {len(ids_to_evaluate)} new theories ---")
 
-    print("\n🎉 评估↔对话循环完成，全部结果位于:", root)
+        # Instead of creating a temp dir, we make the eval script manifest-aware (hypothetically)
+        # For now, let's stick to the existing pattern of demo_1.py if it can take a list of files
+        # A robust way is to create a temporary directory for this generation's evaluation.
+        eval_input_dir = gen_dir / "evaluation_input"
+        eval_input_dir.mkdir(exist_ok=True)
+        for theory_id in ids_to_evaluate:
+            source_path = Path(manifest["theories"][theory_id]["path"])
+            shutil.copy(source_path, eval_input_dir / source_path.name)
+        
+        eval_output_dir = gen_dir / "evaluation_output"
+        cmd_eval = [
+            "python", "demo/demo_1.py", 
+            "--theory_path", str(eval_input_dir), 
+            "--experiment_dir", "demo/experiments/",
+            "--output_dir", str(eval_output_dir), 
+            "--model_source", args.evaluation_model_source,
+            "--model_name", args.evaluation_model_name, 
+            "--run_role_evaluation", 
+            "--role_model_source", args.role_model_source,
+            "--role_model_name", args.role_model_name,
+        ]
+        if args.use_instrument_correction: cmd_eval.append("--use_instrument_correction")
+        run_cmd(cmd_eval)
+        
+        # Phase C: Update manifest with new evaluation scores
+        # THIS IS THE CORE FIX: RE-USE THE ROBUST LOGIC FROM GEN 0
+        try:
+            latest_run_dir = max(
+                (eval_output_dir / d for d in os.listdir(eval_output_dir) if d.startswith("run_")),
+                key=os.path.getmtime
+            )
+            summary_path = latest_run_dir / "role_evaluations" / "combined_rankings.json"
+            manifest_tools.update_manifest_with_evaluation(manifest, str(summary_path))
+        except (FileNotFoundError, ValueError) as e:
+            print(f"[FATAL] Could not find or parse output from Gen {gen} evaluation. Halting: {e}"); break
+            
+        # Phase D: Select best for the *next* generation
+        print(f"\n[MANIFEST] Selecting best theories from Generation {gen}...")
+        promoted_ids = manifest_tools.select_best_theories_for_next_gen(
+            manifest, 
+            current_gen=gen,
+            top_n=args.top_n,
+            min_score=args.promotion_min_score
+        )
 
+        if not promoted_ids:
+            print(f"[STOP] This generation produced no survivors that passed the threshold of {args.promotion_min_score:.2f}. Halting."); break
+        
+        manifest_tools.save_manifest(manifest, manifest_path); time.sleep(1)
+
+    # --- 4. Finalization ---
+    manifest_tools.save_manifest(manifest, manifest_path)
+    print(f"\n🎉 Run complete. Final manifest saved to: {manifest_path}")
 
 if __name__ == "__main__":
     main() 

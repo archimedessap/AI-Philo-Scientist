@@ -85,8 +85,8 @@ class HypothesisGenerator:
             new_hypothesis["metadata"]["generation_info"] = {
                 "source": "direct_synthesis",
                 "contradiction_base": {
-                    "theory1": theory1,
-                    "theory2": theory2,
+                "theory1": theory1,
+                "theory2": theory2,
                 },
                 "generation_time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                 "generation_parameters": generation_params

@@ -157,7 +157,7 @@ class LLMInterface:
                         )
                     )
                     return response.text
-
+                
             except Exception as e:
                 print(f"[WARN] 第 {attempt} 次调用失败: {e}")
                 if attempt == self.max_retries and self.enable_fallback:
@@ -206,7 +206,7 @@ class LLMInterface:
                             api_key=self.api_key_deepseek,
                             base_url="https://api.deepseek.com/v1"
                         )
-                    
+        
                     response = client.chat.completions.create(
                         model=name,
                         messages=messages,
@@ -227,7 +227,7 @@ class LLMInterface:
                         )
                     )
                     return response.text
-
+                
             except Exception as e:
                 print(f"[WARN] 第 {attempt} 次同步调用失败: {e}")
                 if attempt == self.max_retries and self.enable_fallback:
@@ -246,56 +246,52 @@ class LLMInterface:
                 # 退避等待
                 time.sleep(2 ** attempt * 0.5)
     
-    def extract_json(self, text):
+    def extract_json(self, text: Optional[str]) -> Optional[Dict[Any, Any]]:
         """
-        从 LLM 回复中提取第一行有效 JSON。
-        支持：
-          • 单行 JSON
-          • 先 derivation 行、再 value 行（两行 JSON）
-        返回 Python dict；若找不到则返回 None。
+        从 LLM 回复中稳健地提取第一个JSON对象。
+        处理多种情况：
+        - 完美的单行/多行JSON。
+        - ```json ... ``` 代码块 (即使格式不完美).
+        - JSON对象被其他文本包裹。
         """
-        if text is None:
+        if not text:
             return None
-            
-        # 方式 1：逐行找以 { 开头的片段
+
+        # 1. 优先匹配 ```json ... ``` 代码块，容忍缺失的结尾```
+        #    使用非贪婪匹配
+        match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL | re.IGNORECASE)
+        if not match:
+            # 如果上一个失败，尝试匹配从```开始到文本末尾
+             match = re.search(r"```(?:json)?\s*(\{.*\})\s*", text, re.DOTALL | re.IGNORECASE)
+
+        if match:
+            json_str = match.group(1)
+            try:
+                return json.loads(json_str)
+            except json.JSONDecodeError:
+                # 如果代码块内的JSON不完整，交由后续方法处理
+                text = json_str
+
+        # 2. 贪婪搜索从第一个'{'到最后一个'}'的最大块
+        try:
+            start = text.find('{')
+            end = text.rfind('}')
+            if start != -1 and end != -1 and start < end:
+                json_str = text[start:end+1]
+                return json.loads(json_str)
+        except json.JSONDecodeError:
+            pass # 失败则继续
+
+        # 3. 逐行解析，适用于简单的单行JSON
         for line in text.splitlines():
             line = line.strip()
-            if line.startswith("{") and line.endswith("}"):
+            if line.startswith('{') and line.endswith('}'):
                 try:
                     return json.loads(line)
                 except json.JSONDecodeError:
                     continue
-
-        # 方式 2：处理 ```json ... ``` 代码块
-        code_block = re.search(r"```json[\s\S]*?```", text, flags=re.I)
-        if code_block:
-            block = code_block.group()
-            block = re.sub(r"```json|```", "", block, flags=re.I).strip()
-            try:
-                return json.loads(block)
-            except json.JSONDecodeError:
-                # 尝试去掉尾随逗号
-                block2 = re.sub(r",([\s]*[}\]])", r"\1", block)
-                try:
-                    return json.loads(block2)
-                except json.JSONDecodeError:
-                    pass
-
-        # 方式 3：正则搜索最大括号段 {...}
-        m = re.search(r"\{[\s\S]*\}", text)
-        if m:
-            candidate = m.group()
-            try:
-                return json.loads(candidate)
-            except json.JSONDecodeError:
-                # 去尾逗号重试
-                candidate2 = re.sub(r",([\s]*[}\]])", r"\1", candidate)
-                try:
-                    return json.loads(candidate2)
-                except json.JSONDecodeError:
-                    pass
-
-        print(f"[WARN] 无法从文本中提取JSON: {text[:100]}...")
+        
+        print(f"[WARN] 无法从文本中提取有效的JSON: {text[:150]}...")
         return None
     
     def get_current_model_info(self):

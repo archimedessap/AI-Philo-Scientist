@@ -22,7 +22,7 @@ def load_theories_from_sources(theories_path: str, schema_version: str = "2.1") 
         schema_version: 要求加载的理论schema版本 ('any' to load all)
         
     Returns:
-        dict: 理论名称到理论数据的映射
+        dict: 理论名称到 (理论数据, 文件路径) 元组的映射
     """
     theories = {}
     
@@ -60,7 +60,8 @@ def load_theories_from_sources(theories_path: str, schema_version: str = "2.1") 
                 theory_name = t.get("name", os.path.basename(theory_file))
                 if theory_name in theories:
                     print(f"[WARN] 发现重复的理论名称 '{theory_name}'，将覆盖旧版本。")
-                theories[theory_name] = t
+                # 保存理论数据和其原始文件路径
+                theories[theory_name] = (t, theory_file)
 
         except Exception as e:
             print(f"[ERROR] 加载理论文件 {theory_file} 时出错: {str(e)}")
@@ -117,7 +118,7 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
         - If the theory is a **modification** or **extension** of SQM, explicitly use the modified equations from the **Formalism** section. Highlight how the `deviations_from_sqm` lead to a different prediction.
     3.  **Calculate**: Compute the final numerical value for the prediction.
     4.  **Justify**: Explain how the derivation is a logical consequence of the theory's specific axioms and mathematical structure.
-
+    
     ## Output Format
     Return your answer as TWO JSON objects (one per line):
     {{"derivation": "Step-by-step derivation using LaTeX for math, explaining each step logically from the theory's perspective."}}
@@ -186,7 +187,7 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
     if value is None:
         print(f"[WARN] 未能从LLM响应中提取有效的预测数值。跳过对实验 '{exp_id}' 的评估。")
         return None
-
+    
     # 计算与实验值的偏差（使用合并后的完整实验数据）
     chi2 = None
     chi2_corrected = None
@@ -291,7 +292,7 @@ def load_experiments_from_directory(experiment_dir, use_instrument_correction=Fa
     
     # 新增: 直接加载所有测量数据到一个字典
     measured_db = {}
-
+    
     for file_path in experiment_files:
         filename = os.path.basename(file_path)
         
@@ -316,7 +317,7 @@ def load_experiments_from_directory(experiment_dir, use_instrument_correction=Fa
             match = re.match(r"(.+?)_setup\.json", filename)
             if match:
                 setup_files[match.group(1)] = file_path
-
+    
     # 现在，根据模式确定要加载哪些实验
     experiments_to_load = {}
     instrument_setups = {}
@@ -334,7 +335,6 @@ def load_experiments_from_directory(experiment_dir, use_instrument_correction=Fa
                 print(f"[INFO] 已加载实验: {exp_id} (原始+修正设置)")
             except Exception as e:
                 print(f"[ERROR] 加载仪器修正实验 {exp_id} 时出错: {e}")
-
     else:
         # 标准模式: 需要 setup (或 setup_corrected) 和 measured 数据
         available_setup_ids = set(setup_files.keys()) | set(setup_corrected_files.keys())
@@ -350,7 +350,7 @@ def load_experiments_from_directory(experiment_dir, use_instrument_correction=Fa
                 print(f"[INFO] 已加载实验: {exp_id} (使用{file_type}设置)")
             except Exception as e:
                 print(f"[ERROR] 加载标准实验 {exp_id} 时出错: {e}")
-                
+    
     return experiments_to_load, instrument_setups, measured_db
 
 def get_file_list(path_spec):
@@ -379,9 +379,10 @@ async def main():
     main_group.add_argument("--max_theories", type=int, default=None, help="Maximum number of theories to evaluate.")
     main_group.add_argument("--max_experiments", type=int, default=None, help="Maximum number of experiments to run for each theory.")
     main_group.add_argument("--chi2_threshold", type=float, default=4.0, help="Chi-squared threshold for determining prediction success.")
-    main_group.add_argument("--use_instrument_correction", action='store_true', help="Enable instrument correction model.")
+    main_group.add_argument("--use_instrument_correction", action='store_true', default=True, help="Enable instrument correction model (default: enabled).")
+    main_group.add_argument("--disable_instrument_correction", action='store_true', help="Disable instrument correction model.")
     main_group.add_argument("--start-at-index", type=int, default=0, help="0-based index of the theory to start evaluation from.")
-
+    
     # --- LLM 相关参数 ---
     model_group = parser.add_argument_group('LLM Configuration')
     model_group.add_argument("--model_source", type=str, default="deepseek", choices=["openai", "deepseek", "google"], help="LLM provider.")
@@ -394,16 +395,20 @@ async def main():
     role_eval_group.add_argument("--role_success_threshold", type=float, default=0.75, help="Success rate threshold for a theory to be passed to role evaluation.")
     role_eval_group.add_argument("--role_model_source", type=str, default="openai", choices=["openai", "deepseek", "google"], help="LLM provider for role evaluation.")
     role_eval_group.add_argument("--role_model_name", type=str, default="gpt-4o-mini", help="Specific model name for role evaluation.")
-
+    
     args = parser.parse_args()
-
+    
+    # 处理仪器修正设置
+    if args.disable_instrument_correction:
+        args.use_instrument_correction = False
+    
     # --- 1. 设置 ---
     # 创建唯一的输出目录
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     run_output_dir = os.path.join(args.output_dir, f"run_{timestamp}_{args.model_name.replace('/', '_')}")
     os.makedirs(run_output_dir, exist_ok=True)
     print(f"[SETUP] Results will be saved in: {run_output_dir}")
-
+    
     # 初始化LLM
     llm = LLMInterface(model_source=args.model_source, model_name=args.model_name)
     print(f"[SETUP] Initialized LLM: {args.model_source}/{args.model_name}")
@@ -441,7 +446,7 @@ async def main():
     print(f"\n[EVAL] Starting evaluation...")
     all_results = []
     
-    for i, (theory_name, theory) in enumerate(theories.items()):
+    for i, (theory_name, (theory_data, theory_file_path)) in enumerate(theories.items()):
         if i < args.start_at_index:
             continue
             
@@ -459,7 +464,7 @@ async def main():
             corrected_setup = instrument_setups.get(exp_id) if args.use_instrument_correction else None
             
             result = await evaluate_theory_experiment(
-                theory=theory,
+                theory=theory_data,
                 setup_exp=setup_exp,
                 measured_data=measured_data,
                 llm=llm,
@@ -512,28 +517,33 @@ async def main():
             if chi2_to_add is not None:
                 theory_performance[t_name]['chi2_sum'] += chi2_to_add
                 theory_performance[t_name]['chi2_list'].append(chi2_to_add)
-
+        
         # 计算成功率和平均chi2
         ranked_theories = []
         for t_name, perf_data in theory_performance.items():
             success_rate = perf_data['success_count'] / perf_data['total_count'] if perf_data['total_count'] > 0 else 0
             average_chi2 = perf_data['chi2_sum'] / len(perf_data['chi2_list']) if perf_data['chi2_list'] else float('inf')
             
+            # 从原始加载的字典中获取文件路径
+            original_theory_data = theories.get(t_name)
+            file_path = original_theory_data[1] if original_theory_data else "Unknown"
+
             ranked_theories.append({
                 "theory_name": t_name,
+                "file_path": str(file_path),
                 "success_rate": success_rate,
                 "average_chi2": average_chi2,
                 "experiments_count": perf_data['total_count']
             })
-            
+        
         # 按成功率降序，平均chi2升序排序
         ranked_theories.sort(key=lambda x: (-x['success_rate'], x['average_chi2']))
-
+        
         final_summary_file = os.path.join(run_output_dir, "final_evaluation_summary.json")
         with open(final_summary_file, "w", encoding="utf-8") as f:
             json.dump(ranked_theories, f, ensure_ascii=False, indent=2)
         print(f"\n[FINAL] Overall experimental evaluation summary saved to: {final_summary_file}")
-
+        
         # 打印实验评估排名
         print("\n" + "="*100)
         print("📊 实验评估排名")
@@ -548,24 +558,26 @@ async def main():
         if args.run_role_evaluation:
             # 筛选高成功率理论
             high_success_theories = [
-                r for r in ranked_theories 
-                if r['success_rate'] >= args.role_success_threshold
+                    r for r in ranked_theories 
+                    if r['success_rate'] >= args.role_success_threshold
             ]
-            
+        
             if high_success_theories:
-                # 调用角色评估模块
-                await run_role_evaluation_for_theories(
-                    high_success_theories=high_success_theories,
-                    all_theories_definitions=theories, # 使用已加载的理论定义
-                    output_dir=run_output_dir, # 在同一运行目录下输出
-                    model_source=args.role_model_source,
-                    model_name=args.role_model_name
-                )
+                    # 修复：创建一个只包含理论数据的字典，以匹配角色评估脚本的接口
+                    definitions_for_role_eval = {name: data for name, (data, path) in theories.items()}
+                    # 调用角色评估模块
+                    await run_role_evaluation_for_theories(
+                        high_success_theories=high_success_theories,
+                        all_theories_definitions=definitions_for_role_eval, # 使用修复后的字典
+                        output_dir=run_output_dir, # 在同一运行目录下输出
+                        model_source=args.role_model_source,
+                        model_name=args.role_model_name
+                    )
             else:
                 print(f"\n[INFO] 没有理论达到 {args.role_success_threshold*100:.0f}% 的成功率阈值，跳过角色评估。")
-
-    else:
-        print("\n[FINAL] No evaluations were successfully completed.")
+                    
+        else:
+            print("\n[FINAL] No evaluations were successfully completed.")
 
     print("\nEvaluation run finished.")
 

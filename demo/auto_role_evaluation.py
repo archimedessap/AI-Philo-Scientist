@@ -29,7 +29,7 @@ async def run_role_evaluation_for_theories(
 ):
     """
     对给定的高成功率理论列表进行角色评估。
-
+    
     Args:
         high_success_theories: 经实验评估筛选出的高成功率理论信息列表。
                                 (e.g., [{'theory_name': 'T1', 'success_rate': 0.9, ...}, ...])
@@ -44,7 +44,7 @@ async def run_role_evaluation_for_theories(
     print("="*50)
     print(f"[INFO] 收到 {len(high_success_theories)} 个理论进行角色评估。")
     print(f"[INFO] 使用模型: {model_source}/{model_name}")
-
+    
     # 1. 初始化LLM和角色评估器
     try:
         llm = LLMInterface(model_name=model_name, model_source=model_source)
@@ -53,26 +53,26 @@ async def run_role_evaluation_for_theories(
     except Exception as e:
         print(f"[ERROR] 初始化角色评估器失败: {str(e)}")
         return
-
+    
     # 2. 创建输出目录
     role_output_dir = os.path.join(output_dir, "role_evaluations")
     os.makedirs(role_output_dir, exist_ok=True)
-
+    
     # 3. 执行角色评估
     role_results = []
-
+    
     for rank_info in high_success_theories:
         theory_name = rank_info['theory_name']
-
+        
         if theory_name not in all_theories_definitions:
             print(f"[WARNING] 未找到理论 '{theory_name}' 的定义，跳过角色评估")
             continue
-
+            
         theory_data = all_theories_definitions[theory_name]
-
+        
         print(f"\n[INFO] 正在对理论 '{theory_name}' 进行角色评估...")
         print(f"       实验成功率: {rank_info['success_rate']*100:.1f}%, 平均χ²: {rank_info['average_chi2']:.4f}")
-
+        
         try:
             # 执行角色评估
             # 将理论数据适配为角色评估器期望的格式
@@ -133,7 +133,7 @@ async def run_role_evaluation_for_theories(
             
         except Exception as e:
             print(f"[ERROR] 评估理论 '{theory_name}' 的角色时出错: {str(e)}")
-            
+    
     # 4. 保存综合结果和排名
     if role_results:
         # 保存角色评估汇总
@@ -252,7 +252,7 @@ async def standalone_auto_role_evaluation(ranking_files: List[str], theories_dir
     if not all_rankings:
         print("[ERROR] 未加载任何排名数据，程序退出。")
         return
-
+    
     # 2. 读取理论定义
     all_theories_definitions = {}
     try:
@@ -270,7 +270,7 @@ async def standalone_auto_role_evaluation(ranking_files: List[str], theories_dir
     except Exception as e:
         print(f"[ERROR] 读取理论定义目录 '{theories_dir}' 失败: {str(e)}")
         return
-
+    
     # 3. 去重并筛选高成功率理论
     seen_theories = set()
     high_success_theories = []
@@ -324,4 +324,4 @@ def main():
     ))
 
 if __name__ == "__main__":
-    main()
+    main() 

@@ -93,6 +93,7 @@ def optimize_once(
             output_dir=str(next_iter_dir),
             model_source=dialog_model_source,
             model_name=dialog_model_name,
+            iteration=it,
         )
 
         history.append(eval_res)
