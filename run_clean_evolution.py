@@ -171,10 +171,15 @@ class CleanEvolutionOrchestrator:
             parent_data = self.manifest['theories'][parent_id]
             src_path = Path(parent_data['file_path'])
             
-            # 使用简化的文件名格式，去掉theory_id前缀
-            # 直接使用原始文件名，这样精炼脚本的文件名匹配逻辑就能正常工作
-            dest_path = temp_theories_dir / src_path.name
+            # 根据理论名称生成标准化的文件名
+            theory_name = parent_data['theory_name']
+            sanitized_name = theory_name.lower().replace(' ', '_').replace('(', '').replace(')', '').replace(',', '').replace('-', '_')
+            dest_filename = f"{sanitized_name}.json"
+            dest_path = temp_theories_dir / dest_filename
+            
+            # 复制文件
             shutil.copy(src_path, dest_path)
+            print(f"    📂 复制: {src_path.name} -> {dest_filename}")
             
             temp_summary.append({
                 "theory_name": parent_data['theory_name'],
@@ -280,10 +285,26 @@ class CleanEvolutionOrchestrator:
             parent_data = self.manifest['theories'][parent_id]
             parent_name = parent_data['theory_name']
             
-            # 查找该理论的精炼结果
-            theory_dirs = list(output_dir.glob(f"*{parent_name.replace(' ', '_')}*"))
-            if not theory_dirs:
-                theory_dirs = list(output_dir.glob("*"))
+            # 生成标准化的理论名称进行匹配
+            sanitized_parent_name = parent_name.lower().replace(' ', '_').replace('(', '').replace(')', '').replace(',', '').replace('-', '_')
+            
+            # 查找该理论的精炼结果 - 使用多种模式匹配
+            theory_dirs = []
+            # 首先尝试精确匹配标准化名称
+            exact_match = output_dir / sanitized_parent_name
+            if exact_match.exists() and exact_match.is_dir():
+                theory_dirs.append(exact_match)
+            else:
+                # 然后尝试模糊匹配
+                theory_dirs = list(output_dir.glob(f"*{sanitized_parent_name}*"))
+                if not theory_dirs:
+                    # 最后尝试原始名称的变体
+                    theory_dirs = list(output_dir.glob(f"*{parent_name.replace(' ', '_')}*"))
+                if not theory_dirs:
+                    # 如果还是找不到，列出所有目录供调试
+                    all_dirs = [d.name for d in output_dir.iterdir() if d.is_dir()]
+                    print(f"  🔍 未找到 {parent_name} 的精炼目录，可用目录: {all_dirs}")
+                    theory_dirs = list(output_dir.glob("*"))
             
             for theory_dir in theory_dirs:
                 if not theory_dir.is_dir():
@@ -486,13 +507,31 @@ class CleanEvolutionOrchestrator:
         """执行系统命令"""
         print(f"[🔧] {stage_name}: {' '.join(cmd)}")
         
+        # 根据阶段设置不同的超时时间
+        timeout_settings = {
+            "理论合成": 7200,      # 2小时 - 合成相对较快
+            "理论评估": 14400,     # 4小时 - 评估需要较长时间
+            "理论精炼": 21600,     # 6小时 - 精炼是最耗时的阶段
+        }
+        
+        # 默认超时时间
+        timeout = 14400  # 4小时
+        
+        # 根据阶段名称选择合适的超时时间
+        for stage_key, stage_timeout in timeout_settings.items():
+            if stage_key in stage_name:
+                timeout = stage_timeout
+                break
+        
+        print(f"[⏰] 超时设置: {timeout//60} 分钟")
+        
         try:
             result = subprocess.run(
                 cmd, 
                 check=True, 
                 capture_output=True, 
                 text=True,
-                timeout=1800
+                timeout=timeout
             )
             print(f"[✅] {stage_name} 成功")
             return True
@@ -503,7 +542,7 @@ class CleanEvolutionOrchestrator:
             return False
             
         except subprocess.TimeoutExpired:
-            print(f"[⏰] {stage_name} 超时")
+            print(f"[⏰] {stage_name} 超时 ({timeout//60} 分钟)")
             return False
 
 
