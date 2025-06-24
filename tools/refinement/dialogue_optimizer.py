@@ -143,8 +143,37 @@ def improve(
     except Exception:
         pass
 
+    # 智能文件命名策略：避免递归前缀，确保N代演进兼容性
     base_name = os.path.basename(theory_path)
-    new_path = os.path.join(output_dir, f"improved_{base_name}")
+    
+    # 移除文件扩展名，分别处理
+    name_part, ext_part = os.path.splitext(base_name)
+    
+    # 递归移除所有改进相关的前缀，直到获得核心理论名
+    import re
+    clean_name = name_part
+    
+    # 定义所有可能的前缀模式（包括迭代标记）
+    prefix_patterns = [
+        r"^improved_",           # improved_
+        r"^refined_",            # refined_
+        r"^enhanced_",           # enhanced_
+        r"^iter\d+_",           # iter0_, iter1_, iter2_...
+    ]
+    
+    # 反复应用所有模式，直到没有更多匹配
+    changed = True
+    while changed:
+        changed = False
+        for pattern in prefix_patterns:
+            if re.match(pattern, clean_name):
+                clean_name = re.sub(pattern, "", clean_name)
+                changed = True
+    
+    # 生成新的文件名：始终使用简单的"improved_"前缀
+    new_name = f"improved_{clean_name}{ext_part}"
+    
+    new_path = os.path.join(output_dir, new_name)
 
     if not new_json:
         # 解析失败，复制原文件

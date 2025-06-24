@@ -69,6 +69,12 @@ def attach_json_path(items: List[Dict], theories_root: str):
     slug_map = _build_slug_mapping(theories_root)
 
     for it in items:
+        # 如果已经有file_path字段且文件存在，直接使用它作为json_path
+        if "file_path" in it and os.path.exists(it["file_path"]):
+            it["json_path"] = it["file_path"]
+            continue
+            
+        # 否则使用传统的slugify匹配逻辑
         theory_name = it["theory_name"]
         slug = slugify(theory_name).lower()
         if slug in slug_map:

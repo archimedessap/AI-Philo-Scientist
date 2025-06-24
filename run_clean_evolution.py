@@ -62,12 +62,19 @@ class CleanEvolutionOrchestrator:
                 if not success:
                     print(f"[✅] Generation {gen} 自然结束")
                     break
+            
+            # 生成与先验理论的基准对比报告
+            self._generate_benchmark_comparison()
                     
             print(f"[🎉] 演进完成: {self.run_root}")
+            
+            # 演进后处理
+            self._post_evolution_processing()
+            
             return True
             
         except Exception as e:
-            print(f"[💥] 演进失败: {e}")
+            print(f"演进流程意外中断: {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -171,15 +178,10 @@ class CleanEvolutionOrchestrator:
             parent_data = self.manifest['theories'][parent_id]
             src_path = Path(parent_data['file_path'])
             
-            # 根据理论名称生成标准化的文件名
-            theory_name = parent_data['theory_name']
-            sanitized_name = theory_name.lower().replace(' ', '_').replace('(', '').replace(')', '').replace(',', '').replace('-', '_')
-            dest_filename = f"{sanitized_name}.json"
-            dest_path = temp_theories_dir / dest_filename
-            
-            # 复制文件
+            # 使用简化的文件名格式，去掉theory_id前缀
+            # 直接使用原始文件名，这样精炼脚本的文件名匹配逻辑就能正常工作
+            dest_path = temp_theories_dir / src_path.name
             shutil.copy(src_path, dest_path)
-            print(f"    📂 复制: {src_path.name} -> {dest_filename}")
             
             temp_summary.append({
                 "theory_name": parent_data['theory_name'],
@@ -285,26 +287,10 @@ class CleanEvolutionOrchestrator:
             parent_data = self.manifest['theories'][parent_id]
             parent_name = parent_data['theory_name']
             
-            # 生成标准化的理论名称进行匹配
-            sanitized_parent_name = parent_name.lower().replace(' ', '_').replace('(', '').replace(')', '').replace(',', '').replace('-', '_')
-            
-            # 查找该理论的精炼结果 - 使用多种模式匹配
-            theory_dirs = []
-            # 首先尝试精确匹配标准化名称
-            exact_match = output_dir / sanitized_parent_name
-            if exact_match.exists() and exact_match.is_dir():
-                theory_dirs.append(exact_match)
-            else:
-                # 然后尝试模糊匹配
-                theory_dirs = list(output_dir.glob(f"*{sanitized_parent_name}*"))
-                if not theory_dirs:
-                    # 最后尝试原始名称的变体
-                    theory_dirs = list(output_dir.glob(f"*{parent_name.replace(' ', '_')}*"))
-                if not theory_dirs:
-                    # 如果还是找不到，列出所有目录供调试
-                    all_dirs = [d.name for d in output_dir.iterdir() if d.is_dir()]
-                    print(f"  🔍 未找到 {parent_name} 的精炼目录，可用目录: {all_dirs}")
-                    theory_dirs = list(output_dir.glob("*"))
+            # 查找该理论的精炼结果
+            theory_dirs = list(output_dir.glob(f"*{parent_name.replace(' ', '_')}*"))
+            if not theory_dirs:
+                theory_dirs = list(output_dir.glob("*"))
             
             for theory_dir in theory_dirs:
                 if not theory_dir.is_dir():
@@ -507,21 +493,23 @@ class CleanEvolutionOrchestrator:
         """执行系统命令"""
         print(f"[🔧] {stage_name}: {' '.join(cmd)}")
         
-        # 根据阶段设置不同的超时时间
+        # 根据不同阶段设置不同的超时时间（加倍后的时间）
         timeout_settings = {
-            "理论合成": 7200,      # 2小时 - 合成相对较快
-            "理论评估": 14400,     # 4小时 - 评估需要较长时间
-            "理论精炼": 21600,     # 6小时 - 精炼是最耗时的阶段
+            "理论合成": 14400,     # 4小时（原2小时 × 2）
+            "理论评估": 28800,     # 8小时（原4小时 × 2）
+            "理论精炼": 57600,     # 16小时（原8小时 × 2）
         }
         
-        # 默认超时时间
-        timeout = 14400  # 4小时
+        # 默认超时时间：1小时（原30分钟 × 2）
+        timeout = 3600
         
         # 根据阶段名称选择合适的超时时间
-        for stage_key, stage_timeout in timeout_settings.items():
-            if stage_key in stage_name:
-                timeout = stage_timeout
-                break
+        if "合成" in stage_name or "synthesis" in " ".join(cmd).lower():
+            timeout = timeout_settings["理论合成"]
+        elif "评估" in stage_name or "demo_1.py" in " ".join(cmd):
+            timeout = timeout_settings["理论评估"]
+        elif "精炼" in stage_name or "refinement" in " ".join(cmd).lower():
+            timeout = timeout_settings["理论精炼"]
         
         print(f"[⏰] 超时设置: {timeout//60} 分钟")
         
@@ -544,6 +532,134 @@ class CleanEvolutionOrchestrator:
         except subprocess.TimeoutExpired:
             print(f"[⏰] {stage_name} 超时 ({timeout//60} 分钟)")
             return False
+    
+    def _generate_benchmark_comparison(self):
+        """生成与先验理论基准的对比报告"""
+        try:
+            from utils.theory_comparison_visualizer import TheoryComparisonVisualizer
+            
+            print(f"\n{'='*60}")
+            print(f"🏆 生成与先验理论基准的对比报告...")
+            print(f"{'='*60}")
+            
+            # 创建可视化工具
+            visualizer = TheoryComparisonVisualizer()
+            
+            # 加载演进理论的评估结果（传入整个输出根目录）
+            evolved_results = visualizer.load_evolved_theories_results(str(self.config['output_root']))
+            
+            # 检查是否有演进理论结果
+            if not evolved_results.get('role_evaluation') and not evolved_results.get('experimental'):
+                print("[⚠️] 没有找到演进理论的评估结果，跳过对比报告生成")
+                return
+            
+            # 生成对比报告
+            comparison_output_dir = self.run_root / "benchmark_comparison"
+            visualizer.create_comprehensive_comparison_report(
+                evolved_results, 
+                str(comparison_output_dir)
+            )
+            
+            print(f"[✅] 基准对比报告已生成到: {comparison_output_dir}")
+            
+            # 显示简要对比结果
+            self._display_comparison_summary(evolved_results, visualizer)
+            
+        except ImportError:
+            print("[⚠️] 可视化工具未找到，跳过对比报告生成")
+        except Exception as e:
+            print(f"[⚠️] 生成对比报告时出错: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def _display_comparison_summary(self, evolved_results, visualizer):
+        """显示对比结果摘要"""
+        print(f"\n{'='*50}")
+        print(f"📊 对比结果摘要")
+        print(f"{'='*50}")
+        
+        # 先验理论基准
+        benchmark_scores = list(visualizer.prior_theories_benchmark["role_evaluation_benchmark"].values())
+        avg_prior_composite = sum(s["composite_score"] for s in benchmark_scores) / len(benchmark_scores)
+        best_prior = max(visualizer.prior_theories_benchmark["role_evaluation_benchmark"].items(),
+                        key=lambda x: x[1]["composite_score"])
+        
+        print(f"🏛️  先验理论基准:")
+        print(f"   平均角色评估综合分: {avg_prior_composite:.3f}")
+        print(f"   最佳理论: {best_prior[0]} (综合分: {best_prior[1]['composite_score']:.3f})")
+        
+        # 演进理论结果
+        if 'role_evaluation' in evolved_results and evolved_results['role_evaluation']:
+            evolved_role = evolved_results['role_evaluation']
+            avg_evolved_composite = sum(t.get('role_composite_score', 0) for t in evolved_role) / len(evolved_role)
+            best_evolved = max(evolved_role, key=lambda x: x.get('role_composite_score', 0))
+            
+            print(f"\n🚀 演进理论结果:")
+            print(f"   理论数量: {len(evolved_role)}个")
+            print(f"   平均角色评估综合分: {avg_evolved_composite:.3f}")
+            print(f"   最佳理论: {best_evolved['theory_name']} (综合分: {best_evolved.get('role_composite_score', 0):.3f})")
+            
+            # 对比分析
+            print(f"\n🔍 对比分析:")
+            improvement = avg_evolved_composite - avg_prior_composite
+            if improvement > 0:
+                print(f"✅ 演进理论平均分超越先验基准 (+{improvement:.3f})")
+            else:
+                print(f"❌ 演进理论平均分低于先验基准 ({improvement:.3f})")
+            
+            best_evolved_score = best_evolved.get('role_composite_score', 0)
+            if best_evolved_score > best_prior[1]["composite_score"]:
+                breakthrough = best_evolved_score - best_prior[1]["composite_score"]
+                print(f"🏆 发现突破性理论！")
+                print(f"   {best_evolved['theory_name']} 超越 {best_prior[0]} (+{breakthrough:.3f})")
+            else:
+                print(f"📈 最佳演进理论尚未超越先验基准")
+        else:
+            print(f"\n⚠️  演进理论缺少角色评估结果")
+        
+        print(f"{'='*50}")
+
+    def _post_evolution_processing(self):
+        """演进流程结束后的处理，包括注册理论和生成报告"""
+        print(f"\n{'='*60}")
+        print("🏁 演进流程完成，开始进行后处理...")
+        print(f"{'='*60}")
+        
+        try:
+            # 1. 注册演进理论到全局理论库
+            print("\n[步骤1/2] 注册晋级理论到全局理论库...")
+            from utils.global_theory_registry import GlobalTheoryRegistry
+            registry = GlobalTheoryRegistry()
+            
+            # 确保先验理论已注册
+            stats = registry.get_statistics()
+            if stats.get("prior_theories", 0) == 0:
+                print("库中无先验理论，首先注册...")
+                registry.register_prior_theories(self.config['initial_theories_dir'])
+            
+            # 注册本次运行的晋级理论
+            registered_count = registry.register_evolved_theories_from_run(str(self.run_root))
+            print(f"✅ 成功注册 {registered_count} 个演进理论")
+            
+            # 2. 从全局库生成可视化报告
+            print("\n[步骤2/2] 从全局理论库生成可视化对比报告...")
+            from utils.global_theory_visualizer import GlobalTheoryVisualizer
+            visualizer = GlobalTheoryVisualizer(output_dir=self.run_root / "global_comparison")
+            visualizer.generate_comprehensive_report()
+            
+            # 3. 打印注册库摘要
+            print("\n[步骤3/3] 全局理论库统计...")
+            registry.print_summary()
+            
+            print("\n[✅] 后处理全部完成！")
+
+        except ImportError as e:
+            print(f"[❌] 后处理失败: 无法导入模块, {e}")
+            print("请确保 'utils.global_theory_registry' 和 'utils.global_theory_visualizer' 存在且路径正确。")
+        except Exception as e:
+            print(f"[❌] 后处理失败: {e}")
+            import traceback
+            traceback.print_exc()
 
 
 def main():

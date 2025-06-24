@@ -20,133 +20,276 @@ import sys
 import argparse
 import json
 import shutil
+import glob
 from pathlib import Path
 import subprocess
+import os
 
 # NEW: Import manifest tools
-import manifest_tools
+try:
+    import manifest_tools
+    MANIFEST_AVAILABLE = True
+except ImportError:
+    MANIFEST_AVAILABLE = False
+    print("[WARN] manifest_tools not available, running in legacy mode")
 
 def run_cmd(cmd: list[str]):
     """Wraps subprocess.call and prints the command."""
     print("\n$ " + " ".join(cmd))
     return subprocess.call(cmd)
 
-def main():
-    parser = argparse.ArgumentParser(description="M3 Manifest-Aware Refinement Adapter")
-    # NEW: Manifest-aware arguments
-    parser.add_argument("--manifest-path", required=True, type=Path, help="Path to the master run_manifest.json")
-    parser.add_argument("--theory-ids", required=True, help="Comma-separated list of theory IDs to refine")
-    parser.add_argument("--output-dir", required=True, type=Path, help="Directory to store all refinement outputs")
-    
-    # Arguments to be passed through to the legacy script
-    parser.add_argument("--top-n", type=int, default=5, help="筛选前 N")
-    parser.add_argument("--eval_mode", choices=["quick", "real"], default="real", help="评估模式")
-    parser.add_argument("--max-iters", type=int, default=3, help="深度优化最大迭代次数")
-    parser.add_argument("--min-improve", type=float, default=0.05, help="视为有效提升的最小 Δ 分")
-    parser.add_argument("--judge_model_source", default="deepseek")
-    parser.add_argument("--judge_model_name", default="deepseek-reasoner")
-    parser.add_argument("--dialog_model_source", default="deepseek")
-    parser.add_argument("--dialog_model_name", default="deepseek-reasoner")
-    args = parser.parse_args()
+def ensure_directory_exists(directory):
+    """确保目录存在，如果不存在则创建"""
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        print(f"[INFO] 创建目录: {directory}")
 
-    # --- 1. Load Manifest and Prepare Inputs for Legacy Script ---
-    print("[INFO] Loading manifest and preparing inputs for legacy refinement loop...")
-    manifest = manifest_tools.load_manifest(args.manifest_path)
-    theory_ids = args.theory_ids.split(',')
+def load_theories_from_directory(theories_dir):
+    """从目录加载理论文件"""
+    theories = {}
     
-    run_root = args.output_dir
-    run_root.mkdir(parents=True, exist_ok=True)
+    theory_files = glob.glob(os.path.join(theories_dir, "*.json"))
+    print(f"[INFO] 在目录 {theories_dir} 中找到 {len(theory_files)} 个理论文件")
     
-    temp_theories_root = run_root / "refinement_input_theories"
-    temp_theories_root.mkdir()
-    
-    temp_summary_data = []
-    name_to_id_map = {}
-    for tid in theory_ids:
-        details = manifest["theories"][tid]
-        src_path = Path(details["file_path"])
-        dest_path = temp_theories_root / f"{tid}_{src_path.name}"
-        shutil.copy(src_path, dest_path)
-        
-        entry = {
-            "theory_name": details["theory_name"],
-            "file_path": str(dest_path.resolve()),
-            **details.get("scores", {}).get("experimental", {})
-        }
-        temp_summary_data.append(entry)
-        name_to_id_map[details["theory_name"]] = tid
-
-    temp_summary_path = run_root / "temp_summary_for_loop.json"
-    with open(temp_summary_path, 'w', encoding='utf-8') as f:
-        json.dump(temp_summary_data, f, indent=2)
-
-    # --- 2. Call the Legacy Refinement Loop ---
-    depth_output_dir = run_root / "depth_output"
-    cmd_refine_loop = [
-        "python", "run_refinement_loop.py",
-        "--summary_file", str(temp_summary_path),
-        "--theories_root", str(temp_theories_root),
-        "--output_root", str(depth_output_dir),
-        "--top_n", str(args.top_n),
-        "--min_improve", str(args.min_improve),
-        "--eval_mode", args.eval_mode,
-        "--max_iters", str(args.max_iters),
-        "--judge_model_source", args.judge_model_source,
-        "--judge_model_name", args.judge_model_name,
-        "--dialog_model_source", args.dialog_model_source,
-        "--dialog_model_name", args.dialog_model_name,
-    ]
-    if run_cmd(cmd_refine_loop) != 0:
-        print("[FATAL] Legacy refinement loop script failed.")
-        sys.exit(1)
-        
-    # --- 3. Absorb Results Back into Manifest ---
-    print("\n[INFO] Refinement loop finished. Absorbing results into manifest...")
-    summaries_dir = depth_output_dir / "depth_runs"
-    if not summaries_dir.exists():
-        print("[WARN] No 'depth_runs' output directory found. Skipping absorption.")
-        return
-
-    for summary_file in summaries_dir.rglob("summary.json"):
-        with open(summary_file, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        
-        parent_theory_name = data.get("theory_name")
-        parent_id = name_to_id_map.get(parent_theory_name)
-        if not parent_id:
-            print(f"[WARN] Could not find parent ID for theory '{parent_theory_name}' in manifest.")
-            continue
+    for theory_file in theory_files:
+        try:
+            with open(theory_file, 'r', encoding='utf-8') as f:
+                theory = json.load(f)
             
-        # If the refinement was successful, find the new candidate file
-        # Heuristic: final score > baseline score
-        if data.get("final_score", 0) > (data.get("scores", [0])[0]):
-            theory_output_dir = summary_file.parent
-            try:
-                candidate_files = sorted(list(theory_output_dir.glob("candidate_*.json")))
-                if not candidate_files:
-                    continue
-                best_candidate_path = candidate_files[-1]
+            theory_name = theory.get("name", os.path.basename(theory_file))
+            theories[theory_name] = theory
+            
+        except Exception as e:
+            print(f"[ERROR] 加载理论文件 {theory_file} 时出错: {str(e)}")
+    
+    return theories
 
-                with open(best_candidate_path, 'r', encoding='utf-8') as f:
-                    refined_data = json.load(f)
-
-                # Register the new variant in the manifest
-                variant_id = manifest_tools.register_refined_variant(
-                    manifest=manifest,
-                    parent_theory_id=parent_id,
-                    refined_theory_data=refined_data,
-                    refined_file_path=best_candidate_path,
-                    refinement_run_dir=theory_output_dir
-                )
-                # Optionally, add the refinement score to the new variant
-                manifest["theories"][variant_id]["scores"]["refinement_role_score"] = data.get("final_score")
-
-            except (FileNotFoundError, IndexError) as e:
-                print(f"[WARN] Could not find a candidate file for '{parent_theory_name}' despite score improvement. Error: {e}")
-
-    # --- 4. Save the Updated Manifest ---
-    manifest_tools.save_manifest(manifest, args.manifest_path)
-    print("🏆 Refinement complete. Manifest has been updated.")
+def main():
+    parser = argparse.ArgumentParser(description="M3自动精炼系统")
+    
+    # 支持多种调用方式的参数
+    parser.add_argument("--run_dir", type=str, help="运行目录（robust_evolution_runner模式）")
+    parser.add_argument("--target_generation", type=int, help="目标代际（robust_evolution_runner模式）")
+    parser.add_argument("--input_theories_dir", type=str, help="输入理论目录（直接模式）")
+    parser.add_argument("--output_dir", type=str, help="输出目录")
+    parser.add_argument("--summary_file", type=str, help="Summary文件路径（文件模式）")
+    parser.add_argument("--theories_root", type=str, help="理论根目录（文件模式）")
+    parser.add_argument("--manifest-path", type=str, help="Manifest文件路径（manifest模式）")
+    parser.add_argument("--theory-ids", type=str, help="理论ID列表（manifest模式）")
+    parser.add_argument("--output-dir", type=str, help="输出目录（manifest模式）")
+    
+    # 通用参数
+    parser.add_argument("--target_score", type=float, default=0.7, help="目标分数阈值")
+    parser.add_argument("--improvement_threshold", type=float, default=0.02, help="改进阈值")
+    parser.add_argument("--min_improvement", type=float, help="最小改进阈值（兼容性）")
+    parser.add_argument("--max_iterations", type=int, default=3, help="最大迭代次数")
+    parser.add_argument("--max_iters", type=int, help="最大迭代次数（兼容性）")
+    parser.add_argument("--eval_mode", type=str, default="real", choices=["fast", "real"], help="评估模式")
+    parser.add_argument("--model_source", type=str, default="deepseek", help="LLM来源")
+    parser.add_argument("--model_name", type=str, default="deepseek-reasoner", help="LLM模型")
+    
+    # 其他兼容性参数
+    parser.add_argument("--top_n", type=int, default=5, help="选择前N个理论")
+    parser.add_argument("--top-n", type=int, help="选择前N个理论（manifest模式）")
+    parser.add_argument("--min-improve", type=float, help="最小改进阈值（manifest模式）")
+    parser.add_argument("--max-iters", type=int, help="最大迭代次数（manifest模式）")
+    parser.add_argument("--judge_model_source", type=str, help="评审模型来源")
+    parser.add_argument("--judge_model_name", type=str, help="评审模型名称")
+    parser.add_argument("--dialog_model_source", type=str, help="对话模型来源")
+    parser.add_argument("--dialog_model_name", type=str, help="对话模型名称")
+    
+    args = parser.parse_args()
+    
+    # 参数标准化和兼容性处理
+    max_iterations = args.max_iters or getattr(args, 'max-iters', None) or args.max_iterations
+    improvement_threshold = args.min_improvement or getattr(args, 'min-improve', None) or args.improvement_threshold
+    output_dir = args.output_dir or getattr(args, 'output-dir', None)
+    
+    # 根据调用模式确定输入和输出
+    if args.run_dir and args.target_generation is not None:
+        # robust_evolution_runner模式
+        print(f"[INFO] 运行在robust_evolution_runner模式")
+        print(f"[INFO] 运行目录: {args.run_dir}")
+        print(f"[INFO] 目标代际: {args.target_generation}")
+        
+        # 在这种模式下，我们需要从manifest中找到上一代的优胜理论
+        run_dir = Path(args.run_dir)
+        manifest_path = run_dir / "run_manifest.json"
+        
+        if not manifest_path.exists():
+            print(f"[ERROR] 未找到manifest文件: {manifest_path}")
+            return
+        
+        if not MANIFEST_AVAILABLE:
+            print("[ERROR] robust_evolution_runner模式需要manifest_tools")
+            return
+        
+        # 设置输出目录
+        if not output_dir:
+            output_dir = str(run_dir / f"generation_{args.target_generation}" / "refinement")
+        
+        # 加载manifest并找到需要精炼的理论
+        manifest = manifest_tools.load_manifest(manifest_path)
+        
+        # 找到上一代的promoted理论
+        prev_generation = args.target_generation - 1
+        promoted_theories = {}
+        for theory_id, theory_data in manifest['theories'].items():
+            if (theory_data['generation'] == prev_generation and 
+                theory_data.get('status') == 'promoted'):
+                promoted_theories[theory_id] = theory_data
+        
+        if not promoted_theories:
+            print(f"[INFO] 第{prev_generation}代没有找到promoted理论，精炼完成")
+            return
+        
+        print(f"[INFO] 找到 {len(promoted_theories)} 个需要精炼的理论")
+        
+        # 创建临时目录和文件
+        ensure_directory_exists(output_dir)
+        temp_dir = Path(output_dir) / "temp"
+        temp_dir.mkdir(exist_ok=True)
+        temp_theories_dir = temp_dir / "theories"
+        temp_theories_dir.mkdir(exist_ok=True)
+        
+        # 复制理论文件并创建summary
+        summary_data = []
+        for theory_id, theory_data in promoted_theories.items():
+            src_path = Path(theory_data['file_path'])
+            dest_path = temp_theories_dir / src_path.name
+            shutil.copy(src_path, dest_path)
+            
+            summary_data.append({
+                "theory_name": theory_data['theory_name'],
+                "file_path": str(dest_path),
+                "success_rate": theory_data.get('score', 0.8),
+                "composite_score": theory_data.get('score', 0.8)
+            })
+        
+        temp_summary_path = temp_dir / "summary.json"
+        with open(temp_summary_path, 'w', encoding='utf-8') as f:
+            json.dump(summary_data, f, ensure_ascii=False, indent=2)
+            
+        summary_file = str(temp_summary_path)
+        theories_root = str(temp_theories_dir)
+        top_n = len(promoted_theories)
+        
+    elif args.input_theories_dir:
+        # 直接模式
+        print("[INFO] 运行在直接模式")
+        theories_root = args.input_theories_dir
+        
+        if not output_dir:
+            print("[ERROR] 直接模式需要指定--output_dir")
+            return
+        
+        # 创建临时summary文件
+        ensure_directory_exists(output_dir)
+        temp_summary_path = os.path.join(output_dir, "temp_summary.json")
+        
+        theories = load_theories_from_directory(theories_root)
+        summary_data = []
+        for theory_name, theory_data in theories.items():
+            # 找到对应的文件路径
+            theory_files = glob.glob(os.path.join(theories_root, "*.json"))
+            theory_file = None
+            for tf in theory_files:
+                with open(tf, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if data.get("name") == theory_name:
+                        theory_file = tf
+                        break
+            
+            if theory_file:
+                summary_data.append({
+                    "theory_name": theory_name,
+                    "file_path": theory_file,
+                    "success_rate": 0.8,
+                    "composite_score": 0.8
+                })
+        
+        with open(temp_summary_path, 'w', encoding='utf-8') as f:
+            json.dump(summary_data, f, ensure_ascii=False, indent=2)
+        
+        summary_file = temp_summary_path
+        top_n = len(summary_data)
+        
+    elif args.summary_file and args.theories_root:
+        # 文件模式（如run_feedback_cycle.py调用）
+        print("[INFO] 运行在文件模式")
+        summary_file = args.summary_file
+        theories_root = args.theories_root
+        
+        if not output_dir:
+            print("[ERROR] 文件模式需要指定输出目录")
+            return
+        
+        # 从summary文件读取理论数量
+        with open(summary_file, 'r', encoding='utf-8') as f:
+            summary_data = json.load(f)
+        top_n = getattr(args, 'top-n', None) or args.top_n or len(summary_data)
+        
+    else:
+        print("[ERROR] 必须指定运行模式的参数")
+        print("支持的模式：")
+        print("1. robust_evolution_runner模式: --run_dir + --target_generation")
+        print("2. 直接模式: --input_theories_dir + --output_dir")
+        print("3. 文件模式: --summary_file + --theories_root + --output_dir")
+        return
+    
+    # 调用run_refinement_loop.py
+    refinement_output = os.path.join(output_dir, "refinement_output")
+    
+    cmd = [
+        "python", "run_refinement_loop.py",
+        "--summary_file", summary_file,
+        "--theories_root", theories_root,
+        "--output_root", refinement_output,
+        "--top_n", str(top_n),
+        "--max_iters", str(max_iterations),
+        "--min_improve", str(improvement_threshold),
+        "--eval_mode", args.eval_mode,
+        "--judge_model_source", args.judge_model_source or args.model_source,
+        "--judge_model_name", args.judge_model_name or args.model_name,
+        "--dialog_model_source", args.dialog_model_source or args.model_source,
+        "--dialog_model_name", args.dialog_model_name or args.model_name
+    ]
+    
+    print(f"[INFO] 调用精炼循环...")
+    result = run_cmd(cmd)
+    
+    if result == 0:
+        print(f"[INFO] 精炼完成，结果保存在: {refinement_output}")
+        
+        # 如果是robust_evolution_runner模式，需要将结果注册回manifest
+        if args.run_dir and args.target_generation is not None and MANIFEST_AVAILABLE:
+            print("[INFO] 注册精炼结果到manifest...")
+            # 查找精炼结果文件
+            depth_runs_dir = Path(refinement_output) / "depth_runs"
+            if depth_runs_dir.exists():
+                improved_files = list(depth_runs_dir.rglob("improved_*.json"))
+                manifest = manifest_tools.load_manifest(manifest_path)
+                
+                for improved_file in improved_files:
+                    try:
+                        with open(improved_file, 'r', encoding='utf-8') as f:
+                            theory_data = json.load(f)
+                        
+                        # 注册新的精炼理论
+                        theory_id = manifest_tools.register_theory_in_manifest(
+                            manifest, theory_data, improved_file, generation=args.target_generation
+                        )
+                        theory_name = theory_data.get('name', 'Unknown')
+                        print(f"  ✅ 精炼理论: {theory_name} -> {theory_id}")
+                        
+                    except Exception as e:
+                        print(f"  ❌ 无法注册精炼理论 {improved_file}: {e}")
+                
+                manifest_tools.save_manifest(manifest, manifest_path)
+                print(f"[INFO] 精炼结果已注册到manifest")
+            
+    else:
+        print(f"[ERROR] 精炼失败，返回码: {result}")
 
 if __name__ == "__main__":
     main() 
