@@ -6,13 +6,58 @@
     "status": "validated",
     "lineage": {
       "method": "human_authored",
-      "parents": ["Copenhagen Interpretation"],
+      "parents": [
+        "Copenhagen Interpretation"
+      ],
       "generation_prompt_summary": "Formulated by Ghirardi, Rimini, and Weber in 1986 to solve the measurement problem by unifying the dynamics of wave function evolution and collapse into a single, modified stochastic equation."
     },
-    "tags": ["realism", "stochastic-collapse", "non-deterministic", "modified-dynamics", "macro-realism"]
+    "tags": [
+      "realism",
+      "stochastic-collapse",
+      "non-deterministic",
+      "modified-dynamics",
+      "macro-realism"
+    ],
+    "mathematical_classification": {
+      "type": "modified_qm",
+      "uses_standard_qm_math": false,
+      "analysis": {
+        "mathematical_relation": {
+          "type": "modification",
+          "summary": "This theory modifies the Schrödinger equation by adding a non-linear and stochastic term, resulting in a new universal dynamical equation.",
+          "consistency_with_sqm": {
+            "is_consistent_in_limit": true,
+            "limit_description": "Its predictions are statistically indistinguishable from SQM for all experiments conducted to date, provided the new constants (λ and r_c) are chosen appropriately (λ very small, r_c not too large or small).",
+            "conditions_for_consistency": "In the limit where the collapse rate λ approaches zero, the theory's dynamical equation reverts to the standard Schrödinger equation."
+          }
+        },
+        "uses_standard_equations": true,
+        "has_modifications": true,
+        "modification_evidence": [
+          "Found 'non-linear' in formalism",
+          "Found 'stochastic' in formalism",
+          "Found 'collapse' in formalism",
+          "Found 'localization' in formalism",
+          "Found 'spontaneous' in formalism",
+          "Found 'stochastic' in core_principles",
+          "Found 'collapse' in core_principles",
+          "Found 'localization' in core_principles",
+          "Found 'spontaneous' in core_principles",
+          "Found 'stochastic' in predictions_and_verifiability",
+          "Found 'collapse' in predictions_and_verifiability",
+          "Found 'spontaneous' in predictions_and_verifiability",
+          "New parameter: lambda",
+          "New parameter: r_c"
+        ],
+        "standard_evidence": [
+          "Standard Schrödinger equation found"
+        ],
+        "confidence": 0.8
+      },
+      "classifier_version": "1.0"
+    }
   },
   "summary": "Objective Collapse theories, exemplified by the GRW model, propose that wave function collapse is a real, physical process that happens spontaneously and randomly for all particles, independent of measurement or observers. The Schrödinger equation is modified to include a non-linear, stochastic term that causes the wave function of any single particle to spontaneously localize in space at a certain rate. For microscopic systems, this is exceedingly rare, but for macroscopic objects (containing billions of particles), the collective effect ensures an almost instantaneous collapse, thus explaining the emergence of a classical world.",
-  
   "core_principles": [
     {
       "principle": "Unified Dynamics",
@@ -30,10 +75,11 @@
       "implication": "Provides a dynamical explanation for why macroscopic objects are always in definite states, while microscopic objects can remain in superposition for long periods."
     }
   ],
-
   "philosophy": {
     "ontology": {
-      "fundamental_entities": ["The wave function Ψ, which is considered a real, physical field representing the density of matter in space."],
+      "fundamental_entities": [
+        "The wave function Ψ, which is considered a real, physical field representing the density of matter in space."
+      ],
       "nature_of_spacetime": "Assumes a classical, pre-existing spacetime background."
     },
     "epistemology": {
@@ -46,7 +92,6 @@
       "realism": "Strongly realist. The wave function describes the 'density of stuff' in the universe, and it is always in a definite (though perhaps spread-out) state."
     }
   },
-
   "mathematical_relation_to_sqm": {
     "type": "modification",
     "summary": "This theory modifies the Schrödinger equation by adding a non-linear and stochastic term, resulting in a new universal dynamical equation.",
@@ -56,20 +101,25 @@
       "conditions_for_consistency": "In the limit where the collapse rate λ approaches zero, the theory's dynamical equation reverts to the standard Schrödinger equation."
     }
   },
-  
   "formalism": {
     "axioms": [
-      {"axiom": "The state of a system is described by a wave function Ψ in configuration space."},
-      {"axiom": "At random times, the wave function undergoes a spontaneous localization (collapse) process."},
-      {"axiom": "Between collapses, the wave function evolves according to the standard Schrödinger equation."}
+      {
+        "axiom": "The state of a system is described by a wave function Ψ in configuration space."
+      },
+      {
+        "axiom": "At random times, the wave function undergoes a spontaneous localization (collapse) process."
+      },
+      {
+        "axiom": "Between collapses, the wave function evolves according to the standard Schrödinger equation."
+      }
     ],
     "comparison_with_sqm": [
-        {
-            "aspect": "Dynamics",
-            "sqm": "Dualistic evolution: deterministic, linear Schrödinger equation + postulated, non-linear collapse at measurement.",
-            "this_theory": "A single, unified, non-linear, and stochastic evolution equation that incorporates both aspects.",
-            "difference_type": "dynamical_modification"
-        }
+      {
+        "aspect": "Dynamics",
+        "sqm": "Dualistic evolution: deterministic, linear Schrödinger equation + postulated, non-linear collapse at measurement.",
+        "this_theory": "A single, unified, non-linear, and stochastic evolution equation that incorporates both aspects.",
+        "difference_type": "dynamical_modification"
+      }
     ],
     "equations": {
       "state_evolution": "d|Ψ(t)⟩ = [-i/ħ * H dt + Σ_k (L_k - ⟨L_k⟩) dN_k(t)] |Ψ(t)⟩",
@@ -77,13 +127,13 @@
       "born_rule_status": "Derived. The probability of a measurement outcome is a consequence of the probability of collapses occurring in the corresponding region of space."
     },
     "constants_and_parameters": {
-       "lambda": {
+      "lambda": {
         "description": "Collapse Rate. The probability per unit time for a single particle to undergo a spontaneous localization.",
         "type": "new_parameter",
         "value": "≈ 10⁻¹⁶ s⁻¹ (Adler's proposed value)",
         "constraint": "Empirically determined, must be small enough to not contradict observations of microscopic interference."
       },
-       "r_c": {
+      "r_c": {
         "description": "Localization Width. The spatial width of the Gaussian function that localizes the wave function.",
         "type": "new_parameter",
         "value": "≈ 10⁻⁷ m",
@@ -91,7 +141,6 @@
       }
     }
   },
-
   "semantics": {
     "entities": {
       "Ψ": {
@@ -100,14 +149,13 @@
       }
     },
     "operators_and_functions": {
-       "L_k": {
+      "L_k": {
         "description": "The localization operator, which is a narrowly peaked Gaussian function centered at a random position k.",
         "maps_from": "Hilbert Space",
         "maps_to": "Hilbert Space"
       }
     }
   },
-  
   "predictions_and_verifiability": {
     "deviations_from_sqm": [
       {
@@ -128,4 +176,4 @@
       "epr_paradox": "The non-local correlation is explained by the non-local nature of the collapse mechanism itself. When one particle is localized, the wave function of the entire entangled system collapses, instantaneously affecting the state of the other particle."
     }
   }
-} 
+}

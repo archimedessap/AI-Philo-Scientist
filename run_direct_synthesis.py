@@ -13,6 +13,9 @@ import json
 import argparse
 import asyncio
 import time
+import glob
+import shutil
+from pathlib import Path
 from theory_generation.llm_interface import LLMInterface
 from theory_generation.direct_synthesis.contradiction_analyzer import ContradictionAnalyzer
 from theory_generation.direct_synthesis.hypothesis_generator import HypothesisGenerator
@@ -22,6 +25,26 @@ def ensure_directory_exists(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
         print(f"[INFO] 创建目录: {directory}")
+
+def load_theories_from_directory(theories_dir):
+    """从目录加载理论文件"""
+    theories = {}
+    
+    theory_files = glob.glob(os.path.join(theories_dir, "*.json"))
+    print(f"[INFO] 在目录 {theories_dir} 中找到 {len(theory_files)} 个理论文件")
+    
+    for theory_file in theory_files:
+        try:
+            with open(theory_file, 'r', encoding='utf-8') as f:
+                theory = json.load(f)
+            
+            theory_name = theory.get("name", os.path.basename(theory_file))
+            theories[theory_name] = theory
+            
+        except Exception as e:
+            print(f"[ERROR] 加载理论文件 {theory_file} 时出错: {str(e)}")
+    
+    return theories
 
 async def main():
     parser = argparse.ArgumentParser(description="理论直接合成程序")
@@ -135,6 +158,12 @@ async def main():
     print(f"\n[步骤3] 基于矛盾点合成新理论")
     generator = HypothesisGenerator(llm)
     
+    # 导入数学分类器
+    import sys
+    sys.path.append('.')
+    from utils.mathematical_classifier import MathematicalClassifier
+    classifier = MathematicalClassifier()
+    
     for analysis in all_analyses:
         theory1 = analysis.get("theory1")
         theory2 = analysis.get("theory2")
@@ -156,6 +185,9 @@ async def main():
         
         # 保存生成的假说
         for i, hypothesis in enumerate(hypotheses):
+            # 添加数学分类标注
+            hypothesis = classifier.annotate_theory_with_classification(hypothesis)
+            
             hypothesis_name = hypothesis.get("name", f"新理论_{i+1}")
             safe_name = hypothesis_name.replace(" ", "_").replace("/", "_").lower()
             
@@ -183,6 +215,10 @@ async def main():
         ensure_directory_exists(eval_theories_dir)
         
         for hypothesis in all_hypotheses:
+            # 确保理论有数学分类标注
+            if "mathematical_classification" not in hypothesis.get("metadata", {}):
+                hypothesis = classifier.annotate_theory_with_classification(hypothesis)
+            
             # 获取理论名
             theory_name = hypothesis.get("name", "未命名理论")
             safe_name = theory_name.replace(" ", "_").replace("/", "_").lower()
@@ -197,6 +233,18 @@ async def main():
         
         print(f"\n[完成] 总共合成了 {len(all_hypotheses)} 个新理论，已保存到: {synthesis_dir}")
         print(f"[INFO] 标准格式的评估理论文件已保存到: {eval_theories_dir}")
+        
+        # 生成数学分类统计
+        classification_stats = {"standard_qm": 0, "modified_qm": 0, "extended_qm": 0}
+        for hypothesis in all_hypotheses:
+            math_classification = hypothesis.get("metadata", {}).get("mathematical_classification", {})
+            math_type = math_classification.get("type", "unknown")
+            if math_type in classification_stats:
+                classification_stats[math_type] += 1
+        
+        print(f"\n📊 数学分类统计:")
+        for math_type, count in classification_stats.items():
+            print(f"   {math_type}: {count}")
     else:
         print("\n[完成] 未生成任何新理论")
 

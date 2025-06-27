@@ -6,13 +6,43 @@
     "status": "validated",
     "lineage": {
       "method": "human_authored",
-      "parents": ["Copenhagen Interpretation", "Bohr-Heisenberg Philosophy"],
+      "parents": [
+        "Copenhagen Interpretation",
+        "Bohr-Heisenberg Philosophy"
+      ],
       "generation_prompt_summary": "A family of interpretations originating with Bas van Fraassen in 1972, with significant versions developed by Kochen, Dieks, and others. They aim to specify which properties of a quantum system are definite or 'actual' at any given time, without invoking collapse."
     },
-    "tags": ["no-collapse", "property-realism", "perspectival-properties", "superposition"]
+    "tags": [
+      "no-collapse",
+      "property-realism",
+      "perspectival-properties",
+      "superposition"
+    ],
+    "mathematical_classification": {
+      "type": "standard_qm",
+      "uses_standard_qm_math": true,
+      "analysis": {
+        "mathematical_relation": {
+          "type": "interpretation",
+          "summary": "Modal interpretations use the standard SQM formalism but supplement it with a rule to map the quantum state to a set of definite classical properties. They provide a 'hidden variable' theory for properties, not particles.",
+          "consistency_with_sqm": {
+            "is_consistent_in_limit": true,
+            "limit_description": "By design, the statistical predictions of the possessed properties match the Born rule predictions of SQM.",
+            "conditions_for_consistency": "The property-ascription rule must be chosen carefully to ensure consistency with SQM's predictions in all measurement contexts."
+          }
+        },
+        "uses_standard_equations": true,
+        "has_modifications": false,
+        "modification_evidence": [],
+        "standard_evidence": [
+          "Standard Schrödinger equation found"
+        ],
+        "confidence": 0.9
+      },
+      "classifier_version": "1.0"
+    }
   },
   "summary": "Modal interpretations propose a distinction between a system's 'dynamical state' (the wave function Ψ), which describes its possible properties, and its 'value state', which describes its actual, definite properties. The wave function always evolves unitarily according to the Schrödinger equation, so there is no collapse. At any given time, a system possesses a set of definite properties, determined by a 'property-ascription rule' based on the instantaneous state of the wave function (e.g., its spectral decomposition). This provides a form of realism without contradicting the Kochen-Specker theorem, which forbids assigning definite values to all properties simultaneously.",
-  
   "core_principles": [
     {
       "principle": "Dual State Description",
@@ -30,10 +60,11 @@
       "implication": "Realism is selective. Only a subset of a system's properties are definite at any time, in a way that is compatible with the quantum formalism."
     }
   ],
-
   "philosophy": {
     "ontology": {
-      "fundamental_entities": ["The wave function Ψ (dynamical state) and the actual properties (value state). Different versions of the theory assign different ontological weight to each."],
+      "fundamental_entities": [
+        "The wave function Ψ (dynamical state) and the actual properties (value state). Different versions of the theory assign different ontological weight to each."
+      ],
       "nature_of_spacetime": "Assumes a standard classical spacetime."
     },
     "epistemology": {
@@ -46,7 +77,6 @@
       "realism": "It is a realist interpretation, but only for a specific, preferred set of properties. It denies that all observables have definite values at all times."
     }
   },
-
   "mathematical_relation_to_sqm": {
     "type": "interpretation",
     "summary": "Modal interpretations use the standard SQM formalism but supplement it with a rule to map the quantum state to a set of definite classical properties. They provide a 'hidden variable' theory for properties, not particles.",
@@ -56,20 +86,25 @@
       "conditions_for_consistency": "The property-ascription rule must be chosen carefully to ensure consistency with SQM's predictions in all measurement contexts."
     }
   },
-  
   "formalism": {
     "axioms": [
-      {"axiom": "A system is described by a pair (|Ψ⟩, M), where |Ψ⟩ is the state vector and M is the set of definite-valued observables."},
-      {"axiom": "|Ψ⟩ evolves according to the Schrödinger equation."},
-      {"axiom": "The set M is determined at each instant by |Ψ⟩ via a specific mapping rule (e.g., based on the spectral or Schmidt decomposition of the state)." }
+      {
+        "axiom": "A system is described by a pair (|Ψ⟩, M), where |Ψ⟩ is the state vector and M is the set of definite-valued observables."
+      },
+      {
+        "axiom": "|Ψ⟩ evolves according to the Schrödinger equation."
+      },
+      {
+        "axiom": "The set M is determined at each instant by |Ψ⟩ via a specific mapping rule (e.g., based on the spectral or Schmidt decomposition of the state)."
+      }
     ],
     "comparison_with_sqm": [
-        {
-            "aspect": "Real Properties",
-            "sqm": "Properties are generally indefinite until measured.",
-            "this_theory": "A subset of properties is definite and real at all times, independent of measurement.",
-            "difference_type": "ontological_addition"
-        }
+      {
+        "aspect": "Real Properties",
+        "sqm": "Properties are generally indefinite until measured.",
+        "this_theory": "A subset of properties is definite and real at all times, independent of measurement.",
+        "difference_type": "ontological_addition"
+      }
     ],
     "equations": {
       "state_evolution": "iħ(d/dt)|Ψ(t)⟩ = H|Ψ(t)⟩",
@@ -77,7 +112,7 @@
       "born_rule_status": "Postulated or derived, depending on the version. It gives the probability that a certain property will be actualized."
     },
     "constants_and_parameters": {
-       "h_bar": {
+      "h_bar": {
         "description": "Reduced Planck constant",
         "type": "universal_constant",
         "value": "1.0545718 × 10⁻³⁴ J·s",
@@ -85,7 +120,6 @@
       }
     }
   },
-
   "semantics": {
     "entities": {
       "Dynamical State (|Ψ⟩)": {
@@ -99,7 +133,6 @@
     },
     "operators_and_functions": {}
   },
-  
   "predictions_and_verifiability": {
     "deviations_from_sqm": [],
     "crucial_experiments": {
@@ -107,4 +140,4 @@
       "epr_paradox": "The non-local correlation is encoded in the property-ascription rule, which depends on the total state of the entangled pair. When Alice performs a measurement, the set of definite properties for Bob's system can change instantaneously, reflecting the correlation."
     }
   }
-} 
+}

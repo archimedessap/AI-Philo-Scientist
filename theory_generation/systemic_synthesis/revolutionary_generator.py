@@ -69,6 +69,17 @@ class RevolutionaryGenerator:
                 print(f"[ERROR] 无法解析LLM响应为有效JSON")
                 return {"error": "无法解析响应", "raw_response": response}
             
+            # 🔧 修复重名问题：为理论名称添加时间戳，确保多次运行时唯一性
+            if "name" in revolutionary_theory:
+                original_name = revolutionary_theory["name"]
+                # 生成时间戳
+                timestamp = time.strftime("%m%d_%H%M", time.localtime())
+                
+                # 检查是否已经包含时间戳格式，避免重复添加
+                if not any(f"-{ts}" in original_name for ts in [timestamp[:4], timestamp[5:]]):
+                    revolutionary_theory["name"] = f"{original_name}-{timestamp}"
+                    print(f"[INFO] 为革命性理论添加时间戳: {revolutionary_theory['name']}")
+            
             # 添加元数据 (Schema v2.1)
             if "metadata" not in revolutionary_theory:
                 revolutionary_theory["metadata"] = {}
@@ -212,10 +223,21 @@ Invent a new theory that is bold, coherent, and testable. Your output **MUST** b
                     theory["variant_id"] = variant + 1
                     theory["target_index"] = i + 1
                     
-                    # 在名称中体现变体信息
+                    # 🔧 修复重名问题：在名称中体现变体信息并确保时间戳唯一性
                     if "name" in theory:
                         original_name = theory["name"]
-                        theory["name"] = f"{original_name} (Revolutionary Variant {variant+1})"
+                        # 生成时间戳
+                        timestamp = time.strftime("%m%d_%H%M", time.localtime())
+                        
+                        # 如果还没有时间戳，添加完整的变体和时间戳信息
+                        if not any(f"-{ts}" in original_name for ts in [timestamp[:4], timestamp[5:]]):
+                            theory["name"] = f"{original_name} (Revolutionary Variant {variant+1}-{timestamp})"
+                        else:
+                            # 如果已有时间戳，只添加变体信息
+                            if "(Revolutionary Variant" not in original_name:
+                                theory["name"] = f"{original_name} (Revolutionary Variant {variant+1})"
+                        
+                        print(f"[INFO] 生成革命性理论变体: {theory['name']}")
                     
                     all_theories.append(theory)
         
@@ -249,6 +271,17 @@ Invent a new theory that is bold, coherent, and testable. Your output **MUST** b
             if not synthesis_theory:
                 print("[ERROR] 无法解析综合理论的LLM响应为JSON")
                 return {"error": "无法解析响应", "raw_response": response}
+            
+            # 🔧 修复重名问题：为统一理论名称添加时间戳，确保多次运行时唯一性
+            if "name" in synthesis_theory:
+                original_name = synthesis_theory["name"]
+                # 生成时间戳
+                timestamp = time.strftime("%m%d_%H%M", time.localtime())
+                
+                # 检查是否已经包含时间戳格式，避免重复添加
+                if not any(f"-{ts}" in original_name for ts in [timestamp[:4], timestamp[5:]]):
+                    synthesis_theory["name"] = f"{original_name}-{timestamp}"
+                    print(f"[INFO] 为统一理论添加时间戳: {synthesis_theory['name']}")
             
             # 添加元数据 (Schema v2.1)
             if "metadata" not in synthesis_theory:

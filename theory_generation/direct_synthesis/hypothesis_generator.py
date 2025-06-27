@@ -77,6 +77,18 @@ class HypothesisGenerator:
                 print(f"[ERROR] 无法解析LLM响应为有效JSON")
                 return {"error": "无法解析响应", "raw_response": response}
             
+            # 🔧 修复重名问题：为理论名称添加时间戳，确保多次运行时唯一性
+            if "name" in new_hypothesis:
+                original_name = new_hypothesis["name"]
+                # 生成时间戳
+                import time
+                timestamp = time.strftime("%m%d_%H%M", time.localtime())
+                
+                # 检查是否已经包含时间戳格式，避免重复添加
+                if not any(f"-{ts}" in original_name for ts in [timestamp[:4], timestamp[5:]]):
+                    new_hypothesis["name"] = f"{original_name}-{timestamp}"
+                    print(f"[INFO] 为理论添加时间戳: {new_hypothesis['name']}")
+            
             # 添加元数据
             # 确保metadata字段存在
             if "metadata" not in new_hypothesis:
@@ -222,6 +234,10 @@ Based on the analysis, construct a new theory. Your output **MUST** be a single,
         """
         generated_variants = []
         
+        # 生成时间戳，用于确保多次运行时理论名称唯一性
+        import time
+        timestamp = time.strftime("%m%d_%H%M", time.localtime())
+        
         for i in range(variants_count):
             print(f"[INFO] 生成假说变体 {i+1}/{variants_count}")
             
@@ -240,12 +256,15 @@ Based on the analysis, construct a new theory. Your output **MUST** be a single,
                 # 添加变体标识
                 variant["variant_id"] = i + 1
                 
-                # 将变体信息添加到理论名称中
+                # 🔧 修复重名问题：为理论名称添加时间戳，确保多次运行时唯一性
                 if "name" in variant:
                     original_name = variant["name"]
                     # 如果名称中已经包含变体信息则不添加
                     if f"(Variant {i+1})" not in original_name and f"（变种{i+1}）" not in original_name:
-                        variant["name"] = f"{original_name} (Variant {i+1})"
+                        # 添加时间戳和变体标识，确保全局唯一性
+                        variant["name"] = f"{original_name} (Variant {i+1}-{timestamp})"
+                    
+                    print(f"[INFO] 生成理论: {variant['name']}")
                 
                 generated_variants.append(variant)
         

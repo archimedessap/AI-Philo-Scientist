@@ -6,13 +6,52 @@
     "status": "validated",
     "lineage": {
       "method": "human_authored",
-      "parents": ["Classical Mechanics", "Copenhagen Interpretation"],
+      "parents": [
+        "Classical Mechanics",
+        "Copenhagen Interpretation"
+      ],
       "generation_prompt_summary": "Originally proposed by de Broglie in the 1920s and rediscovered and extended by David Bohm in 1952 as a deterministic, hidden-variables alternative to the Copenhagen interpretation."
     },
-    "tags": ["realism", "no-collapse", "deterministic", "hidden-variables", "pilot-wave", "non-local"]
+    "tags": [
+      "realism",
+      "no-collapse",
+      "deterministic",
+      "hidden-variables",
+      "pilot-wave",
+      "non-local"
+    ],
+    "mathematical_classification": {
+      "type": "modified_qm",
+      "uses_standard_qm_math": false,
+      "analysis": {
+        "mathematical_relation": {
+          "type": "extension",
+          "summary": "This theory extends the mathematics of SQM by adding a new dynamical law (the guidance equation) for a new ontological entity (the particle configuration Q).",
+          "consistency_with_sqm": {
+            "is_consistent_in_limit": true,
+            "limit_description": "Its statistical predictions are identical to SQM's, provided that the initial distribution of particle positions satisfies the 'quantum equilibrium hypothesis' (ρ = |Ψ|²).",
+            "conditions_for_consistency": "The quantum equilibrium hypothesis must be assumed. If systems in 'quantum non-equilibrium' exist, their statistical predictions would differ from SQM."
+          }
+        },
+        "uses_standard_equations": true,
+        "has_modifications": true,
+        "modification_evidence": [
+          "Found 'collapse' in formalism",
+          "Found 'guidance equation' in formalism",
+          "Found 'collapse' in core_principles",
+          "Found 'guidance equation' in core_principles",
+          "Found 'guidance equation' in predictions_and_verifiability",
+          "Found 'pilot wave' in predictions_and_verifiability"
+        ],
+        "standard_evidence": [
+          "Standard Schrödinger equation found"
+        ],
+        "confidence": 0.8
+      },
+      "classifier_version": "1.0"
+    }
   },
   "summary": "De Broglie-Bohm theory, or pilot-wave theory, is a deterministic interpretation of quantum mechanics. It posits that in addition to the wave function, every particle has a definite, real position at all times. The wave function, evolving according to the Schrödinger equation, acts as a 'pilot wave' that guides the motion of the particles via a guidance equation. There is no wave function collapse; all measurement outcomes are predetermined by the initial positions of the particles and the wave function.",
-  
   "core_principles": [
     {
       "principle": "Ontological Duality",
@@ -30,10 +69,12 @@
       "implication": "The 'measurement problem' is solved by asserting that measurements simply reveal the pre-existing positions of particles in the measurement apparatus."
     }
   ],
-
   "philosophy": {
     "ontology": {
-      "fundamental_entities": ["The wave function Ψ, which is a real physical field in configuration space.", "A configuration of point particles Q, which always have definite positions."],
+      "fundamental_entities": [
+        "The wave function Ψ, which is a real physical field in configuration space.",
+        "A configuration of point particles Q, which always have definite positions."
+      ],
       "nature_of_spacetime": "Assumes a classical, pre-existing spacetime background."
     },
     "epistemology": {
@@ -46,7 +87,6 @@
       "realism": "Strongly realist about both the wave function and the particles."
     }
   },
-
   "mathematical_relation_to_sqm": {
     "type": "extension",
     "summary": "This theory extends the mathematics of SQM by adding a new dynamical law (the guidance equation) for a new ontological entity (the particle configuration Q).",
@@ -56,26 +96,31 @@
       "conditions_for_consistency": "The quantum equilibrium hypothesis must be assumed. If systems in 'quantum non-equilibrium' exist, their statistical predictions would differ from SQM."
     }
   },
-  
   "formalism": {
     "axioms": [
-      {"axiom": "The state of a system is described by the pair (Ψ(q,t), Q(t)), where Ψ is the wave function and Q are the particle positions."},
-      {"axiom": "Ψ evolves according to the Schrödinger equation: iħ(∂Ψ/∂t) = HΨ."},
-      {"axiom": "The particle positions Q evolve according to the guidance equation: dQ_k/dt = (ħ/m_k) * Im(∇_kΨ / Ψ)."}
+      {
+        "axiom": "The state of a system is described by the pair (Ψ(q,t), Q(t)), where Ψ is the wave function and Q are the particle positions."
+      },
+      {
+        "axiom": "Ψ evolves according to the Schrödinger equation: iħ(∂Ψ/∂t) = HΨ."
+      },
+      {
+        "axiom": "The particle positions Q evolve according to the guidance equation: dQ_k/dt = (ħ/m_k) * Im(∇_kΨ / Ψ)."
+      }
     ],
     "comparison_with_sqm": [
-        {
-            "aspect": "State Description",
-            "sqm": "State is fully described by Ψ.",
-            "this_theory": "State is described by the pair (Ψ, Q).",
-            "difference_type": "ontological_addition"
-        },
-        {
-            "aspect": "Dynamics",
-            "sqm": "Dualistic evolution: unitary + collapse.",
-            "this_theory": "Unitary evolution for Ψ, plus a new deterministic guidance equation for Q. No collapse.",
-            "difference_type": "dynamical_addition"
-        }
+      {
+        "aspect": "State Description",
+        "sqm": "State is fully described by Ψ.",
+        "this_theory": "State is described by the pair (Ψ, Q).",
+        "difference_type": "ontological_addition"
+      },
+      {
+        "aspect": "Dynamics",
+        "sqm": "Dualistic evolution: unitary + collapse.",
+        "this_theory": "Unitary evolution for Ψ, plus a new deterministic guidance equation for Q. No collapse.",
+        "difference_type": "dynamical_addition"
+      }
     ],
     "equations": {
       "state_evolution": "iħ(∂Ψ/∂t) = HΨ",
@@ -83,7 +128,7 @@
       "born_rule_status": "Derived. It is shown that if the initial particle distribution ρ(Q,t₀) equals |Ψ(Q,t₀)|², then ρ(Q,t) = |Ψ(Q,t)|² for all later times t."
     },
     "constants_and_parameters": {
-       "h_bar": {
+      "h_bar": {
         "description": "Reduced Planck constant",
         "type": "universal_constant",
         "value": "1.0545718 × 10⁻³⁴ J·s",
@@ -91,27 +136,25 @@
       }
     }
   },
-
   "semantics": {
     "entities": {
       "Ψ": {
         "description": "The 'pilot wave' or guiding wave. A real physical field in configuration space that determines particle velocities.",
         "ontological_status": "real_field"
       },
-       "Q(t)": {
+      "Q(t)": {
         "description": "The configuration of all particles in the system, which have definite positions at all times.",
         "ontological_status": "primary_beable"
       }
     },
     "operators_and_functions": {
-       "v_k": {
+      "v_k": {
         "description": "The velocity of the k-th particle. It is determined by the phase of the wave function at the particle's actual position.",
         "maps_from": "(Ψ, Q)",
         "maps_to": "Velocity Vector"
       }
     }
   },
-  
   "predictions_and_verifiability": {
     "deviations_from_sqm": [
       {
@@ -132,4 +175,4 @@
       "epr_paradox": "The non-local correlation is explicitly explained by the non-local guidance equation. When Alice measures her particle, she learns its position. This act does not change Bob's particle or the wave function, but because the velocity of Bob's particle depends on the instantaneous configuration of the *entire system* (including Alice's particle), their outcomes are correlated in a non-local way."
     }
   }
-} 
+}

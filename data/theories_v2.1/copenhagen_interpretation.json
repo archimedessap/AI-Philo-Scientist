@@ -6,13 +6,44 @@
     "status": "validated",
     "lineage": {
       "method": "human_authored",
-      "parents": ["Classical Mechanics", "Early Quantum Theory"],
+      "parents": [
+        "Classical Mechanics",
+        "Early Quantum Theory"
+      ],
       "generation_prompt_summary": "Standard historical formulation by Bohr, Heisenberg, and Born in the 1920s."
     },
-    "tags": ["instrumentalism", "wave-function-collapse", "complementarity", "probabilistic", "orthodox"]
+    "tags": [
+      "instrumentalism",
+      "wave-function-collapse",
+      "complementarity",
+      "probabilistic",
+      "orthodox"
+    ],
+    "mathematical_classification": {
+      "type": "standard_qm",
+      "uses_standard_qm_math": true,
+      "analysis": {
+        "mathematical_relation": {
+          "type": "interpretation",
+          "summary": "This is the 'standard' interpretation, so its mathematics *are* the mathematics of Standard Quantum Mechanics. It provides the philosophical framework for the standard textbook formulation.",
+          "consistency_with_sqm": {
+            "is_consistent_in_limit": true,
+            "limit_description": "It *is* SQM. Its predictions are the baseline against which other interpretations are compared.",
+            "conditions_for_consistency": "N/A"
+          }
+        },
+        "uses_standard_equations": true,
+        "has_modifications": false,
+        "modification_evidence": [],
+        "standard_evidence": [
+          "Standard Schrödinger equation found"
+        ],
+        "confidence": 0.9
+      },
+      "classifier_version": "1.0"
+    }
   },
   "summary": "The Copenhagen interpretation is the orthodox view of quantum mechanics, asserting that quantum systems are described by a wave function which provides probabilities for measurement outcomes. The act of measurement causes an instantaneous, non-deterministic 'collapse' of the wave function, and properties like position or momentum do not have definite values until measured. It emphasizes the principle of complementarity and the essential role of the classical measurement apparatus.",
-  
   "core_principles": [
     {
       "principle": "Wave Function Completeness",
@@ -30,10 +61,12 @@
       "implication": "A single, classical picture of reality is impossible. Both wave-like and particle-like aspects are necessary for a full description, but they are mutually exclusive in any single experiment."
     }
   ],
-
   "philosophy": {
     "ontology": {
-      "fundamental_entities": ["The wave function Ψ, representing a state of potentiality or information.", "Classical measurement apparatuses, which are not described by quantum mechanics."],
+      "fundamental_entities": [
+        "The wave function Ψ, representing a state of potentiality or information.",
+        "Classical measurement apparatuses, which are not described by quantum mechanics."
+      ],
       "nature_of_spacetime": "Assumes a classical, pre-existing spacetime background (Newtonian or Relativistic) in which quantum phenomena occur."
     },
     "epistemology": {
@@ -46,7 +79,6 @@
       "realism": "Anti-realist about the properties of a quantum system before measurement. It is meaningless to ask about the position of a particle until it is measured."
     }
   },
-
   "mathematical_relation_to_sqm": {
     "type": "interpretation",
     "summary": "This is the 'standard' interpretation, so its mathematics *are* the mathematics of Standard Quantum Mechanics. It provides the philosophical framework for the standard textbook formulation.",
@@ -56,28 +88,37 @@
       "conditions_for_consistency": "N/A"
     }
   },
-  
   "formalism": {
     "axioms": [
-      {"axiom": "The state of a system is completely described by a state vector |Ψ⟩ in a Hilbert space."},
-      {"axiom": "Observables are represented by Hermitian operators acting on the Hilbert space."},
-      {"axiom": "The time evolution of a closed system is governed by the Schrödinger equation: iħ(d/dt)|Ψ⟩ = H|Ψ⟩."},
-      {"axiom": "The measurement of an observable A will yield one of the eigenvalues of A. The probability of obtaining eigenvalue a_n is given by |⟨φ_n|Ψ⟩|², where |φ_n⟩ is the corresponding eigenvector (Born Rule)."},
-      {"axiom": "Immediately after the measurement yields result a_n, the state of the system collapses to the corresponding eigenstate |φ_n⟩ (Collapse Postulate)."}
+      {
+        "axiom": "The state of a system is completely described by a state vector |Ψ⟩ in a Hilbert space."
+      },
+      {
+        "axiom": "Observables are represented by Hermitian operators acting on the Hilbert space."
+      },
+      {
+        "axiom": "The time evolution of a closed system is governed by the Schrödinger equation: iħ(d/dt)|Ψ⟩ = H|Ψ⟩."
+      },
+      {
+        "axiom": "The measurement of an observable A will yield one of the eigenvalues of A. The probability of obtaining eigenvalue a_n is given by |⟨φ_n|Ψ⟩|², where |φ_n⟩ is the corresponding eigenvector (Born Rule)."
+      },
+      {
+        "axiom": "Immediately after the measurement yields result a_n, the state of the system collapses to the corresponding eigenstate |φ_n⟩ (Collapse Postulate)."
+      }
     ],
     "comparison_with_sqm": [
-        {
-            "aspect": "State Description",
-            "sqm": "State is fully described by the wave function Ψ.",
-            "this_theory": "State is fully described by the wave function Ψ.",
-            "difference_type": "no_difference"
-        },
-        {
-            "aspect": "Dynamics",
-            "sqm": "Dualistic evolution: unitary evolution via Schrödinger equation, and non-unitary collapse during measurement.",
-            "this_theory": "Accepts and postulates this dualism as fundamental.",
-            "difference_type": "no_difference"
-        }
+      {
+        "aspect": "State Description",
+        "sqm": "State is fully described by the wave function Ψ.",
+        "this_theory": "State is fully described by the wave function Ψ.",
+        "difference_type": "no_difference"
+      },
+      {
+        "aspect": "Dynamics",
+        "sqm": "Dualistic evolution: unitary evolution via Schrödinger equation, and non-unitary collapse during measurement.",
+        "this_theory": "Accepts and postulates this dualism as fundamental.",
+        "difference_type": "no_difference"
+      }
     ],
     "equations": {
       "state_evolution": "iħ(d/dt)|Ψ(t)⟩ = H|Ψ(t)⟩",
@@ -93,7 +134,6 @@
       }
     }
   },
-
   "semantics": {
     "entities": {
       "|Ψ⟩": {
@@ -109,7 +149,6 @@
       }
     }
   },
-  
   "predictions_and_verifiability": {
     "deviations_from_sqm": [],
     "crucial_experiments": {
@@ -117,4 +156,4 @@
       "epr_paradox": "The non-local correlations are accepted as a feature of quantum mechanics, but a detailed explanation is often avoided by emphasizing that no information can be sent faster than light. The correlation is revealed upon measurement."
     }
   }
-} 
+}

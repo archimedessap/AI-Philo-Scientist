@@ -6,13 +6,41 @@
     "status": "validated",
     "lineage": {
       "method": "human_authored",
-      "parents": ["Statistical Mechanics", "Copenhagen Interpretation"],
+      "parents": [
+        "Statistical Mechanics",
+        "Copenhagen Interpretation"
+      ],
       "generation_prompt_summary": "Championed by Albert Einstein and formally developed by Leslie Ballentine, the Ensemble Interpretation posits that the wave function does not describe a single system, but only the statistical properties of an ensemble of similarly prepared systems."
     },
-    "tags": ["statistical", "anti-realism", "no-collapse", "hidden-variables-friendly"]
+    "tags": [
+      "statistical",
+      "anti-realism",
+      "no-collapse",
+      "hidden-variables-friendly"
+    ],
+    "mathematical_classification": {
+      "type": "standard_qm",
+      "uses_standard_qm_math": true,
+      "analysis": {
+        "mathematical_relation": {
+          "type": "interpretation",
+          "summary": "It uses the full mathematical formalism of SQM but restricts its domain of applicability to statistical ensembles, denying its relevance to individual events.",
+          "consistency_with_sqm": {
+            "is_consistent_in_limit": true,
+            "limit_description": "It is designed to reproduce the statistical predictions of SQM perfectly, as it accepts the formalism for ensembles.",
+            "conditions_for_consistency": "N/A."
+          }
+        },
+        "uses_standard_equations": false,
+        "has_modifications": false,
+        "modification_evidence": [],
+        "standard_evidence": [],
+        "confidence": 0.9
+      },
+      "classifier_version": "1.0"
+    }
   },
   "summary": "The Ensemble Interpretation, or Statistical Interpretation, asserts that the wave function Ψ does not apply to an individual quantum system but only to an 'ensemble' of many similarly prepared systems. The probabilistic predictions of quantum mechanics are therefore interpreted as standard statistical frequencies within this ensemble. This view resolves many paradoxes by denying that a single particle has a wave function, thus there is no collapse for a single system and no concept of a particle being in a superposition.",
-  
   "core_principles": [
     {
       "principle": "Ensemble-Only Description",
@@ -30,10 +58,12 @@
       "implication": "The theory is inherently compatible with the idea of 'hidden variables' that would, if known, provide a complete, deterministic description of the individual system."
     }
   ],
-
   "philosophy": {
     "ontology": {
-      "fundamental_entities": ["Individual physical systems (e.g., particles) which possess definite properties at all times.", "The experimental preparation device, which defines the ensemble."],
+      "fundamental_entities": [
+        "Individual physical systems (e.g., particles) which possess definite properties at all times.",
+        "The experimental preparation device, which defines the ensemble."
+      ],
       "nature_of_spacetime": "Assumes a standard classical spacetime."
     },
     "epistemology": {
@@ -46,7 +76,6 @@
       "realism": "Realist about the properties of individual systems, but anti-realist about the wave function as a description of a single system."
     }
   },
-
   "mathematical_relation_to_sqm": {
     "type": "interpretation",
     "summary": "It uses the full mathematical formalism of SQM but restricts its domain of applicability to statistical ensembles, denying its relevance to individual events.",
@@ -56,25 +85,28 @@
       "conditions_for_consistency": "N/A."
     }
   },
-  
   "formalism": {
     "axioms": [
-      {"axiom": "A quantum state |Ψ⟩ represents the procedure used to prepare an ensemble of systems."},
-      {"axiom": "The formalism of quantum mechanics correctly predicts the statistical outcomes of measurements performed on this ensemble."}
+      {
+        "axiom": "A quantum state |Ψ⟩ represents the procedure used to prepare an ensemble of systems."
+      },
+      {
+        "axiom": "The formalism of quantum mechanics correctly predicts the statistical outcomes of measurements performed on this ensemble."
+      }
     ],
     "comparison_with_sqm": [
-        {
-            "aspect": "Applicability of Ψ",
-            "sqm": "Ψ describes a single quantum system.",
-            "this_theory": "Ψ describes a statistical ensemble of systems.",
-            "difference_type": "conceptual_reframing"
-        },
-        {
-            "aspect": "Completeness",
-            "sqm": "Copenhagen version claims Ψ is a complete description.",
-            "this_theory": "Asserts Ψ is an incomplete description of any single system within the ensemble.",
-            "difference_type": "conceptual_reframing"
-        }
+      {
+        "aspect": "Applicability of Ψ",
+        "sqm": "Ψ describes a single quantum system.",
+        "this_theory": "Ψ describes a statistical ensemble of systems.",
+        "difference_type": "conceptual_reframing"
+      },
+      {
+        "aspect": "Completeness",
+        "sqm": "Copenhagen version claims Ψ is a complete description.",
+        "this_theory": "Asserts Ψ is an incomplete description of any single system within the ensemble.",
+        "difference_type": "conceptual_reframing"
+      }
     ],
     "equations": {
       "state_evolution": "The Schrödinger equation describes the evolution of the statistical properties of the ensemble over time.",
@@ -82,7 +114,7 @@
       "born_rule_status": "Postulated as the rule giving the distribution of measured values over the ensemble."
     },
     "constants_and_parameters": {
-       "h_bar": {
+      "h_bar": {
         "description": "Reduced Planck constant",
         "type": "universal_constant",
         "value": "1.0545718 × 10⁻³⁴ J·s",
@@ -90,7 +122,6 @@
       }
     }
   },
-
   "semantics": {
     "entities": {
       "|Ψ⟩": {
@@ -104,7 +135,6 @@
     },
     "operators_and_functions": {}
   },
-  
   "predictions_and_verifiability": {
     "deviations_from_sqm": [],
     "crucial_experiments": {
@@ -112,4 +142,4 @@
       "epr_paradox": "The non-local correlation is a statistical correlation between the properties of particles in the entangled ensemble. The interpretation does not provide a mechanism for this correlation for a single pair, but simply accepts it as a predicted statistical fact."
     }
   }
-} 
+}
