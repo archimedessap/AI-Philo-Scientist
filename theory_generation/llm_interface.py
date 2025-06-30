@@ -253,10 +253,14 @@ class LLMInterface:
         - 完美的单行/多行JSON。
         - ```json ... ``` 代码块 (即使格式不完美).
         - JSON对象被其他文本包裹。
+        - 处理Gemini特有的输出格式
         """
         if not text:
             return None
 
+        # 预处理：清理常见的格式问题
+        text = text.strip()
+        
         # 1. 优先匹配 ```json ... ``` 代码块，容忍缺失的结尾```
         #    使用非贪婪匹配
         match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL | re.IGNORECASE)
@@ -268,7 +272,8 @@ class LLMInterface:
             json_str = match.group(1)
             try:
                 return json.loads(json_str)
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as e:
+                print(f"[WARN] 代码块内JSON解析失败: {e}")
                 # 如果代码块内的JSON不完整，交由后续方法处理
                 text = json_str
 
@@ -278,9 +283,23 @@ class LLMInterface:
             end = text.rfind('}')
             if start != -1 and end != -1 and start < end:
                 json_str = text[start:end+1]
-                return json.loads(json_str)
-        except json.JSONDecodeError:
-            pass # 失败则继续
+                
+                # 尝试直接解析
+                try:
+                    return json.loads(json_str)
+                except json.JSONDecodeError as e:
+                    print(f"[WARN] 直接JSON解析失败: {e}")
+                    
+                    # 尝试修复常见的JSON格式问题
+                    fixed_json = self._fix_common_json_issues(json_str)
+                    if fixed_json:
+                        try:
+                            return json.loads(fixed_json)
+                        except json.JSONDecodeError:
+                            print(f"[WARN] 修复后的JSON仍然无法解析")
+                            
+        except Exception as e:
+            print(f"[WARN] JSON提取过程出错: {e}")
 
         # 3. 逐行解析，适用于简单的单行JSON
         for line in text.splitlines():
@@ -291,8 +310,85 @@ class LLMInterface:
                 except json.JSONDecodeError:
                     continue
         
+        # 4. 尝试使用正则表达式匹配平衡的大括号
+        try:
+            balanced_json = self._extract_balanced_json(text)
+            if balanced_json:
+                return json.loads(balanced_json)
+        except json.JSONDecodeError:
+            pass
+        
         print(f"[WARN] 无法从文本中提取有效的JSON: {text[:150]}...")
         return None
+    
+    def _fix_common_json_issues(self, json_str: str) -> Optional[str]:
+        """尝试修复常见的JSON格式问题"""
+        
+        if not isinstance(json_str, str):
+            return None
+        
+        # 1. 移除代码块标记
+        json_str = re.sub(r'```json\s*|\s*```', '', json_str, flags=re.DOTALL)
+        
+        # 2. 移除注释
+        json_str = re.sub(r'//.*', '', json_str)
+        json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
+
+        # 3. 修复非法的反斜杠转义 (新增强)
+        # 查找一个反斜杠，后面不是一个合法的JSON转义字符 (", \, /, b, f, n, r, t, u)
+        # 使用负向先行断言
+        json_str = re.sub(r'\\(?![\\"bfnrtu/])', r'\\\\', json_str)
+
+        # 4. 修复使用单引号的问题
+        json_str = json_str.replace("'", '"')
+        
+        # 5. 移除尾随逗号 (在对象和数组中)
+        json_str = re.sub(r',\s*([}\]])', r'\1', json_str)
+        
+        # 6. 修复未转义的双引号（在一个值的内部）
+        # 这很复杂，但我们可以尝试修复最常见的情况
+        json_str = re.sub(r'(?<![:{\[,])"(?![:}\],])', r'\\"', json_str)
+
+        return json_str.strip()
+    
+    def _extract_balanced_json(self, text: str) -> Optional[str]:
+        """提取平衡的JSON对象"""
+        try:
+            start = text.find('{')
+            if start == -1:
+                return None
+                
+            brace_count = 0
+            in_string = False
+            escape_next = False
+            
+            for i, char in enumerate(text[start:], start):
+                if escape_next:
+                    escape_next = False
+                    continue
+                    
+                if char == '\\':
+                    escape_next = True
+                    continue
+                    
+                if char == '"' and not escape_next:
+                    in_string = not in_string
+                    continue
+                    
+                if not in_string:
+                    if char == '{':
+                        brace_count += 1
+                    elif char == '}':
+                        brace_count -= 1
+                        
+                        if brace_count == 0:
+                            return text[start:i+1]
+            
+            return None
+            
+        except Exception as e:
+            print(f"[WARN] 平衡JSON提取出错: {e}")
+            return None
     
     def get_current_model_info(self):
         """获取当前使用的模型信息"""
