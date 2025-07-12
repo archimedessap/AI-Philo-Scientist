@@ -169,7 +169,10 @@ class InnovationFramework:
         score = 0.0
         
         # 检查数学关系类型
-        math_relation = theory.get("mathematical_relation_to_sqm", "").lower()
+        math_relation = theory.get("mathematical_relation_to_sqm", "")
+        if not isinstance(math_relation, str):
+            math_relation = str(math_relation)
+        math_relation = math_relation.lower()
         if "modification" in math_relation:
             score += 0.4
         elif "extension" in math_relation:
@@ -177,7 +180,10 @@ class InnovationFramework:
         
         # 检查新数学对象
         formalism = theory.get("formalism", {})
-        math_objects = formalism.get("mathematical_objects", "").lower()
+        math_objects = formalism.get("mathematical_objects", "")
+        if not isinstance(math_objects, str):
+            math_objects = str(math_objects)
+        math_objects = math_objects.lower()
         
         novel_math_indicators = [
             "new space", "novel algebra", "additional dimension",
@@ -204,18 +210,25 @@ class InnovationFramework:
                     # 如果是字典，提取所有文本值
                     string_equations.extend([str(v) for v in eq.values() if isinstance(v, str)])
             if string_equations:
-                equations_text += " ".join(string_equations).lower() + " "
+                # 确保所有元素都是字符串再调用lower()
+                safe_equations = [str(eq) for eq in string_equations]
+                equations_text += " ".join(safe_equations).lower() + " "
         
         # 2. 检查旧格式：equations (字典)
         equations = formalism.get("equations", {})
         if isinstance(equations, dict):
             # 处理字典格式（如consistent_histories中的结构）
-            equation_values = [str(v) for v in equations.values() if isinstance(v, str)]
+            equation_values = [str(v) for v in equations.values()]
             if equation_values:
                 equations_text += " ".join(equation_values).lower() + " "
         elif isinstance(equations, str):
             # 处理单个字符串
             equations_text += equations.lower() + " "
+        elif isinstance(equations, list):
+            # 处理列表格式
+            equation_values = [str(eq) for eq in equations]
+            if equation_values:
+                equations_text += " ".join(equation_values).lower() + " "
             
         equations_text = equations_text.strip()
         if equations_text:
@@ -236,8 +249,14 @@ class InnovationFramework:
         
         # 检查核心原则的创新性
         core_principles = theory.get("core_principles", {})
-        ontology = core_principles.get("ontological_commitments", "").lower()
+        ontology = core_principles.get("ontological_commitments", "")
+        if not isinstance(ontology, str):
+            ontology = str(ontology)
+        ontology = ontology.lower()
+        
         postulates = core_principles.get("key_postulates", [])
+        # 确保postulates是字符串列表
+        safe_postulates = [str(p) for p in postulates] if postulates else []
         
         breakthrough_concepts = [
             "emergence", "holism", "information", "computation",
@@ -245,7 +264,7 @@ class InnovationFramework:
             "quantum gravity", "many minds", "modal realism"
         ]
         
-        all_text = f"{ontology} {' '.join(postulates)}".lower()
+        all_text = f"{ontology} {' '.join(safe_postulates)}".lower()
         
         for concept in breakthrough_concepts:
             if concept in all_text:
@@ -271,7 +290,10 @@ class InnovationFramework:
             # 检查预测的具体性
             for deviation in deviations:
                 if isinstance(deviation, dict):
-                    exp_setup = deviation.get("experimental_setup", "").lower()
+                    exp_setup = deviation.get("experimental_setup", "")
+                    if not isinstance(exp_setup, str):
+                        exp_setup = str(exp_setup)
+                    exp_setup = exp_setup.lower()
                     if any(keyword in exp_setup for keyword in [
                         "specific", "precision", "measurement", "detector",
                         "interferometer", "collider", "telescope"
@@ -285,7 +307,10 @@ class InnovationFramework:
         score = 0.0
         
         core_principles = theory.get("core_principles", {})
-        epistemology = core_principles.get("epistemological_stances", "").lower()
+        epistemology = core_principles.get("epistemological_stances", "")
+        if not isinstance(epistemology, str):
+            epistemology = str(epistemology)
+        epistemology = epistemology.lower()
         
         philosophical_depth_indicators = [
             "reality", "knowledge", "measurement", "observer",
@@ -303,7 +328,10 @@ class InnovationFramework:
             "space", "consciousness", "interpretation"
         ]
         
-        summary = theory.get("summary", "").lower()
+        summary = theory.get("summary", "")
+        if not isinstance(summary, str):
+            summary = str(summary)
+        summary = summary.lower()
         for problem in classical_problems:
             if problem in summary:
                 score += 0.15
@@ -315,7 +343,10 @@ class InnovationFramework:
         score = 0.0
         
         # 检查是否挑战基本假设
-        summary = theory.get("summary", "").lower()
+        summary = theory.get("summary", "")
+        if not isinstance(summary, str):
+            summary = str(summary)
+        summary = summary.lower()
         paradigm_shift_indicators = [
             "fundamental", "revolutionary", "paradigm", "breakthrough",
             "transform", "redefine", "challenge", "overthrow"

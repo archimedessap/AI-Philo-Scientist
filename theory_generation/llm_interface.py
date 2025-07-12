@@ -47,6 +47,7 @@ class LLMInterface:
         self.api_key_openai = os.environ.get("OPENAI_API_KEY")
         self.api_key_deepseek = os.environ.get("DEEPSEEK_API_KEY")
         self.api_key_google = os.environ.get("GOOGLE_API_KEY")
+        self.api_key_xai = os.environ.get("XAI_API_KEY")
 
         self.openai_client = None
         self.genai_model = None
@@ -77,6 +78,15 @@ class LLMInterface:
             self.openai_client = openai.AsyncOpenAI(
                 api_key=self.api_key_deepseek,
                 base_url="https://api.deepseek.com/v1"
+            )
+            self.genai_model = None
+        elif source == 'xai':
+            print(f"[INFO] 使用XAI Grok模型: {self.model_name}")
+            if not self.api_key_xai:
+                raise ValueError("XAI_API_KEY 环境变量未设置")
+            self.openai_client = openai.AsyncOpenAI(
+                api_key=self.api_key_xai,
+                base_url="https://api.x.ai/v1"
             )
             self.genai_model = None
         elif source == 'google':
@@ -135,7 +145,7 @@ class LLMInterface:
             try:
                 print(f"[INFO] (尝试 {attempt}) 调用API: {source}/{name}")
 
-                if source.lower() in ['openai', 'deepseek']:
+                if source.lower() in ['openai', 'deepseek', 'xai']:
                     if not self.openai_client:
                         raise ValueError(f"{source} 客户端未初始化。")
                     response = await self.openai_client.chat.completions.create(
@@ -197,14 +207,19 @@ class LLMInterface:
             try:
                 print(f"[INFO] (尝试 {attempt}) 同步调用API: {source}/{name}")
 
-                if source.lower() in ['openai', 'deepseek']:
+                if source.lower() in ['openai', 'deepseek', 'xai']:
                     # 创建同步客户端
                     if source.lower() == 'openai':
                         client = openai.OpenAI(api_key=self.api_key_openai)
-                    else:  # deepseek
+                    elif source.lower() == 'deepseek':
                         client = openai.OpenAI(
                             api_key=self.api_key_deepseek,
                             base_url="https://api.deepseek.com/v1"
+                        )
+                    else:  # xai
+                        client = openai.OpenAI(
+                            api_key=self.api_key_xai,
+                            base_url="https://api.x.ai/v1"
                         )
         
                     response = client.chat.completions.create(
@@ -441,6 +456,23 @@ class LLMInterface:
                     input=text
                 )
                 return response.data[0].embedding
+                
+            elif self.model_source.lower() == 'google':
+                print(f"[INFO] 使用Google获取嵌入向量: text-embedding-004")
+                
+                # 对于Google模型，使用Google的嵌入API
+                import google.generativeai as genai
+                
+                # 配置API密钥
+                genai.configure(api_key=self.api_key_google)
+                
+                # 使用Google的嵌入模型
+                result = genai.embed_content(
+                    model="models/text-embedding-004",
+                    content=text,
+                    task_type="semantic_similarity"
+                )
+                return result['embedding']
                 
             else:
                 raise ValueError(f"不支持的模型来源用于嵌入: {self.model_source}")

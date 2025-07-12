@@ -97,9 +97,9 @@ def main():
     parser.add_argument("--judge_model_name", type=str, help="评审模型名称")
     parser.add_argument("--dialog_model_source", type=str, help="对话模型来源")
     parser.add_argument("--dialog_model_name", type=str, help="对话模型名称")
-    
+
     args = parser.parse_args()
-    
+
     # 参数标准化和兼容性处理
     max_iterations = args.max_iters or getattr(args, 'max-iters', None) or args.max_iterations
     improvement_threshold = args.min_improvement or getattr(args, 'min-improve', None) or args.improvement_threshold
@@ -254,13 +254,13 @@ def main():
         "--dialog_model_source", args.dialog_model_source or args.model_source,
         "--dialog_model_name", args.dialog_model_name or args.model_name
     ]
-    
+
     print(f"[INFO] 调用精炼循环...")
     result = run_cmd(cmd)
     
     if result == 0:
         print(f"[INFO] 精炼完成，结果保存在: {refinement_output}")
-        
+
         # 如果是robust_evolution_runner模式，需要将结果注册回manifest
         if args.run_dir and args.target_generation is not None and MANIFEST_AVAILABLE:
             print("[INFO] 注册精炼结果到manifest...")

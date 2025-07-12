@@ -693,13 +693,13 @@ def main():
     
     # 模型参数
     parser.add_argument("--synthesis_model_source", default="google",
-                       choices=["openai", "deepseek", "google"])
+                       choices=["openai", "deepseek", "xai", "google"])
     parser.add_argument("--synthesis_model_name", default="gemini-2.5-pro")
     parser.add_argument("--evaluation_model_source", default="google",
-                       choices=["openai", "deepseek", "google"])
+                       choices=["openai", "deepseek", "xai", "google"])
     parser.add_argument("--evaluation_model_name", default="gemini-2.5-pro")
     parser.add_argument("--dialog_model_source", default="google",
-                       choices=["openai", "deepseek", "google"])
+                       choices=["openai", "deepseek", "xai", "google"])
     parser.add_argument("--dialog_model_name", default="gemini-2.5-pro")
     
     # 精炼参数

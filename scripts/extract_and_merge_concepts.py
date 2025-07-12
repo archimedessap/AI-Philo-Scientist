@@ -44,7 +44,7 @@ def main():
     parser.add_argument("--theories", default="Copenhagen Interpretation,Many-Worlds Interpretation",
                       help="要生成的理论列表，用逗号分隔")
     parser.add_argument("--model_source", default="openai",
-                      choices=["openai", "ollama", "deepseek", "groq", "auto"],
+                      choices=["openai", "ollama", "deepseek", "xai", "groq", "auto"],
                       help="LLM模型来源，使用'auto'自动选择可用的最佳模型")
     parser.add_argument("--model_name", default="gpt-4o-mini",
                       help="LLM模型名称")

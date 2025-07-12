@@ -24,7 +24,7 @@ def main():
     
     # LLM接口参数
     parser.add_argument("--model_source", type=str, default="deepseek",
-                        choices=["openai", "deepseek", "ollama", "groq", "auto"],
+                        choices=["openai", "deepseek", "xai", "ollama", "groq", "auto"],
                         help="LLM模型来源")
     parser.add_argument("--model_name", type=str, default="deepseek-chat",
                         help="LLM模型名称")

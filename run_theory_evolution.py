@@ -673,7 +673,7 @@ async def main():
 
     # LLM 参数
     model_group = parser.add_argument_group('LLM Configuration')
-    model_group.add_argument("--model_source", type=str, default="google", choices=["openai", "deepseek", "google"], help="LLM provider.")
+    model_group.add_argument("--model_source", type=str, default="google", choices=["openai", "deepseek", "xai", "google"], help="LLM provider.")
     model_group.add_argument("--model_name", type=str, default="gemini-2.5-flash", help="Specific model name.")
     model_group.add_argument("--temperature", type=float, default=0.2, help="Sampling temperature for the LLM.")
     

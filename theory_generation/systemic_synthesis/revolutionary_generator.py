@@ -235,7 +235,7 @@ Invent a new theory that is bold, coherent, and testable. Your output **MUST** b
                         else:
                             # 如果已有时间戳，只添加变体信息
                             if "(Revolutionary Variant" not in original_name:
-                                theory["name"] = f"{original_name} (Revolutionary Variant {variant+1})"
+                        theory["name"] = f"{original_name} (Revolutionary Variant {variant+1})"
                         
                         print(f"[INFO] 生成革命性理论变体: {theory['name']}")
                     

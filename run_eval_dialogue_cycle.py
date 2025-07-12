@@ -87,7 +87,7 @@ def main():
     # --- 2. Generation 0 ---
     print("\n" + "="*80 + "\nGeneration 0: Creation and Initial Evaluation\n" + "="*80)
     gen0_dir = run_root / "generation_0"
-    
+
     # Phase A: Create and evaluate initial theories
     full_cycle_dir = gen0_dir / "full_cycle"
     cmd_full = [
@@ -107,7 +107,7 @@ def main():
     
     print(f"$ {' '.join(cmd_full)}")
     run_cmd(cmd_full)
-    
+
     # Phase B: Ingest the results into the manifest
     try:
         # 1. 智能地寻找新理论所在的目录 (这部分之前是正确的)
@@ -149,7 +149,7 @@ def main():
         print("\n" + "="*80 + f"\nGeneration {gen}: Refinement and Re-evaluation\n" + "="*80)
         gen_dir = run_root / f"generation_{gen}"
         gen_dir.mkdir(exist_ok=True)
-        
+
         # Phase A: Refine theories from the previous generation
         if not promoted_ids:
             print(f"[INFO] No theories to refine for Gen {gen}. Ending run."); break
@@ -159,16 +159,16 @@ def main():
         
         # NOTE: Using the arguments as defined in the user's original script version
         cmd_refine = [
-            "python", "run_m3_auto_refinement.py", 
+            "python", "run_m3_auto_refinement.py",
             "--manifest-path", str(manifest_path.resolve()),
             "--theory-ids", ",".join(promoted_ids), 
             "--output-dir", str(refinement_dir.resolve()),
             "--top-n", str(args.top_n), 
             "--max-iters", str(args.max_iters), 
             "--min-improve", str(args.min_improve),
-            "--judge_model_source", args.evaluation_model_source, 
+            "--judge_model_source", args.evaluation_model_source,
             "--judge_model_name", args.evaluation_model_name,
-            "--dialog_model_source", args.dialog_model_source, 
+            "--dialog_model_source", args.dialog_model_source,
             "--dialog_model_name", args.dialog_model_name,
         ]
         run_cmd(cmd_refine)
@@ -196,16 +196,16 @@ def main():
         
         eval_output_dir = gen_dir / "evaluation_output"
         cmd_eval = [
-            "python", "demo/demo_1.py", 
+                "python", "demo/demo_1.py",
             "--theory_path", str(eval_input_dir), 
-            "--experiment_dir", "demo/experiments/",
+                "--experiment_dir", "demo/experiments/",
             "--output_dir", str(eval_output_dir), 
-            "--model_source", args.evaluation_model_source,
-            "--model_name", args.evaluation_model_name, 
-            "--run_role_evaluation", 
+                "--model_source", args.evaluation_model_source,
+                "--model_name", args.evaluation_model_name,
+                "--run_role_evaluation",
             "--role_model_source", args.role_model_source,
             "--role_model_name", args.role_model_name,
-        ]
+            ]
         if args.use_instrument_correction: cmd_eval.append("--use_instrument_correction")
         run_cmd(cmd_eval)
         

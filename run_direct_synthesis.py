@@ -51,7 +51,7 @@ async def main():
     
     # LLM接口参数
     parser.add_argument("--model_source", type=str, default="openai",
-                        choices=["openai", "deepseek", "google"],
+                        choices=["openai", "deepseek", "xai", "google"],
                         help="模型来源")
     parser.add_argument("--model_name", type=str, default="gpt-4o-mini",
                         help="模型名称")

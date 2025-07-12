@@ -49,20 +49,20 @@ class EvolutionOrchestrator:
         try:
             # 1. 初始化 manifest
             self._initialize_manifest()
-            
+        
             # 2. Generation 0: 创生阶段
             success = self._run_generation_0()
             if not success:
                 print("[FATAL] Generation 0 失败，流程终止")
                 return False
-                
+            
             # 3. Generation 1+: 精炼循环
             for gen in range(1, self.config['max_generations']):
                 success = self._run_generation_n(gen)
                 if not success:
                     print(f"[INFO] Generation {gen} 未产生合格后代，演进自然结束")
                     break
-                    
+                
             print(f"\n🎉 演进流程完成！最终结果保存在: {self.run_root}")
             return True
             
@@ -128,7 +128,7 @@ class EvolutionOrchestrator:
             return False
             
         print(f"[INFO] 选中 {len(parent_ids)} 个父代理论: {parent_ids}")
-        
+            
         # Stage 2: 精炼理论
         print(f"\n[STAGE 2] 精炼理论...")
         refinement_result = self._call_refinement_stage(gen_dir, parent_ids)
@@ -233,7 +233,7 @@ class EvolutionOrchestrator:
         success = self._update_scores_from_evaluation(eval_output_dir)
         if not success:
             return False
-            
+        
         # 标记理论状态并选择优胜者
         self._mark_generation_complete(generation)
         
@@ -339,7 +339,7 @@ class EvolutionOrchestrator:
         }
         
         manifest_tools.save_manifest(self.manifest, self.manifest_path)
-        
+            
         print(f"[COMPLETE] Generation {generation} 完成，{len(promoted_ids)} 个理论晋级")
     
     def _execute_command(self, stage_name, cmd):
@@ -434,17 +434,17 @@ def main():
     
     # 模型参数
     parser.add_argument("--synthesis_model_source", default="google",
-                       choices=["openai", "deepseek", "google"],
+                       choices=["openai", "deepseek", "xai", "google"],
                        help="理论合成模型来源")
     parser.add_argument("--synthesis_model_name", default="gemini-2.5-pro",
                        help="理论合成模型名称")
     parser.add_argument("--evaluation_model_source", default="google", 
-                       choices=["openai", "deepseek", "google"],
+                       choices=["openai", "deepseek", "xai", "google"],
                        help="理论评估模型来源")
     parser.add_argument("--evaluation_model_name", default="gemini-2.5-pro",
                        help="理论评估模型名称")
     parser.add_argument("--dialog_model_source", default="google",
-                       choices=["openai", "deepseek", "google"],
+                       choices=["openai", "deepseek", "xai", "google"],
                        help="对话精炼模型来源")
     parser.add_argument("--dialog_model_name", default="gemini-2.5-pro",
                        help="对话精炼模型名称")
