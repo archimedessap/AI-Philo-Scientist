@@ -83,11 +83,17 @@ class InnovationFramework:
         """基于特征而非简单平均分确定创新层次"""
         
         # 检查数学关系类型 - 这是最直接的指标
-        math_relation = theory.get("mathematical_relation_to_sqm", "").lower()
+        math_relation = theory.get("mathematical_relation_to_sqm", "")
+        if not isinstance(math_relation, str):
+            math_relation = str(math_relation)
+        math_relation = math_relation.lower()
         
         # 检查是否有新参数
         formalism = theory.get("formalism", {})
-        math_objects = formalism.get("mathematical_objects", "").lower()
+        math_objects = formalism.get("mathematical_objects", "")
+        if not isinstance(math_objects, str):
+            math_objects = str(math_objects)
+        math_objects = math_objects.lower()
         
         # 安全地提取方程文本 - 处理两种数据结构
         equations_text = ""
