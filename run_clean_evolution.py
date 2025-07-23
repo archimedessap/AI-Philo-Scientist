@@ -147,21 +147,72 @@ class CleanEvolutionOrchestrator:
         return self._evaluate_generation(generation, gen_dir)
     
     def _call_synthesis(self, gen_dir):
-        """调用理论合成模块"""
+        """调用理论合成模块 - 支持多种生成方法，不回退"""
         synthesis_dir = gen_dir / "synthesis"
         synthesis_dir.mkdir(exist_ok=True)
+
+        # 获取生成方法配置（默认为 direct_synthesis 保持向后兼容）
+        synthesis_method = self.config.get('synthesis_method', 'direct_synthesis')
+
+        print(f"[🎯] 使用生成方法: {synthesis_method}")
+
+        # 使用新的理论生成中心
+        try:
+            from theory_generation.generation_hub import get_generation_hub
+            
+            hub = get_generation_hub()
+            
+            # 检查方法是否可用
+            available_methods = hub.list_methods()
+            print(f"[📋] 可用生成方法: {', '.join(available_methods)}")
+            
+            if synthesis_method not in available_methods:
+                print(f"[❌] 错误: 方法 {synthesis_method} 不可用")
+                print(f"[💡] 请使用以下方法之一: {', '.join(available_methods)}")
+                raise ValueError(f"未知的生成方法: {synthesis_method}")
+            
+            # 调用理论生成
+            print(f"[🚀] 开始使用 {synthesis_method} 方法生成理论...")
+            result = hub.generate_theories(
+                method=synthesis_method,
+                theories_dir=self.config['initial_theories_dir'],
+                output_dir=str(synthesis_dir),
+                max_pairs=self.config['max_pairs_to_analyze'],
+                variants_per_contradiction=self.config['variants_per_contradiction'],
+                model_source=self.config['synthesis_model_source'],
+                model_name=self.config['synthesis_model_name']
+            )
+            
+            # 检查生成结果
+            if result.get('success', False):
+                theories_count = len(result.get('theories', []))
+                print(f"[✅] 理论合成成功: 生成 {theories_count} 个理论")
+                
+                # 显示额外的元数据信息
+                if 'metadata' in result:
+                    metadata = result['metadata']
+                    if 'space_analysis' in metadata:
+                        space_info = metadata['space_analysis']
+                        print(f"[📊] 概念空间: {space_info.get('total_concepts', 0)} 个概念")
+                        print(f"[📊] 理论空间: {space_info.get('total_theories', 0)} 个理论") 
+                        print(f"[📊] 空白区域: {space_info.get('conceptual_gaps', 0)} 个")
+                
+                return True
+            else:
+                error_msg = result.get('error_message', '未知错误')
+                print(f"[❌] 理论合成失败: {error_msg}")
+                raise RuntimeError(f"理论生成失败: {error_msg}")
+                
+        except ImportError as e:
+            print(f"[❌] 无法导入理论生成中心: {e}")
+            print(f"[💡] 请检查理论生成模块是否正确安装")
+            raise ImportError(f"理论生成中心导入失败: {e}")
         
-        cmd = [
-            "python", "run_direct_synthesis.py",
-            "--theories_dir", self.config['initial_theories_dir'],
-            "--max_pairs", str(self.config['max_pairs_to_analyze']),
-            "--variants_per_contradiction", str(self.config['variants_per_contradiction']),
-            "--model_source", self.config['synthesis_model_source'],
-            "--model_name", self.config['synthesis_model_name'],
-            "--output_dir", str(synthesis_dir)
-        ]
-        
-        return self._run_command("理论合成", cmd)
+        except Exception as e:
+            print(f"[❌] 理论生成过程出错: {e}")
+            print(f"[🔍] 错误类型: {type(e).__name__}")
+            print(f"[💡] 请检查生成方法 '{synthesis_method}' 的配置和依赖")
+            raise RuntimeError(f"理论生成失败: {e}")
     
     def _call_refinement(self, gen_dir, parent_ids):
         """调用理论精炼模块 - 使用简化接口"""
@@ -686,6 +737,8 @@ def main():
                        help="每代保留的理论数量")
     
     # 生成参数  
+    parser.add_argument("--synthesis_method", default="direct_synthesis",
+                       help="理论生成方法 (direct_synthesis, multi_level, unified_generator, concept_relaxation)")
     parser.add_argument("--max_pairs_to_analyze", type=int, default=3,
                        help="合成时分析的理论对数")
     parser.add_argument("--variants_per_contradiction", type=int, default=1,
@@ -730,6 +783,7 @@ def main():
         'max_generations': args.max_generations,
         'promotion_min_score': args.promotion_min_score,
         'top_n_survivors': args.top_n_survivors,
+        'synthesis_method': args.synthesis_method,  # 新增：理论生成方法
         'max_pairs_to_analyze': args.max_pairs_to_analyze,
         'variants_per_contradiction': args.variants_per_contradiction,
         'synthesis_model_source': args.synthesis_model_source,
