@@ -29,20 +29,36 @@ import uuid
 # 导入清单管理工具
 import manifest_tools
 
+# 导入断点续跑管理器
+from utils.checkpoint_manager import CheckpointManager, ResumableRunner
+
 
 class CleanEvolutionOrchestrator:
     """基于纯净数据流的演进调度器"""
     
-    def __init__(self, config):
+    def __init__(self, config, resume_run_id=None):
         self.config = config
-        self.run_id = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        self.run_root = Path(config['output_root']) / self.run_id
-        self.manifest_path = self.run_root / "run_manifest.json"
         
-        # 创建运行目录
-        self.run_root.mkdir(parents=True, exist_ok=True)
-        print(f"[🚀] 演进运行启动: {self.run_id}")
+        # 支持续跑
+        if resume_run_id:
+            self.run_id = resume_run_id
+            self.run_root = Path(config['output_root']) / self.run_id
+            self.is_resume = True
+            print(f"[🔄] 续跑模式: {self.run_id}")
+        else:
+            self.run_id = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            self.run_root = Path(config['output_root']) / self.run_id
+            self.is_resume = False
+            # 创建运行目录
+            self.run_root.mkdir(parents=True, exist_ok=True)
+            print(f"[🚀] 演进运行启动: {self.run_id}")
+        
+        self.manifest_path = self.run_root / "run_manifest.json"
         print(f"[📁] 运行目录: {self.run_root}")
+        
+        # 初始化断点管理器
+        self.checkpoint_manager = CheckpointManager(self.run_id, 
+                                                   checkpoint_dir=str(self.run_root / "checkpoints"))
         
     def run(self):
         """运行完整的演进循环"""
@@ -173,15 +189,27 @@ class CleanEvolutionOrchestrator:
             
             # 调用理论生成
             print(f"[🚀] 开始使用 {synthesis_method} 方法生成理论...")
-            result = hub.generate_theories(
-                method=synthesis_method,
-                theories_dir=self.config['initial_theories_dir'],
-                output_dir=str(synthesis_dir),
-                max_pairs=self.config['max_pairs_to_analyze'],
-                variants_per_contradiction=self.config['variants_per_contradiction'],
-                model_source=self.config['synthesis_model_source'],
-                model_name=self.config['synthesis_model_name']
-            )
+            
+            # 构建生成参数
+            generation_params = {
+                'method': synthesis_method,
+                'theories_dir': self.config['initial_theories_dir'],
+                'output_dir': str(synthesis_dir),
+                'max_pairs': self.config['max_pairs_to_analyze'],
+                'variants_per_contradiction': self.config['variants_per_contradiction'],
+                'model_source': self.config['synthesis_model_source'],
+                'model_name': self.config['synthesis_model_name']
+            }
+            
+            # 添加文献概念相关参数（如果方法支持）
+            if synthesis_method in ['unified', 'unified_generator']:
+                if self.config.get('use_raw_literature', False):
+                    generation_params['use_raw_literature'] = True
+                    generation_params['force_load_literature'] = True  # 强制加载文献概念
+                    generation_params['literature_concepts_dir'] = self.config.get('literature_concepts_dir', 'data/enhanced_concepts')
+                    print(f"[📚] 启用原始文献概念增强")
+            
+            result = hub.generate_theories(**generation_params)
             
             # 检查生成结果
             if result.get('success', False):
@@ -405,11 +433,22 @@ class CleanEvolutionOrchestrator:
         temp_theories_dir = eval_dir / "theories"
         temp_theories_dir.mkdir(exist_ok=True)
         
-        # 复制理论文件
+        # 复制并转换理论文件格式
+        from utils.theory_format_converter import convert_theory_file
+        
         for theory_id, theory_data in unevaluated.items():
             src_path = Path(theory_data['file_path'])
             dest_path = temp_theories_dir / f"{theory_id}_{src_path.name}"
+            
+            # 复制文件
             shutil.copy(src_path, dest_path)
+            
+            # 转换格式（原地修改）
+            try:
+                convert_theory_file(dest_path, dest_path)
+                print(f"  ✅ 转换理论格式: {theory_data['theory_name']}")
+            except Exception as e:
+                print(f"  ⚠️  转换失败: {theory_data['theory_name']} - {e}")
         
         eval_output_dir = eval_dir / "results"
         success = self._call_evaluation(temp_theories_dir, eval_output_dir)
@@ -738,11 +777,19 @@ def main():
     
     # 生成参数  
     parser.add_argument("--synthesis_method", default="direct_synthesis",
-                       help="理论生成方法 (direct_synthesis, multi_level, unified_generator, concept_relaxation)")
+                       help="理论生成方法 (direct_synthesis, multi_level, unified_generator, unified, concept_relaxation)")
     parser.add_argument("--max_pairs_to_analyze", type=int, default=3,
                        help="合成时分析的理论对数")
     parser.add_argument("--variants_per_contradiction", type=int, default=1,
                        help="每个矛盾生成的变体数")
+    
+    # 文献概念控制参数
+    parser.add_argument("--use_raw_literature", action="store_true",
+                       help="是否使用原始文献概念（需要先运行prepare_enhanced_concepts.py）")
+    parser.add_argument("--literature_concepts_dir", default="data/enhanced_concepts",
+                       help="文献概念目录")
+    parser.add_argument("--auto_extract_concepts", action="store_true",
+                       help="如果没有预提取的概念，是否自动提取（会显著增加运行时间）")
     
     # 模型参数
     parser.add_argument("--synthesis_model_source", default="google",
@@ -768,6 +815,10 @@ def main():
                        help="启用仪器修正评估（默认开启）")
     parser.add_argument("--disable_instrument_correction", action="store_true",
                        help="禁用仪器修正评估")
+    
+    # 断点续跑参数
+    parser.add_argument("--resume", type=str, default=None,
+                       help="续跑的运行ID (例如: run_20250724_123456)")
     
     args = parser.parse_args()
     
@@ -795,11 +846,15 @@ def main():
         'max_refinement_iters': args.max_refinement_iters,
         'min_improvement': args.min_improvement,
         'role_success_threshold': args.role_success_threshold,
-        'use_instrument_correction': args.use_instrument_correction
+        'use_instrument_correction': args.use_instrument_correction,
+        # 文献概念相关配置
+        'use_raw_literature': args.use_raw_literature,
+        'literature_concepts_dir': args.literature_concepts_dir,
+        'auto_extract_concepts': args.auto_extract_concepts
     }
     
-    # 启动演进
-    orchestrator = CleanEvolutionOrchestrator(config)
+    # 启动演进（支持续跑）
+    orchestrator = CleanEvolutionOrchestrator(config, resume_run_id=args.resume)
     success = orchestrator.run()
     sys.exit(0 if success else 1)
 

@@ -100,6 +100,25 @@ class ConceptEmbedder:
         print(f"[INFO] 成功嵌入 {len(self.formula_embeddings)} 个公式")
         return self.formula_embeddings
     
+    async def embed_texts(self, texts: List[str]) -> Dict[str, np.ndarray]:
+        """
+        批量嵌入文本
+        
+        Args:
+            texts: 文本列表
+            
+        Returns:
+            Dict[str, np.ndarray]: 文本到嵌入向量的映射
+        """
+        embeddings = {}
+        for text in texts:
+            try:
+                embedding = await self._get_embedding(text)
+                embeddings[text] = embedding
+            except Exception as e:
+                print(f"[警告] 无法嵌入文本 '{text[:50]}...': {e}")
+        return embeddings
+    
     async def embed_theories(self, theories: List[Dict]) -> Dict[str, np.ndarray]:
         """
         将理论嵌入到高维空间

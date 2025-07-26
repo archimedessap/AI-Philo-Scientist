@@ -13,6 +13,7 @@ import asyncio
 import json
 from theory_generation.llm_interface import LLMInterface
 from theory_validation.agent_validation.theory_evaluator import TheoryEvaluator
+from utils.manifest_manager import ManifestManager
 import glob
 
 def ensure_directory_exists(directory):
@@ -54,6 +55,8 @@ async def main():
                         help="提取高分理论的分数阈值")
     parser.add_argument("--immediate_extract", action="store_true", default=True,
                         help="立即提取高分理论，不等待全部评估完成")
+    parser.add_argument("--manifest_path", type=str, default=None,
+                        help="运行清单文件路径，用于自动回写评估分数")
     
     args = parser.parse_args()
     
@@ -73,6 +76,12 @@ async def main():
     
     # 创建理论评估器
     evaluator = TheoryEvaluator(llm)
+    
+    # 如果提供了清单路径，初始化清单管理器
+    manifest_manager = None
+    if args.manifest_path:
+        manifest_manager = ManifestManager(args.manifest_path)
+        print(f"[INFO] 将自动更新清单文件: {args.manifest_path}")
     
     # 加载理论
     if not os.path.exists(args.theories_file):
@@ -148,6 +157,20 @@ async def main():
                         json.dump(theory, f, ensure_ascii=False, indent=2)
                     
                     print(f"[即时提取] 高分理论 ({score:.1f}分) 已保存到: {output_path}")
+            
+            # 如果有清单管理器，更新评估分数
+            if manifest_manager and theory_id:
+                scores = result.get('evaluator_feedback', {})
+                final_score = result.get('overall_score', 0)
+                eval_summary_path = experiment_file
+                
+                manifest_manager.update_theory_scores(
+                    theory_id=theory_id,
+                    scores=scores,
+                    final_score=final_score,
+                    eval_summary_path=eval_summary_path
+                )
+                print(f"[清单更新] 已更新理论 {theory_id} 的评估分数")
         
         except Exception as e:
             print(f"[ERROR] 评估理论 '{theory.get('name', '未命名')}' 失败: {str(e)}")

@@ -198,13 +198,13 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
     - **Relation to SQM:** {theory.get("mathematical_relation_to_sqm", "Not specified")}
 
     ### Core Principles
-    {json.dumps(theory.get("core_principles", "No principles provided."), indent=2)}
+    {json.dumps(theory.get("core_principles", theory.get("core_assumptions", "No principles provided.")), indent=2)}
     
     ### Formalism
-    {json.dumps(theory.get("formalism", "No formalism provided."), indent=2)}
+    {json.dumps(theory.get("formalism", theory.get("mathematical_formalism", "No formalism provided.")), indent=2)}
     
     ### Predictions and Verifiability
-    {json.dumps(theory.get("predictions_and_verifiability", "No predictions provided."), indent=2)}
+    {json.dumps(theory.get("predictions_and_verifiability", theory.get("empirical_predictions", "No predictions provided.")), indent=2)}
     
     ## Experiment
     {json.dumps(setup_exp, indent=2)}
@@ -263,7 +263,15 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
     value = None
     
     # 解析响应中的JSON对象
-    for line in response.splitlines():
+    # 首先尝试去除markdown代码块标记
+    cleaned_response = response.strip()
+    if cleaned_response.startswith("```json") and cleaned_response.endswith("```"):
+        cleaned_response = cleaned_response[7:-3].strip()
+    elif cleaned_response.startswith("```") and cleaned_response.endswith("```"):
+        cleaned_response = cleaned_response[3:-3].strip()
+    
+    # 尝试按行解析JSON对象
+    for line in cleaned_response.splitlines():
         line = line.strip()
         if line.startswith("{") and line.endswith("}"):
             try:
@@ -274,16 +282,53 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
                     print(derivation)
                     print("-"*50)
                 if "value" in obj:
-                    value = float(obj["value"])
-                    print(f"\n预测值: {value}\n")
-            except (json.JSONDecodeError, TypeError, ValueError):
-                print(f"[WARN] 无法解析或转换行，或值无效: {line}")
+                    # 处理null值的情况
+                    if obj["value"] is not None:
+                        value = float(obj["value"])
+                        print(f"\n预测值: {value}\n")
+                    else:
+                        print(f"\n预测值: null (LLM无法计算)\n")
+            except (json.JSONDecodeError, TypeError, ValueError) as e:
+                print(f"[WARN] 无法解析或转换行: {line}")
+                print(f"[WARN] 错误: {e}")
                 continue
     
-    # 如果LLM未能提供有效数值，则无法继续评估
+    # 获取实验测量值
+    # exp_target 已经在前面定义过了
+    measured = measured_data[exp_id]["value"]
+    sigma = measured_data[exp_id]["sigma"]
+    
+    # 如果LLM未能提供有效数值，仍然生成评估文件但标记为失败
     if value is None:
-        print(f"[WARN] 未能从LLM响应中提取有效的预测数值。跳过对实验 '{exp_id}' 的评估。")
-        return None
+        print(f"[WARN] 未能从LLM响应中提取有效的预测数值。将生成失败的评估记录。")
+        
+        # 生成失败的评佐结果
+        structured_output = {
+            "theory_name": theory_name,
+            "experiment_id": exp_id,
+            "prediction": None,
+            "measured": measured,
+            "derivation": derivation,
+            "chi2": None,
+            "success": False,
+            "error": "LLM failed to provide valid prediction value",
+            "evaluation_metadata": {
+                "model_source": args.model_source,
+                "model_name": args.model_name,
+                "temperature": args.temperature
+            }
+        }
+        
+        # 保存失败的评估结果
+        output_dir = os.path.dirname(output_file)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
+        
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(structured_output, f, ensure_ascii=False, indent=2)
+        
+        print(f"[INFO] 失败的评估结果已保存到: {output_file}")
+        return structured_output
     
     # 计算与实验值的偏差（使用合并后的完整实验数据）
     chi2 = None
@@ -676,6 +721,26 @@ async def main():
                     
     else:
         print("\n[FINAL] No evaluations were successfully completed.")
+        
+    # 无论是否有成功的评估，都生成一个摘要文件
+    # 这确保run_clean_evolution.py可以找到评估结果
+    if not all_results:
+        # 没有任何评估结果，为每个理论创建一个失败记录
+        ranked_theories = []
+        for theory_name, (theory_data, file_path) in theories.items():
+            ranked_theories.append({
+                "theory_name": theory_name,
+                "success_rate": 0.0,
+                "average_chi2": float('inf'),
+                "experiments_count": 0,
+                "file_path": file_path,
+                "error": "All evaluations failed"
+            })
+        
+        final_summary_file = os.path.join(run_output_dir, "final_evaluation_summary.json")
+        with open(final_summary_file, "w", encoding="utf-8") as f:
+            json.dump(ranked_theories, f, ensure_ascii=False, indent=2)
+        print(f"\n[FINAL] Empty evaluation summary saved to: {final_summary_file}")
 
     print("\nEvaluation run finished.")
 

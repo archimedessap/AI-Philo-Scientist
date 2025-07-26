@@ -151,6 +151,34 @@ class TheoryGenerationHub:
             print(f"[⚠️] 无法导入 unified_generator 适配器: {e}")
         
         try:
+            # 导入并注册增强的 unified 适配器（基于高维概念空间）
+            try:
+                from .methods.unified_generator_adapter import UnifiedGeneratorAdapter
+            except ImportError:
+                from methods.unified_generator_adapter import UnifiedGeneratorAdapter
+            self.register_method(
+                "unified", 
+                UnifiedGeneratorAdapter,
+                "基于高维概念空间的增强统一生成方法（包含概念提取、知识图谱和物理嵌入）"
+            )
+        except ImportError as e:
+            print(f"[⚠️] 无法导入增强的 unified 适配器: {e}")
+        
+        try:
+            # 导入并注册优化版 unified 适配器
+            try:
+                from .methods.unified_generator_adapter_optimized import UnifiedGeneratorAdapterOptimized
+            except ImportError:
+                from methods.unified_generator_adapter_optimized import UnifiedGeneratorAdapterOptimized
+            self.register_method(
+                "unified_optimized", 
+                UnifiedGeneratorAdapterOptimized,
+                "优化版基于高维概念空间的统一生成方法（并行加载、缓存支持、批处理优化）"
+            )
+        except ImportError as e:
+            print(f"[⚠️] 无法导入优化版 unified 适配器: {e}")
+        
+        try:
             # 导入并注册 concept_relaxation 适配器
             try:
                 from .methods.concept_relaxation_adapter import ConceptRelaxationAdapter

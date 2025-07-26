@@ -10,6 +10,12 @@
 import os
 import json
 from typing import List, Dict, Any, Tuple, Optional
+import sys
+from pathlib import Path
+
+# 添加项目根目录到sys.path
+sys.path.append(str(Path(__file__).parent.parent.parent))
+from utils.retry_decorator import retry_on_api_error
 
 def safe_get_nested(obj, path, subpath=None, default=''):
     """安全获取嵌套字段，无论是字典还是字符串"""
@@ -115,9 +121,10 @@ class TheoryEvaluator:
         
         return base_result
     
+    @retry_on_api_error(retries=3, initial_delay=2.0)
     async def _evaluate_as_role(self, theory: Dict, role_id: str, role_info: Dict) -> Dict:
         """
-        从特定角色视角评估理论
+        从特定角色视角评估理论（带重试机制）
         
         Args:
             theory: 要评估的理论

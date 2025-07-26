@@ -15,6 +15,11 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 
+# 导入日志系统
+from utils.logging_config import get_logger, log_config, log_error_with_context, log_execution
+# 导入缓存管理器
+from utils.cache_manager import CacheManager
+
 # 导入各个组件
 from core_embedding.concept_extractor import ConceptExtractor
 from core_embedding.embedding import ConceptEmbedder
@@ -60,59 +65,125 @@ class UnifiedTheoryGenerator:
             llm_interface: LLM接口
             config: 统一生成配置
         """
+        # 初始化日志器
+        self.logger = get_logger('unified_theory_generator', module_specific=True)
+        self.logger.info("初始化统一理论生成器")
+        
         self.llm = llm_interface
         self.config = config
         
-        # 初始化组件
-        self.concept_extractor = ConceptExtractor(llm_interface)
-        self.concept_embedder = ConceptEmbedder(llm_interface)
-        self.contradiction_analyzer = ContradictionAnalyzer(llm_interface)
-        self.theory_registry = TheoryRegistry(config.theory_registry_dir)
+        # 记录配置
+        log_config(config.__dict__, 'unified_config')
         
-        # 数据存储
-        self.literature_concepts = []  # 从文献提取的概念
-        self.prior_theories = {}       # 先验理论库
-        self.concept_embeddings = {}   # 概念嵌入向量
-        self.theory_embeddings = {}    # 理论嵌入向量
-        self.unified_concept_space = {}  # 统一概念空间
+        # 初始化缓存管理器
+        self.cache_manager = CacheManager(
+            cache_dir="cache/unified_theory",
+            version="1.1.0"  # 使用新版本号
+        )
         
-        # 多级创新生成器（稍后初始化）
-        self.multi_level_generator = None
-        
-        # 创建输出目录
-        Path(config.output_dir).mkdir(exist_ok=True)
+        try:
+            # 初始化组件
+            self.concept_extractor = ConceptExtractor(llm_interface)
+            self.concept_embedder = ConceptEmbedder(llm_interface)
+            self.contradiction_analyzer = ContradictionAnalyzer(llm_interface)
+            self.theory_registry = TheoryRegistry(config.theory_registry_dir)
+            
+            # 数据存储
+            self.literature_concepts = []  # 从文献提取的概念
+            self.prior_theories = {}       # 先验理论库
+            self.concept_embeddings = {}   # 概念嵌入向量
+            self.theory_embeddings = {}    # 理论嵌入向量
+            self.unified_concept_space = {}  # 统一概念空间
+            
+            # 多级创新生成器（稍后初始化）
+            self.multi_level_generator = None
+            
+            # 创建输出目录
+            Path(config.output_dir).mkdir(exist_ok=True)
+            self.logger.info(f"输出目录已创建: {config.output_dir}")
+            
+        except Exception as e:
+            log_error_with_context(e, {
+                'config': config.__dict__,
+                'stage': 'initialization'
+            })
+            raise
     
+    @log_execution('unified_theory_generator')
     async def initialize_unified_system(self):
         """初始化统一系统"""
+        self.logger.info("🚀 开始初始化统一理论生成系统")
         print("🚀 初始化统一理论生成系统")
         print("=" * 60)
         
-        # 步骤1: 处理文献和概念提取
-        await self._process_literature()
-        
-        # 步骤2: 加载先验理论库
-        await self._load_prior_theories()
-        
-        # 步骤3: 构建统一概念空间
-        await self._build_unified_concept_space()
-        
-        # 步骤4: 初始化多级创新生成器
-        self._initialize_multi_level_generator()
-        
-        print("✅ 统一系统初始化完成")
+        try:
+            # 步骤1: 处理文献和概念提取
+            self.logger.info("步骤1: 处理文献和概念提取")
+            await self._process_literature()
+            
+            # 步骤2: 加载先验理论库
+            self.logger.info("步骤2: 加载先验理论库")
+            await self._load_prior_theories()
+            
+            # 步骤3: 构建统一概念空间
+            self.logger.info("步骤3: 构建统一概念空间")
+            await self._build_unified_concept_space()
+            
+            # 步骤4: 初始化多级创新生成器
+            self.logger.info("步骤4: 初始化多级创新生成器")
+            self._initialize_multi_level_generator()
+            
+            self.logger.info("✅ 统一系统初始化完成")
+            print("✅ 统一系统初始化完成")
+            
+            # 记录初始化统计
+            self.logger.info(f"初始化统计:")
+            self.logger.info(f"  - 文献概念数: {len(self.literature_concepts)}")
+            self.logger.info(f"  - 先验理论数: {len(self.prior_theories)}")
+            self.logger.info(f"  - 概念嵌入数: {len(self.concept_embeddings)}")
+            self.logger.info(f"  - 统一概念空间大小: {len(self.unified_concept_space)}")
+            
+        except Exception as e:
+            self.logger.error("系统初始化失败")
+            log_error_with_context(e, {
+                'stage': 'system_initialization',
+                'literature_concepts': len(self.literature_concepts),
+                'prior_theories': len(self.prior_theories)
+            })
+            raise
     
     async def _process_literature(self):
         """处理文献和概念提取"""
         print("\n📚 步骤1: 处理文献和概念提取")
+        self.logger.info("开始处理文献和概念提取")
         
-        # 检查缓存
+        # 尝试从新缓存系统加载
+        cache_key = "literature_concepts"
+        cached_data = self.cache_manager.load(cache_key, cache_type='json')
+        
+        if cached_data:
+            self.literature_concepts = cached_data.get('concepts', [])
+            self.logger.info(f"从缓存加载了 {len(self.literature_concepts)} 个概念")
+            print(f"📋 从缓存加载了 {len(self.literature_concepts)} 个概念")
+            return
+        
+        # 兼容旧缓存文件
         cache_file = Path(self.config.concept_cache_file)
         if cache_file.exists():
-            print("📋 加载缓存的概念数据...")
+            print("📋 发现旧缓存文件，正在迁移...")
             with open(cache_file, 'r', encoding='utf-8') as f:
                 cached_data = json.load(f)
+            
+            # 保存到新缓存系统
+            self.cache_manager.save(
+                cache_key,
+                cached_data,
+                cache_type='json',
+                ttl_hours=24*7  # 7天有效期
+            )
+            
             self.literature_concepts = cached_data.get('concepts', [])
-            print(f"✅ 加载了 {len(self.literature_concepts)} 个缓存概念")
+            print(f"✅ 已迁移 {len(self.literature_concepts)} 个概念到新缓存系统")
             return
         
         # 从文献中提取概念
@@ -535,6 +606,8 @@ class UnifiedTheoryGenerator:
     
     def save_unified_analysis(self, filename: str = "unified_analysis.json"):
         """保存统一分析结果"""
+        self.logger.info("保存统一分析结果")
+        
         analysis = {
             'literature_concepts_count': len(self.literature_concepts),
             'prior_theories_count': len(self.prior_theories),
@@ -550,6 +623,10 @@ class UnifiedTheoryGenerator:
             json.dump(analysis, f, ensure_ascii=False, indent=2)
         
         print(f"📊 统一分析结果已保存到: {output_file}")
+        
+        # 生成概念空间可视化（如果启用）
+        if self.config.enable_visualization:
+            self._generate_concept_space_visualization()
     
     def _calculate_concept_space_stats(self) -> Dict:
         """计算概念空间统计信息"""
@@ -612,4 +689,55 @@ class UnifiedTheoryGenerator:
                 'std_norm': 0.0,
                 'concept_count': 0,
                 'theory_count': 0
-            } 
+            }
+    
+    def _generate_concept_space_visualization(self):
+        """生成概念空间可视化"""
+        try:
+            from utils.concept_space_visualizer import ConceptSpaceVisualizer
+            
+            print("\n📊 生成概念空间可视化...")
+            self.logger.info("开始生成概念空间可视化")
+            
+            # 创建可视化器
+            viz_dir = Path(self.config.output_dir) / "concept_space_visualization"
+            visualizer = ConceptSpaceVisualizer(str(viz_dir))
+            
+            # 准备数据
+            all_embeddings = {}
+            all_labels = {}
+            
+            # 添加概念嵌入
+            for name, embedding in self.concept_embeddings.items():
+                if embedding is not None and isinstance(embedding, np.ndarray):
+                    all_embeddings[f"概念: {name}"] = embedding
+                    all_labels[f"概念: {name}"] = "文献概念"
+            
+            # 添加理论嵌入
+            for name, embedding in self.theory_embeddings.items():
+                if embedding is not None and isinstance(embedding, np.ndarray):
+                    all_embeddings[f"理论: {name}"] = embedding
+                    all_labels[f"理论: {name}"] = "先验理论"
+            
+            # 确保有足够的数据进行可视化
+            if len(all_embeddings) < 3:
+                self.logger.warning("嵌入数量不足，跳过可视化")
+                print("⚠️ 嵌入数量不足（需要至少3个），跳过可视化")
+                return
+            
+            # 生成综合报告
+            visualizer.create_comprehensive_report(
+                all_embeddings,
+                labels=all_labels,
+                output_prefix="unified_concept_space"
+            )
+            
+            print(f"✅ 概念空间可视化已生成: {viz_dir}")
+            self.logger.info(f"概念空间可视化完成: {viz_dir}")
+            
+        except ImportError:
+            self.logger.warning("无法导入可视化模块，跳过可视化")
+            print("⚠️ 可视化模块未安装，跳过概念空间可视化")
+        except Exception as e:
+            self.logger.error(f"生成可视化时出错: {e}")
+            print(f"⚠️ 生成可视化时出错: {e}") 
