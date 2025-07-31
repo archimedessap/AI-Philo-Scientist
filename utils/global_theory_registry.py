@@ -217,15 +217,10 @@ class GlobalTheoryRegistry:
             if tinfo.get("generation") == max_generation and tinfo.get("status") == "promoted"
         ]
         
-        # 如果没有promoted状态的，选择最高代数中评分最高的前2个理论
+        # 如果没有promoted状态的，说明没有理论达到晋级标准，不应该注册任何理论
         if not final_theories:
-            max_gen_theories = [
-                (tid, tinfo) for tid, tinfo in manifest["theories"].items()
-                if tinfo.get("generation") == max_generation
-            ]
-            # 按分数排序，取前2个
-            max_gen_theories.sort(key=lambda x: x[1].get("score", 0), reverse=True)
-            final_theories = max_gen_theories[:2]
+            print(f"⚠️ 第{max_generation}代没有理论达到晋级标准，跳过注册")
+            return 0
         
         print(f"发现 {len(final_theories)} 个最终晋级理论 (第{max_generation}代)")
         
