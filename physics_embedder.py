@@ -161,7 +161,17 @@ class PhysicsEmbedder:
         """获取语义嵌入"""
         # 使用基础嵌入器
         embeddings = await self.base_embedder.embed_texts([text])
-        return embeddings[text]
+        embedding = embeddings.get(text)
+        
+        # 确保返回numpy数组
+        if embedding is None:
+            logger.warning(f"No embedding found for text: {text[:50]}...")
+            return np.zeros(self.base_embedder.dimension)
+        
+        if not isinstance(embedding, np.ndarray):
+            embedding = np.array(embedding)
+        
+        return embedding
     
     def _extract_structural_features(self, text: str, concept_type: str) -> np.ndarray:
         """提取结构特征"""

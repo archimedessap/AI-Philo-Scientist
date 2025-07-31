@@ -191,6 +191,20 @@ class TheoryGenerationHub:
             )
         except ImportError as e:
             print(f"[⚠️] 无法导入 concept_relaxation 适配器: {e}")
+        
+        try:
+            # 导入并注册 feedback_aware 适配器
+            try:
+                from .methods.feedback_aware_generator import FeedbackAwareGenerator
+            except ImportError:
+                from methods.feedback_aware_generator import FeedbackAwareGenerator
+            self.register_method(
+                "feedback_aware", 
+                FeedbackAwareGenerator,
+                "基于评估反馈的智能生成方法（根据评估结果自动调整生成策略）"
+            )
+        except ImportError as e:
+            print(f"[⚠️] 无法导入 feedback_aware 适配器: {e}")
 
 
 # 创建全局实例

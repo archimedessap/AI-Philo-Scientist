@@ -135,11 +135,21 @@ class UnifiedSpaceBasedGenerator(TheoryGenerationMethod):
             from knowledge_graph_builder import KnowledgeGraph
             kg_dir = Path('data/knowledge_graph')
             if kg_dir.exists():
-                # 查找所有知识图谱文件（包括增强版本）
-                kg_patterns = ['enhanced_kg_*.json', 'test_kg_*.json', 'knowledge_graph_*.json']
+                # 查找所有知识图谱文件（包括增强版本）- 优先使用标准格式
+                # 首先尝试标准格式文件（不包括可视化文件）
+                standard_patterns = ['enhanced_kg_*.json', 'knowledge_graph_*.json']
                 kg_files = []
-                for pattern in kg_patterns:
+                for pattern in standard_patterns:
                     kg_files.extend(list(kg_dir.glob(pattern)))
+                
+                # 添加非可视化的test_kg文件
+                test_kg_files = [f for f in kg_dir.glob('test_kg_*.json') 
+                               if not f.name.startswith('test_kg_viz_')]
+                kg_files.extend(test_kg_files)
+                
+                # 如果还是没有文件，才考虑可视化文件
+                if not kg_files:
+                    kg_files = list(kg_dir.glob('test_kg_viz_*.json'))
                 
                 if kg_files:
                     latest_kg = max(kg_files, key=os.path.getctime)
@@ -162,15 +172,28 @@ class UnifiedSpaceBasedGenerator(TheoryGenerationMethod):
             
             kg = KnowledgeGraph()
             
-            # 加载节点
-            for node_id, node_data in data.get('nodes', {}).items():
-                node = Node(
-                    id=node_data['id'],
-                    type=node_data['type'],
-                    name=node_data['name'],
-                    attributes=node_data['attributes']
-                )
-                kg.add_node(node)
+            # 加载节点 - 支持两种格式
+            nodes_data = data.get('nodes', {})
+            if isinstance(nodes_data, dict):
+                # 标准格式：nodes是字典
+                for node_id, node_data in nodes_data.items():
+                    node = Node(
+                        id=node_data['id'],
+                        type=node_data['type'],
+                        name=node_data['name'],
+                        attributes=node_data['attributes']
+                    )
+                    kg.add_node(node)
+            elif isinstance(nodes_data, list):
+                # 可视化格式：nodes是列表
+                for node_data in nodes_data:
+                    node = Node(
+                        id=node_data['id'],
+                        type=node_data.get('type', 'unknown'),
+                        name=node_data.get('label', node_data.get('name', node_data['id'])),
+                        attributes=node_data.get('attributes', {})
+                    )
+                    kg.add_node(node)
             
             # 加载边
             for edge_data in data.get('edges', []):
@@ -1658,12 +1681,17 @@ New Theory:
         self._log_info("🎯 Identifying high-value conceptual gaps using enhanced analysis")
         
         # 使用物理嵌入器识别概念桥梁
+        from physics_embedder import PhysicsEmbedding
         embeddings = {}
         for name, vector in self.concept_space.items():
-            embeddings[name] = type('PhysicsEmbedding', (), {
-                'vector': vector,
-                'metadata': {'domain': self._infer_domain(name)}
-            })()
+            # 创建真正的PhysicsEmbedding对象
+            embeddings[name] = PhysicsEmbedding(
+                vector=vector,
+                semantic_vector=vector,  # 使用相同的向量作为语义向量
+                structural_vector=np.zeros_like(vector),  # 空的结构向量
+                domain_vector=np.zeros_like(vector),  # 空的领域向量
+                metadata={'domain': self._infer_domain(name)}
+            )
         
         # 查找概念桥梁（跨领域的高相似度概念对）
         bridges = self.physics_embedder.find_conceptual_bridges(embeddings, threshold=0.6)
@@ -1681,11 +1709,16 @@ New Theory:
                     'value_score': similarity * self.concept_importance.get(concept1, 0.5) * self.concept_importance.get(concept2, 0.5)
                 })
         
+        # 保存当前已识别的概念桥梁
+        bridge_gaps = self.conceptual_gaps.copy()
+        
         # 使用传统方法识别其他空白
-        traditional_gaps = self._identify_conceptual_gaps()
+        self.conceptual_gaps = []  # 清空以便传统方法填充
+        self._identify_conceptual_gaps()  # 这个方法会填充 self.conceptual_gaps
+        traditional_gaps = self.conceptual_gaps.copy()
         
         # 合并并排序
-        all_gaps = self.conceptual_gaps + traditional_gaps
+        all_gaps = bridge_gaps + traditional_gaps
         all_gaps.sort(key=lambda x: x.get('value_score', 0), reverse=True)
         
         self.conceptual_gaps = all_gaps[:20]  # 保留前20个最有价值的空白

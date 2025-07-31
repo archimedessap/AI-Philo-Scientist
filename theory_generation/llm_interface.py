@@ -353,6 +353,10 @@ class LLMInterface:
         # 查找一个反斜杠，后面不是一个合法的JSON转义字符 (", \, /, b, f, n, r, t, u)
         # 使用负向先行断言
         json_str = re.sub(r'\\(?![\\"bfnrtu/])', r'\\\\', json_str)
+        
+        # 3.1 额外处理：修复Windows路径等常见的反斜杠问题
+        # 将单个反斜杠（不在转义序列中）替换为双反斜杠
+        json_str = re.sub(r'(?<!\\)\\(?!\\)', r'\\\\', json_str)
 
         # 4. 修复使用单引号的问题
         json_str = json_str.replace("'", '"')
