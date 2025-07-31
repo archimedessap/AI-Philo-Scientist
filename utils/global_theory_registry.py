@@ -206,23 +206,29 @@ class GlobalTheoryRegistry:
         
         print(f"📊 分析运行: {run_id}")
         
-        # 找出最终晋级的理论
-        # 优先选择最高代数中状态为promoted的理论
-        # 如果没有promoted状态的，则选择最高代数中评分最高的理论
-        max_generation = max((t.get("generation", 0) for t in manifest["theories"].values()), default=0)
-        
-        # 先尝试找promoted状态的理论
-        final_theories = [
+        # 找出所有晋级的理论（不限于最高代）
+        # 收集所有状态为promoted的理论
+        promoted_theories = [
             (tid, tinfo) for tid, tinfo in manifest["theories"].items()
-            if tinfo.get("generation") == max_generation and tinfo.get("status") == "promoted"
+            if tinfo.get("status") == "promoted"
         ]
         
-        # 如果没有promoted状态的，说明没有理论达到晋级标准，不应该注册任何理论
-        if not final_theories:
-            print(f"⚠️ 第{max_generation}代没有理论达到晋级标准，跳过注册")
+        # 如果没有promoted状态的理论，说明没有理论达到晋级标准
+        if not promoted_theories:
+            print(f"⚠️ 整个运行中没有理论达到晋级标准，跳过注册")
             return 0
         
-        print(f"发现 {len(final_theories)} 个最终晋级理论 (第{max_generation}代)")
+        # 按理论家族分组，每个家族只选择最高分的版本
+        families = {}
+        for tid, tinfo in promoted_theories:
+            # 获取理论的原始ID（家族ID）
+            family_id = tid.split('_')[0] if '_' in tid else tid
+            if family_id not in families or tinfo.get("score", 0) > families[family_id][1].get("score", 0):
+                families[family_id] = (tid, tinfo)
+        
+        final_theories = list(families.values())
+        
+        print(f"发现 {len(final_theories)} 个晋级理论家族")
         
         for theory_id_in_run, theory_info in final_theories:
             try:
