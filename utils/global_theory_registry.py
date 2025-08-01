@@ -282,6 +282,8 @@ class GlobalTheoryRegistry:
                 
                 # 记录运行信息
                 if run_id not in index["runs"]:
+                    # 计算最大代数
+                    max_generation = max((t.get("generation", 0) for t in manifest["theories"].values()), default=0)
                     index["runs"][run_id] = {
                         "run_id": run_id,
                         "run_path": str(run_path),
