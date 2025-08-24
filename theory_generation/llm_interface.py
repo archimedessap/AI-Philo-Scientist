@@ -139,7 +139,7 @@ class LLMInterface:
         
         # 确保客户端已针对当前模型正确设置
         if source != self.model_source or name != self.model_name:
-             self.set_model(source, name)
+            self.set_model(source, name)
         
         for attempt in range(1, self.max_retries + 1):
             try:
@@ -148,11 +148,17 @@ class LLMInterface:
                 if source.lower() in ['openai', 'deepseek', 'xai']:
                     if not self.openai_client:
                         raise ValueError(f"{source} 客户端未初始化。")
-                    response = await self.openai_client.chat.completions.create(
-                        model=name,
-                        messages=messages,
-                        temperature=temperature
-                    )
+                    # 针对 OpenAI gpt-5* 系列不支持自定义 temperature 的情况，省略该参数或强制为默认值
+                    create_kwargs = {
+                        "model": name,
+                        "messages": messages
+                    }
+                    if not (source.lower() == 'openai' and name.lower().startswith('gpt-5')):
+                        create_kwargs["temperature"] = temperature
+                    else:
+                        if abs(temperature - 1.0) > 1e-6:
+                            print(f"[INFO] 模型 {name} 不支持自定义 temperature，已使用默认值 1.0")
+                    response = await self.openai_client.chat.completions.create(**create_kwargs)
                     return response.choices[0].message.content
                 
                 elif source.lower() == 'google':
@@ -221,14 +227,20 @@ class LLMInterface:
                             api_key=self.api_key_xai,
                             base_url="https://api.x.ai/v1"
                         )
-        
-                    response = client.chat.completions.create(
-                        model=name,
-                        messages=messages,
-                        temperature=temperature
-                    )
+
+                    # 同步分支同样处理 OpenAI gpt-5* 的 temperature 兼容
+                    create_kwargs = {
+                        "model": name,
+                        "messages": messages
+                    }
+                    if not (source.lower() == 'openai' and name.lower().startswith('gpt-5')):
+                        create_kwargs["temperature"] = temperature
+                    else:
+                        if abs(temperature - 1.0) > 1e-6:
+                            print(f"[INFO] 模型 {name} 不支持自定义 temperature，已使用默认值 1.0")
+                    response = client.chat.completions.create(**create_kwargs)
                     return response.choices[0].message.content
-                
+
                 elif source.lower() == 'google':
                     if not self.api_key_google:
                         raise ValueError("GOOGLE_API_KEY 环境变量未设置")
@@ -242,9 +254,9 @@ class LLMInterface:
                         )
                     )
                     return response.text
-                
+
             except Exception as e:
-                print(f"[WARN] 第 {attempt} 次同步调用失败: {e}")
+                print(f"[WARN] 第 {attempt} 次调用失败: {e}")
                 if attempt == self.max_retries and self.enable_fallback:
                     print("[INFO] 尝试使用 fallback 模型...")
                     return self.query(
@@ -258,7 +270,7 @@ class LLMInterface:
                     if self.raise_api_error:
                         raise Exception(error_message)
                     return f"错误: {error_message}"
-                # 退避等待
+                # 等待指数退避（同步可用 time.sleep，但为了统一这里简单退避）
                 time.sleep(2 ** attempt * 0.5)
     
     def extract_json(self, text: Optional[str]) -> Optional[Dict[Any, Any]]:
