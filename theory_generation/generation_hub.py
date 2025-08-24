@@ -123,35 +123,7 @@ class TheoryGenerationHub:
             print(f"[⚠️] 无法导入 direct_synthesis 适配器: {e}")
         
         try:
-            # 导入并注册 multi_level 适配器
-            try:
-                from .methods.multi_level_adapter import MultiLevelAdapter
-            except ImportError:
-                from methods.multi_level_adapter import MultiLevelAdapter
-            self.register_method(
-                "multi_level", 
-                MultiLevelAdapter,
-                "多层级创新生成方法"
-            )
-        except ImportError as e:
-            print(f"[⚠️] 无法导入 multi_level 适配器: {e}")
-        
-        try:
-            # 导入并注册 unified_generator 适配器
-            try:
-                from .methods.unified_generator_adapter import UnifiedGeneratorAdapter
-            except ImportError:
-                from methods.unified_generator_adapter import UnifiedGeneratorAdapter
-            self.register_method(
-                "unified_generator", 
-                UnifiedGeneratorAdapter,
-                "统一生成器方法"
-            )
-        except ImportError as e:
-            print(f"[⚠️] 无法导入 unified_generator 适配器: {e}")
-        
-        try:
-            # 导入并注册增强的 unified 适配器（基于高维概念空间）
+            # 导入并注册 unified 适配器（基于高维概念空间）
             try:
                 from .methods.unified_generator_adapter import UnifiedGeneratorAdapter
             except ImportError:
@@ -159,52 +131,10 @@ class TheoryGenerationHub:
             self.register_method(
                 "unified", 
                 UnifiedGeneratorAdapter,
-                "基于高维概念空间的增强统一生成方法（包含概念提取、知识图谱和物理嵌入）"
+                "基于高维概念空间的统一生成方法（包含概念提取、知识图谱和物理嵌入）"
             )
         except ImportError as e:
-            print(f"[⚠️] 无法导入增强的 unified 适配器: {e}")
-        
-        try:
-            # 导入并注册优化版 unified 适配器
-            try:
-                from .methods.unified_generator_adapter_optimized import UnifiedGeneratorAdapterOptimized
-            except ImportError:
-                from methods.unified_generator_adapter_optimized import UnifiedGeneratorAdapterOptimized
-            self.register_method(
-                "unified_optimized", 
-                UnifiedGeneratorAdapterOptimized,
-                "优化版基于高维概念空间的统一生成方法（并行加载、缓存支持、批处理优化）"
-            )
-        except ImportError as e:
-            print(f"[⚠️] 无法导入优化版 unified 适配器: {e}")
-        
-        try:
-            # 导入并注册 concept_relaxation 适配器
-            try:
-                from .methods.concept_relaxation_adapter import ConceptRelaxationAdapter
-            except ImportError:
-                from methods.concept_relaxation_adapter import ConceptRelaxationAdapter
-            self.register_method(
-                "concept_relaxation", 
-                ConceptRelaxationAdapter,
-                "概念放松生成方法"
-            )
-        except ImportError as e:
-            print(f"[⚠️] 无法导入 concept_relaxation 适配器: {e}")
-        
-        try:
-            # 导入并注册 feedback_aware 适配器
-            try:
-                from .methods.feedback_aware_generator import FeedbackAwareGenerator
-            except ImportError:
-                from methods.feedback_aware_generator import FeedbackAwareGenerator
-            self.register_method(
-                "feedback_aware", 
-                FeedbackAwareGenerator,
-                "基于评估反馈的智能生成方法（根据评估结果自动调整生成策略）"
-            )
-        except ImportError as e:
-            print(f"[⚠️] 无法导入 feedback_aware 适配器: {e}")
+            print(f"[⚠️] 无法导入 unified 适配器: {e}")
 
 
 # 创建全局实例

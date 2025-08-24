@@ -777,7 +777,7 @@ def main():
     
     # 生成参数  
     parser.add_argument("--synthesis_method", default="direct_synthesis",
-                       help="理论生成方法 (direct_synthesis, multi_level, unified_generator, unified, concept_relaxation)")
+                       help="理论生成方法 (direct_synthesis, unified)")
     parser.add_argument("--max_pairs_to_analyze", type=int, default=3,
                        help="合成时分析的理论对数")
     parser.add_argument("--variants_per_contradiction", type=int, default=1,

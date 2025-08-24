@@ -1,0 +1,37 @@
+======================================================================
+🏆 全局理论注册库综合对比报告
+======================================================================
+生成时间: 2025-07-31 19:33:00
+
+📊 统计概览:
+  总理论数: 95
+  先验理论: 11
+  演进理论: 84
+  演进运行数: 48
+  当前最佳理论: Many-Worlds Interpretation (分数: 0.913)
+
+🏛️ 先验理论分析:
+  平均综合分: 0.857
+  最高分: 0.913
+  最低分: 0.733
+  标准差: 0.055
+  前三名先验理论:
+    1. Many-Worlds Interpretation (分数: 0.913)
+    2. Consistent Histories (分数: 0.907)
+    3. Copenhagen Interpretation (分数: 0.900)
+
+🚀 演进理论分析:
+  平均综合分: 0.804
+  最高分: 0.907
+  最低分: 0.520
+  标准差: 0.089
+  前三名演进理论:
+    1. Perspectival Relational Quantum Mechanics (PRQM) (Variant 2 - Deepened Philosophical Foundation) (分数: 0.907, 运行: run_20250623_192837)
+    2. Contextual Ensemble Realism Theory-0710_1643 (Variant 3 - Enhanced Predictability) (分数: 0.907, 运行: run_20250710_164254)
+    3. Interrelational Ensemble Quantum Theory (IEQT)-0712_1717 (Variant 1-0712_1716) - Mathematically Enhanced Version (分数: 0.907, 运行: run_20250712_171632)
+
+🔍 对比结论:
+  📈 演进理论平均分低于先验基准 (-0.053)
+  📊 最佳演进理论尚未超越先验基准 (差距: 0.006)
+
+======================================================================
