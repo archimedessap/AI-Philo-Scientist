@@ -94,6 +94,13 @@ class HypothesisGenerator:
             if "metadata" not in new_hypothesis:
                 new_hypothesis["metadata"] = {}
             
+            # 注入生成元信息（包含所用 LLM 模型）
+            model_info = {}
+            try:
+                model_info = self.llm.get_current_model_info()
+            except Exception:
+                model_info = {}
+
             new_hypothesis["metadata"]["generation_info"] = {
                 "source": "direct_synthesis",
                 "contradiction_base": {
@@ -101,7 +108,11 @@ class HypothesisGenerator:
                 "theory2": theory2,
                 },
                 "generation_time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "generation_parameters": generation_params
+                "generation_parameters": generation_params,
+                "llm_model": {
+                    "model_source": model_info.get("model_source") or model_info.get("source"),
+                    "model_name": model_info.get("model_name") or model_info.get("name"),
+                }
             }
             
             # 保存生成的假说

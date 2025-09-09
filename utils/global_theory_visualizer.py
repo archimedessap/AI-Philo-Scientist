@@ -65,12 +65,36 @@ class GlobalTheoryVisualizer:
         self._create_role_evaluation_radar_chart(prior_theories, evolved_theories)
         self._create_evolution_timeline_chart(evolved_theories)
         self._create_success_rate_comparison(prior_theories, evolved_theories)
+        # 导出带模型信息的综合榜单
+        self._export_ranking_with_models(prior_theories, evolved_theories)
         
         # 生成文本报告
         self._generate_text_report(prior_theories, evolved_theories)
         
         print(f"\n🎉 完整报告已生成到: {self.output_dir.absolute()}")
         return self.output_dir
+
+    def _export_ranking_with_models(self, prior_theories: List[Dict], evolved_theories: List[Dict]):
+        """导出包含生成模型信息的综合榜单（CSV）。"""
+        rows = []
+        for t in (prior_theories + evolved_theories):
+            rows.append({
+                'theory_name': t.get('theory_name'),
+                'source_type': t.get('source_type'),
+                'composite_score': t.get('composite_score'),
+                'success_rate': t.get('success_rate'),
+                'run_id': t.get('run_id'),
+                'generation_model_source': t.get('generation_model_source'),
+                'generation_model_name': t.get('generation_model_name'),
+            })
+        if not rows:
+            return
+        df = pd.DataFrame(rows)
+        # 排序：综合分数降序
+        df = df.sort_values(by=['composite_score'], ascending=False)
+        out_csv = self.output_dir / 'theory_ranking_with_models.csv'
+        df.to_csv(out_csv, index=False)
+        print(f"✅ 已导出带模型信息的综合榜单: {out_csv}")
     
     def _create_overall_ranking_chart(self, prior_theories: List[Dict], evolved_theories: List[Dict]):
         """创建综合排名图表"""
@@ -265,7 +289,15 @@ class GlobalTheoryVisualizer:
                 name = theory["theory_name"]
                 if len(name) > 25:
                     name = name[:22] + "..."
-                ax.text(0.01, y_pos, f"{name} ({theory['composite_score']:.3f})", 
+                model_tag = ''
+                if theory.get('generation_model_source') or theory.get('generation_model_name'):
+                    msrc = theory.get('generation_model_source') or ''
+                    mname = theory.get('generation_model_name') or ''
+                    # 简短显示模型名称
+                    if len(mname) > 24:
+                        mname = mname[:21] + '...'
+                    model_tag = f"  · {msrc}/{mname}"
+                ax.text(0.01, y_pos, f"{name} ({theory['composite_score']:.3f}){model_tag}", 
                        va='center', fontsize=9, fontweight='bold')
                 y_pos += 1
             
@@ -385,7 +417,9 @@ class GlobalTheoryVisualizer:
             top_evolved = sorted(evolved_theories, key=lambda x: x["composite_score"], reverse=True)[:3]
             add_line("前三名演进理论:", 1)
             for i, theory in enumerate(top_evolved):
-                add_line(f"{i+1}. {theory['theory_name']} (分数: {theory['composite_score']:.3f}, 运行: {theory['run_id']})", 2)
+                msrc = theory.get('generation_model_source') or 'N/A'
+                mname = theory.get('generation_model_name') or 'N/A'
+                add_line(f"{i+1}. {theory['theory_name']} (分数: {theory['composite_score']:.3f}, 运行: {theory['run_id']}, 模型: {msrc}/{mname})", 2)
             add_line("")
         
         # 对比结论

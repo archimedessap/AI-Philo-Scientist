@@ -51,3 +51,20 @@ UniversalTheoryGen/
 ├── requirements.txt                # 环境依赖
 │
 └── README.md                       # 本文档
+
+## 论文编译（paper）
+- 依赖：LaTeX 发行版（TeX Live / MacTeX）与 `latexmk`。
+- 快速构建：
+  - 从仓库根目录运行：`bash scripts/build_paper.sh`
+  - 或进入 `paper/` 目录运行：`bash build.sh`
+- 输出：
+  - 生成 `paper/ai-philo-crossAI-arxiv.pdf`
+  - 生成 `paper/warnings_summary.txt`（自动汇总关键告警/错误）
+- 日志清理：`build.sh` 会把 `.log/.fls/.fdb_latexmk` 里的绝对路径标准化为相对 `paper/`，便于跨环境复现与分享。
+
+### Makefile 快捷命令
+- 生成图：`make figs`
+- 生成表：`make tables`
+- 生成图表并编译 PDF：`make paper`
+- 快速编译（静默）：`make fast`
+- 清理构建产物：`make clean`

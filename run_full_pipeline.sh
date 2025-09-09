@@ -106,7 +106,7 @@ echo "=========================================="
 EVO_CMD="python run_clean_evolution.py \
     --initial_theories_dir data/theories_v2.1 \
     --output_root ${OUTPUT_DIR} \
-    --experiment_dir evaluation/experiments \
+    --experiment_dir demo/experiments \
     --synthesis_method unified \
     --max_generations ${MAX_GENERATIONS} \
     --max_pairs_to_analyze 5 \

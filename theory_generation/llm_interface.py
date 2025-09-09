@@ -16,11 +16,22 @@ import os
 import json
 import re
 import time
-import openai
+try:
+    import openai  # Optional at import time; may be unavailable in offline/envs
+except Exception:
+    openai = None
 import asyncio
-import google.generativeai as genai
+try:
+    import google.generativeai as genai  # Optional; guard actual usage
+except Exception:
+    genai = None
 from typing import List, Dict, Any, Optional
-from dotenv import load_dotenv
+# Optional dotenv support
+try:
+    from dotenv import load_dotenv
+except Exception:
+    def load_dotenv(*args, **kwargs):
+        return False
 
 # 加载.env文件中的环境变量
 load_dotenv()
@@ -70,11 +81,15 @@ class LLMInterface:
         """根据模型来源初始化客户端"""
         source = self.model_source.lower()
         if source == 'openai':
+            if openai is None:
+                raise ImportError("openai package not installed; cannot initialize OpenAI client")
             print(f"[INFO] 使用OpenAI模型: {self.model_name}")
             self.openai_client = openai.AsyncOpenAI(api_key=self.api_key_openai)
             self.genai_model = None
         elif source == 'deepseek':
             print(f"[INFO] 使用DeepSeek模型: {self.model_name}")
+            if openai is None:
+                raise ImportError("openai package not installed; cannot initialize DeepSeek client")
             self.openai_client = openai.AsyncOpenAI(
                 api_key=self.api_key_deepseek,
                 base_url="https://api.deepseek.com/v1"
@@ -84,6 +99,8 @@ class LLMInterface:
             print(f"[INFO] 使用XAI Grok模型: {self.model_name}")
             if not self.api_key_xai:
                 raise ValueError("XAI_API_KEY 环境变量未设置")
+            if openai is None:
+                raise ImportError("openai package not installed; cannot initialize XAI client")
             self.openai_client = openai.AsyncOpenAI(
                 api_key=self.api_key_xai,
                 base_url="https://api.x.ai/v1"
@@ -93,6 +110,8 @@ class LLMInterface:
             print(f"[INFO] 使用Google Gemini模型: {self.model_name}")
             if not self.api_key_google:
                 raise ValueError("GOOGLE_API_KEY 环境变量未设置")
+            if genai is None:
+                raise ImportError("google-generativeai package not installed; cannot initialize Gemini model")
             genai.configure(api_key=self.api_key_google)
             self.genai_model = genai.GenerativeModel(self.model_name)
             self.openai_client = None
@@ -146,6 +165,8 @@ class LLMInterface:
                 print(f"[INFO] (尝试 {attempt}) 调用API: {source}/{name}")
 
                 if source.lower() in ['openai', 'deepseek', 'xai']:
+                    if openai is None:
+                        raise ImportError("openai package not installed; cannot call chat.completions")
                     if not self.openai_client:
                         raise ValueError(f"{source} 客户端未初始化。")
                     # 针对 OpenAI gpt-5* 系列不支持自定义 temperature 的情况，省略该参数或强制为默认值
@@ -162,6 +183,8 @@ class LLMInterface:
                     return response.choices[0].message.content
                 
                 elif source.lower() == 'google':
+                    if genai is None:
+                        raise ImportError("google-generativeai package not installed; cannot call Gemini")
                     if not self.genai_model:
                         raise ValueError("Google Gemini 模型未初始化。")
                     # Gemini API 使用不同的消息格式
@@ -214,6 +237,8 @@ class LLMInterface:
                 print(f"[INFO] (尝试 {attempt}) 同步调用API: {source}/{name}")
 
                 if source.lower() in ['openai', 'deepseek', 'xai']:
+                    if openai is None:
+                        raise ImportError("openai package not installed; cannot call chat.completions")
                     # 创建同步客户端
                     if source.lower() == 'openai':
                         client = openai.OpenAI(api_key=self.api_key_openai)
@@ -242,6 +267,8 @@ class LLMInterface:
                     return response.choices[0].message.content
 
                 elif source.lower() == 'google':
+                    if genai is None:
+                        raise ImportError("google-generativeai package not installed; cannot call Gemini")
                     if not self.api_key_google:
                         raise ValueError("GOOGLE_API_KEY 环境变量未设置")
                     genai.configure(api_key=self.api_key_google)
@@ -449,6 +476,8 @@ class LLMInterface:
         
         try:
             if self.model_source.lower() == 'openai':
+                if openai is None:
+                    raise ImportError("openai package not installed; cannot get embeddings")
                 print(f"[INFO] 使用OpenAI获取嵌入向量: {embedding_model}")
                 
                 # 使用OpenAI嵌入API
@@ -460,6 +489,8 @@ class LLMInterface:
                 return response.data[0].embedding
                 
             elif self.model_source.lower() == 'deepseek':
+                if openai is None:
+                    raise ImportError("openai package not installed; cannot get embeddings via DeepSeek")
                 print(f"[INFO] 使用DeepSeek获取嵌入向量: {embedding_model}")
                 
                 # 使用DeepSeek嵌入API
@@ -474,11 +505,11 @@ class LLMInterface:
                 return response.data[0].embedding
                 
             elif self.model_source.lower() == 'google':
+                if genai is None:
+                    raise ImportError("google-generativeai package not installed; cannot get embeddings")
                 print(f"[INFO] 使用Google获取嵌入向量: text-embedding-004")
                 
                 # 对于Google模型，使用Google的嵌入API
-                import google.generativeai as genai
-                
                 # 配置API密钥
                 genai.configure(api_key=self.api_key_google)
                 

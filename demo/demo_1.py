@@ -9,7 +9,7 @@ import sys, os, json, asyncio, argparse, glob, re, time
 from pathlib import Path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from theory_generation.llm_interface import LLMInterface
-from demo.instrument_correction import InstrumentCorrector
+# Instrument correction is optional; import lazily when needed to allow offline runs
 # 导入新的角色评估模块
 from demo.auto_role_evaluation import run_role_evaluation_for_theories
 
@@ -341,7 +341,12 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
     corrector = None
     correction_result = None
     if getattr(args, 'use_instrument_correction', False):
-        corrector = InstrumentCorrector()
+        try:
+            from demo.instrument_correction import InstrumentCorrector
+            corrector = InstrumentCorrector()
+        except Exception as e:
+            print(f"[WARN] Instrument correction unavailable ({e}); continuing without correction.")
+            corrector = None
     
     if value is not None:
         measured = complete_exp.get("measured", {}).get("value")
@@ -556,9 +561,13 @@ async def main():
     os.makedirs(run_output_dir, exist_ok=True)
     print(f"[SETUP] Results will be saved in: {run_output_dir}")
     
-    # 初始化LLM
-    llm = LLMInterface(model_source=args.model_source, model_name=args.model_name)
-    print(f"[SETUP] Initialized LLM: {args.model_source}/{args.model_name}")
+    # 初始化LLM（允许在离线/缺依赖环境中降级为None，仅支持标准QM自动通过路径）
+    try:
+        llm = LLMInterface(model_source=args.model_source, model_name=args.model_name)
+        print(f"[SETUP] Initialized LLM: {args.model_source}/{args.model_name}")
+    except Exception as e:
+        llm = None
+        print(f"[SETUP] LLM unavailable ({e}); running in offline mode. Non-standard QM evaluations will be skipped.")
 
     # --- 2. 加载数据 ---
     print(f"\n[LOAD] Loading theories from: {args.theory_path}")

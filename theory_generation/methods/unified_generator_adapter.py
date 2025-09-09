@@ -1412,11 +1412,25 @@ New Theory:
                 if 'metadata' not in theory:
                     theory['metadata'] = {}
                 
+                # 注入生成元数据（含 LLM 模型信息）
+                model_info = {}
+                try:
+                    model_info = self.llm_interface.get_current_model_info()
+                except Exception:
+                    model_info = {}
+
                 theory['metadata'].update({
                     'generation_method': 'unified_space_based',
                     'generator_version': '1.0',
                     'concept_space_size': len(self.concept_space),
-                    'theory_space_size': len(self.theory_space)
+                    'theory_space_size': len(self.theory_space),
+                    'generation_info': {
+                        'source': 'unified_space_based',
+                        'llm_model': {
+                            'model_source': model_info.get('model_source') or model_info.get('source'),
+                            'model_name': model_info.get('model_name') or model_info.get('name'),
+                        }
+                    }
                 })
                 
                 # 进行数学分类标注

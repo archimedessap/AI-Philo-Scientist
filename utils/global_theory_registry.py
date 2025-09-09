@@ -230,6 +230,16 @@ class GlobalTheoryRegistry:
         
         print(f"发现 {len(final_theories)} 个晋级理论家族")
         
+        # 提取本次运行的生成模型信息（用于索引记录）
+        gen_model_source = None
+        gen_model_name = None
+        try:
+            cfg = manifest.get("config", {})
+            gen_model_source = cfg.get("synthesis_model_source")
+            gen_model_name = cfg.get("synthesis_model_name")
+        except Exception:
+            pass
+
         for theory_id_in_run, theory_info in final_theories:
             try:
                 theory_name = theory_info["theory_name"]
@@ -266,7 +276,7 @@ class GlobalTheoryRegistry:
                 with open(eval_file, 'w', encoding='utf-8') as f:
                     json.dump(evaluation_data, f, indent=2, ensure_ascii=False)
                 
-                # 注册到索引
+                # 注册到索引（附带生成模型信息）
                 index["theories"][registry_theory_id] = {
                     "theory_id": registry_theory_id,
                     "theory_name": theory_name,
@@ -277,7 +287,9 @@ class GlobalTheoryRegistry:
                     "evaluation_file": str(eval_file),
                     "composite_score": evaluation_data["role_evaluation_results"]["composite_score"],
                     "success_rate": evaluation_data["experimental_results"]["success_rate"],
-                    "registered_at": datetime.now().isoformat()
+                    "registered_at": datetime.now().isoformat(),
+                    "generation_model_source": gen_model_source,
+                    "generation_model_name": gen_model_name
                 }
                 
                 # 记录运行信息
@@ -446,6 +458,135 @@ class GlobalTheoryRegistry:
         print(f"🏆 最佳理论: {stats.get('best_theory_name', 'N/A')} (分数: {stats['best_score']:.3f})")
         print(f"📁 注册库位置: {self.registry_dir.absolute()}")
         print(f"{'='*60}")
+
+    def backfill_generation_model_info(self) -> int:
+        """为已注册的演进理论补充生成模型信息（如缺失）。
+
+        策略：优先读取理论文件中的 metadata.generation_info.llm_model；
+        若不存在，则尝试从对应运行的 manifest.config 中读取 synthesis_model_*。
+
+        Returns:
+            更新的理论条目数量
+        """
+        index = self._load_index()
+        updated = 0
+
+        # 建立 run_id -> run_path 对照，便于读取 manifest
+        run_paths = {rid: rinfo.get("run_path") for rid, rinfo in index.get("runs", {}).items()}
+
+        for tid, tinfo in index.get("theories", {}).items():
+            if tinfo.get("source_type") != "evolved":
+                continue
+
+            # 先检测是否为可疑的旧值（例如以时间戳开头）
+            existing_bad = False
+            if tinfo.get("generation_model_name"):
+                head0 = str(tinfo.get("generation_model_name")).split('_', 1)[0]
+                if head0.isdigit():
+                    existing_bad = True
+
+            if (tinfo.get("generation_model_source") and tinfo.get("generation_model_name")) and not existing_bad:
+                continue  # 已有且看起来有效，无需回填
+
+            model_source = None
+            model_name = None
+
+            # 1) 尝试从理论文件 metadata 中读取
+            try:
+                theory_file = Path(tinfo.get("theory_file", ""))
+                if theory_file.exists():
+                    with open(theory_file, 'r', encoding='utf-8') as f:
+                        theory_obj = json.load(f)
+                    gi = theory_obj.get("metadata", {}).get("generation_info", {})
+                    llm = gi.get("llm_model", {}) if isinstance(gi, dict) else {}
+                    model_source = llm.get("model_source") or llm.get("source")
+                    model_name = llm.get("model_name") or llm.get("name")
+            except Exception:
+                pass
+
+            # 2) 若理论文件无信息，则读取 manifest.config
+            if not (model_source and model_name):
+                run_id = tinfo.get("run_id")
+                run_path = run_paths.get(run_id)
+                if run_path:
+                    manifest_file = Path(run_path) / "run_manifest.json"
+                else:
+                    # 兼容旧索引：直接以 registry 目录同级寻找 run_id 目录
+                    manifest_file = self.registry_dir.parent / run_id / "run_manifest.json"
+                if manifest_file.exists():
+                    try:
+                        with open(manifest_file, 'r', encoding='utf-8') as f:
+                            manifest = json.load(f)
+                        cfg = manifest.get("config", {})
+                        model_source = model_source or cfg.get("synthesis_model_source")
+                        model_name = model_name or cfg.get("synthesis_model_name")
+
+                        # 3) 再退一步：从 eval_summary_path 的 run 目录名推断模型名
+                        if not (model_source and model_name):
+                            # 尝试在 manifest['theories'] 中找到匹配名称的记录
+                            target_name = tinfo.get("theory_name")
+                            for _tid, _tinfo in manifest.get("theories", {}).items():
+                                if _tinfo.get("theory_name") == target_name:
+                                    esp = _tinfo.get("eval_summary_path")
+                                    if esp:
+                                        p = Path(esp)
+                                        # 寻找父目录名以 run_ 开头
+                                        for parent in [p] + list(p.parents):
+                                            if parent.name.startswith('run_'):
+                                                name = parent.name
+                                                parts = name.split('_')
+                                                # 形如 run_YYYYMMDD_HHMMSS_MODEL...
+                                                if len(parts) >= 4:
+                                                    model_name = model_name or '_'.join(parts[3:])
+                                                elif len(parts) >= 3:
+                                                    model_name = model_name or parts[2]
+                                                    mn = (model_name or '').lower()
+                                                    if 'gemini' in mn:
+                                                        model_source = model_source or 'google'
+                                                    elif 'gpt' in mn or 'o1' in mn or 'openai' in mn:
+                                                        model_source = model_source or 'openai'
+                                                    elif 'deepseek' in mn:
+                                                        model_source = model_source or 'deepseek'
+                                                    elif 'grok' in mn or 'xai' in mn:
+                                                        model_source = model_source or 'xai'
+                                                break
+                                    break
+                    except Exception:
+                        pass
+
+            # 回填到索引
+            # 如果现有的 model_name 形如 "123456_model..."，认为需要纠正
+            if existing_bad:
+                # 清空以触发重新解析
+                model_source = None
+                model_name = None
+
+            if model_source or model_name or existing_bad:
+                tinfo["generation_model_source"] = model_source
+                tinfo["generation_model_name"] = model_name
+                updated += 1
+
+                # 可选：同步回写到理论文件（仅当文件缺失该字段时）
+                try:
+                    theory_file = Path(tinfo.get("theory_file", ""))
+                    if theory_file.exists():
+                        with open(theory_file, 'r', encoding='utf-8') as f:
+                            theory_obj = json.load(f)
+                        md = theory_obj.setdefault("metadata", {})
+                        gi = md.setdefault("generation_info", {})
+                        llm = gi.setdefault("llm_model", {})
+                        if not llm.get("model_source"):
+                            llm["model_source"] = model_source
+                        if not llm.get("model_name"):
+                            llm["model_name"] = model_name
+                        with open(theory_file, 'w', encoding='utf-8') as f:
+                            json.dump(theory_obj, f, ensure_ascii=False, indent=2)
+                except Exception:
+                    pass
+
+        if updated:
+            self._save_index(index)
+        return updated
 
 
 def main():
