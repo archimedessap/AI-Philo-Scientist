@@ -228,6 +228,98 @@ Based on the analysis, construct a new theory. Your output **MUST** be a single,
 - Do not add any text or explanation outside the single JSON object.
 """
         return prompt
+
+    async def generate_from_contradictions_list(self,
+                                               analyses: List[Dict],
+                                               relaxation_plan: Optional[Dict] = None,
+                                               generation_params: Optional[Dict] = None,
+                                               max_items: int = 8) -> Dict:
+        """
+        Network-level synthesis: build a unified theory that satisfies a set of
+        contradictions (possibly across multiple theories) guided by a relaxation plan.
+
+        Returns a single theory JSON (Schema v2.1) or an {error} dict.
+        """
+        if generation_params is None:
+            generation_params = {
+                "creativity_level": 0.6,
+                "mathematical_rigor": 0.7,
+                "philosophical_depth": 0.7,
+                "emphasis_on_testability": 0.6,
+            }
+
+        # Aggregate top contradictions across analyses by importance
+        items = []
+        parents = set()
+        for a in analyses:
+            t1 = a.get("theory1") or a.get("theory_i")
+            t2 = a.get("theory2") or a.get("theory_j")
+            if t1: parents.add(t1)
+            if t2: parents.add(t2)
+            for c in a.get("contradictions", []):
+                items.append({
+                    "dimension": c.get("dimension"),
+                    "theory1_position": c.get("theory1_position"),
+                    "theory2_position": c.get("theory2_position"),
+                    "core_tension": c.get("core_tension"),
+                    "importance": c.get("importance_score", 5)
+                })
+        items = sorted(items, key=lambda x: x.get("importance", 5), reverse=True)[:max_items]
+
+        # Build prompt
+        contradictions_text = []
+        for i, it in enumerate(items, 1):
+            contradictions_text.append(
+                f"### Tension {i} ({it.get('dimension','unknown')}):\n"
+                f"- P1: {it.get('theory1_position','')}\n"
+                f"- P2: {it.get('theory2_position','')}\n"
+                f"- Core: {it.get('core_tension','')}\n"
+            )
+        relax_text = "{}"
+        if relaxation_plan:
+            import json as _json
+            relax_text = _json.dumps({
+                "relaxations": relaxation_plan.get("relaxations", []),
+                "super_space": relaxation_plan.get("super_space", []),
+                "satisfaction_targets": relaxation_plan.get("satisfaction_targets", [])
+            }, ensure_ascii=False, indent=2)
+
+        parents_list = ", ".join(sorted(parents)) or "unknown"
+        prompt = f"""
+# TASK
+Unify tensions across multiple quantum interpretations by proposing a single new theory that satisfies them under a minimally relaxed concept space.
+
+# INPUT
+## Tensions (Top-{len(items)})
+{''.join(contradictions_text)}
+
+## Concept Relaxation Plan (sketch)
+{relax_text}
+
+# INSTRUCTIONS
+Construct a new theory in the Schema v2.1 strictly as a single JSON object. Include explicit derivations/constraints in the formalism and clearly state testable deviations from SQM. The theory should cite its lineage with method "Network Synthesis from Contradiction" and parents [{parents_list}].
+"""
+
+        temperature = 0.5 + generation_params["creativity_level"] * 0.4
+        response = await self.llm.query_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature
+        )
+        try:
+            theory = self.llm.extract_json(response)
+            if not theory:
+                return {"error": "无法解析响应", "raw_response": response}
+
+            # Stamp lineage
+            theory.setdefault("metadata", {}).setdefault("lineage", {})
+            theory["metadata"]["lineage"]["method"] = "Network Synthesis from Contradiction"
+            theory["metadata"]["lineage"]["parents"] = sorted(list(parents))
+            theory["metadata"]["generation_info"] = {
+                "source": "network_synthesis",
+            }
+            return theory
+        except Exception as e:
+            return {"error": str(e), "raw_response": response}
     
     async def generate_multiple_hypotheses(self, contradiction: Dict, 
                                          variants_count: int = 3,

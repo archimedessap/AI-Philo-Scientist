@@ -136,6 +136,20 @@ class TheoryGenerationHub:
         except ImportError as e:
             print(f"[⚠️] 无法导入 unified 适配器: {e}")
 
+        try:
+            # 导入并注册 network 适配器（矛盾网络合成）
+            try:
+                from .methods.network_synthesis_adapter import NetworkSynthesisAdapter
+            except ImportError:
+                from methods.network_synthesis_adapter import NetworkSynthesisAdapter
+            self.register_method(
+                "network",
+                NetworkSynthesisAdapter,
+                "矛盾网络合成（CNS-Lite）：多理论矛盾→放松→统一合成"
+            )
+        except ImportError as e:
+            print(f"[⚠️] 无法导入 network 适配器: {e}")
+
 
 # 创建全局实例
 _hub_instance = None
