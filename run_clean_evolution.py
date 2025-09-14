@@ -208,6 +208,12 @@ class CleanEvolutionOrchestrator:
                     generation_params['force_load_literature'] = True  # 强制加载文献概念
                     generation_params['literature_concepts_dir'] = self.config.get('literature_concepts_dir', 'data/enhanced_concepts')
                     print(f"[📚] 启用原始文献概念增强")
+            # network 方法专用参数
+            if synthesis_method in ['network']:
+                if 'relaxation_budget' in self.config:
+                    generation_params['relaxation_budget'] = self.config['relaxation_budget']
+                if 'network_dry_run' in self.config:
+                    generation_params['dry_run'] = bool(self.config['network_dry_run'])
             
             result = hub.generate_theories(**generation_params)
             
@@ -777,11 +783,17 @@ def main():
     
     # 生成参数  
     parser.add_argument("--synthesis_method", default="direct_synthesis",
-                       help="理论生成方法 (direct_synthesis, unified)")
+                       help="理论生成方法 (direct_synthesis, unified, network)")
     parser.add_argument("--max_pairs_to_analyze", type=int, default=3,
                        help="合成时分析的理论对数")
     parser.add_argument("--variants_per_contradiction", type=int, default=1,
                        help="每个矛盾生成的变体数")
+    
+    # network（CNS-Lite）专用参数
+    parser.add_argument("--relaxation_budget", type=int, default=6,
+                       help="network方法：概念放松预算（选择放松的概念轴数量）")
+    parser.add_argument("--network_dry_run", action="store_true",
+                       help="network方法：干跑（无需API，使用占位数据）")
     
     # 文献概念控制参数
     parser.add_argument("--use_raw_literature", action="store_true",
@@ -837,6 +849,9 @@ def main():
         'synthesis_method': args.synthesis_method,  # 新增：理论生成方法
         'max_pairs_to_analyze': args.max_pairs_to_analyze,
         'variants_per_contradiction': args.variants_per_contradiction,
+        # network（CNS-Lite）
+        'relaxation_budget': args.relaxation_budget,
+        'network_dry_run': args.network_dry_run,
         'synthesis_model_source': args.synthesis_model_source,
         'synthesis_model_name': args.synthesis_model_name,
         'evaluation_model_source': args.evaluation_model_source,
