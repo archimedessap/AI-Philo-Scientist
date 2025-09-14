@@ -485,7 +485,25 @@ class CleanEvolutionOrchestrator:
         if not success:
             return False
         
-        return self._update_scores(eval_output_dir, generation)
+        # 常规更新分数
+        updated = self._update_scores(eval_output_dir, generation)
+        if updated:
+            return True
+        
+        # 智能回退：若开启了仪器修正但未产生任何结果，则尝试关闭仪器修正后重评估
+        if self.config.get('use_instrument_correction', False):
+            print("[ℹ️] 未找到评估结果，尝试在不启用仪器修正的情况下重新评估……")
+            original_flag = self.config['use_instrument_correction']
+            try:
+                self.config['use_instrument_correction'] = False
+                alt_success = self._call_evaluation(temp_theories_dir, eval_output_dir)
+                if not alt_success:
+                    return False
+                return self._update_scores(eval_output_dir, generation)
+            finally:
+                self.config['use_instrument_correction'] = original_flag
+        
+        return False
     
     def _get_unevaluated_theories(self, generation):
         """获取指定代际的未评估理论"""
