@@ -202,7 +202,8 @@ class NetworkSynthesisAdapter(TheoryGenerationMethod):
                         self._log_warning(f"第{k+1}个统一合成失败: {theory['error']}")
                         continue
                     # 保证名称唯一
-                    if "name" in theory:
+                    # 轻量去重并附加种子标识
+                    if theory.get("name"):
                         theory["name"] = f"{theory['name']} (Seed {k+1})"
                     theories_out.append(theory)
                 except Exception as e:
@@ -215,8 +216,30 @@ class NetworkSynthesisAdapter(TheoryGenerationMethod):
                 output_dir=str(self.synthesis_dir)
             ).to_dict()
 
+        # --- 强制补齐最小 Schema，确保注册与评估稳定 ---
+        def _ensure_minimal_schema(obj: Dict[str, Any], idx: int) -> Dict[str, Any]:
+            now_tag = time.strftime('%m%d_%H%M')
+            uid_tag = time.strftime('%Y%m%d-%H%M%S')
+            # name
+            if not obj.get('name') and obj.get('theory_name'):
+                obj['name'] = obj['theory_name']
+            if not obj.get('name'):
+                obj['name'] = f"Network Unified Theory - {now_tag}-S{idx}"
+            # metadata
+            md = obj.setdefault('metadata', {})
+            md.setdefault('uid', f"THEORY-{uid_tag}-S{idx}")
+            md.setdefault('schema_version', '2.1')
+            md.setdefault('author', 'AI Physicist')
+            lineage = md.setdefault('lineage', {})
+            lineage.setdefault('method', 'Network Synthesis from Contradiction')
+            lineage.setdefault('parents', parents)
+            # relation
+            obj.setdefault('mathematical_relation_to_sqm', 'Interpretation')
+            return obj
+
         # 保存理论并准备评估
         for theory in theories_out:
+            theory = _ensure_minimal_schema(theory, theories_out.index(theory) + 1)
             safe_name = theory.get("name", "network_theory").replace(" ", "_").replace("/", "_").lower()
             eval_file = eval_ready / f"{safe_name}.json"
             eval_file.write_text(json.dumps(theory, ensure_ascii=False, indent=2), encoding="utf-8")
