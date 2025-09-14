@@ -214,6 +214,8 @@ class CleanEvolutionOrchestrator:
                     generation_params['relaxation_budget'] = self.config['relaxation_budget']
                 if 'network_dry_run' in self.config:
                     generation_params['dry_run'] = bool(self.config['network_dry_run'])
+                if 'network_num_seeds' in self.config:
+                    generation_params['num_seeds'] = int(self.config['network_num_seeds'])
             
             result = hub.generate_theories(**generation_params)
             
@@ -426,8 +428,30 @@ class CleanEvolutionOrchestrator:
         """评估指定代际的所有理论"""
         unevaluated = self._get_unevaluated_theories(generation)
         if not unevaluated:
-            print(f"[ℹ️] Generation {generation} 没有待评估的理论")
-            return True
+            print(f"[ℹ️] Generation {generation} 没有待评估的理论，尝试从合成产物中注册后再评估…")
+            # Fallback: 尝试在本代的合成目录下查找 eval_ready_theories 并注册
+            eval_ready_dirs = list(gen_dir.rglob("eval_ready_theories"))
+            newly_registered = 0
+            for eval_dir in eval_ready_dirs:
+                for theory_file in eval_dir.glob("*.json"):
+                    try:
+                        with open(theory_file, 'r', encoding='utf-8') as f:
+                            theory_data = json.load(f)
+                        # 跳过非理论文件
+                        if 'name' not in theory_data and 'theory_name' not in theory_data:
+                            continue
+                        _tid = manifest_tools.register_theory_in_manifest(
+                            self.manifest, theory_data, theory_file, generation=generation
+                        )
+                        newly_registered += 1
+                    except Exception as e:
+                        print(f"  ⚠️  回填注册失败: {theory_file} - {e}")
+            if newly_registered > 0:
+                manifest_tools.save_manifest(self.manifest, self.manifest_path)
+                unevaluated = self._get_unevaluated_theories(generation)
+            if not unevaluated:
+                print(f"[ℹ️] 仍无可评估理论，跳过评估阶段")
+                return True
         
         print(f"[⚖️] 评估 {len(unevaluated)} 个理论:")
         for theory_id, theory_data in unevaluated.items():
