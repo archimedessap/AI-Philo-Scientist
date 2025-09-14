@@ -48,6 +48,7 @@ class NetworkSynthesisAdapter(TheoryGenerationMethod):
                  model_name: str = "gemini-2.5-flash",
                  relaxation_budget: int = 6,
                  diversity_level: float = 0.6,
+                 num_seeds: int = 1,
                  dry_run: bool = False,
                  **kwargs):
         super().__init__(
@@ -62,6 +63,7 @@ class NetworkSynthesisAdapter(TheoryGenerationMethod):
         self.relaxation_budget = relaxation_budget
         self.diversity_level = diversity_level
         self.dry_run = dry_run
+        self.num_seeds = max(1, int(num_seeds))
         self.synthesis_dir = self.output_dir / f"network_synthesis_{time.strftime('%Y%m%d_%H%M%S')}"
         self.synthesis_dir.mkdir(parents=True, exist_ok=True)
 
@@ -143,63 +145,86 @@ class NetworkSynthesisAdapter(TheoryGenerationMethod):
         eval_ready = self.synthesis_dir / "eval_ready_theories"
         eval_ready.mkdir(exist_ok=True)
 
+        theories_out: List[Dict[str, Any]] = []
+        parents = sorted(list({p for an in analyses for p in [an.get('theory1'), an.get('theory2')] if p}))
+
         if self.dry_run or llm is None:
-            # 构造一个最小理论草案（Schema v2.1 近似）
-            parents = sorted(list({p for an in analyses for p in [an.get('theory1'), an.get('theory2')] if p}))
-            theory = {
-                "name": f"Network-Integrated Interpretation (CNS-Lite) - {time.strftime('%m%d_%H%M')}",
-                "metadata": {
-                    "uid": f"THEORY-{time.strftime('%Y%m%d-%H%M%S')}",
-                    "schema_version": "2.1",
-                    "author": "AI Physicist",
-                    "lineage": {"method": "Network Synthesis from Contradiction", "parents": parents},
-                },
-                "mathematical_relation_to_sqm": "Interpretation",
-                "summary": "A relational-perspectival, layered-ontology synthesis unifying tensions under minimal concept relaxations.",
-                "core_principles": {
-                    "ontological_commitments": "Layered potentiality (objective relational dispositions) + perspectival actuality.",
-                    "epistemological_stances": "Agent-relative definiteness with intersubjective consistency.",
-                    "key_postulates": [
-                        "Unitary background; measurement as context-driven actualization with thresholded decoherence.",
-                        "No-signalling preserved via holistic relational potential; deviations only in complex contexts."
-                    ]
-                },
-                "formalism": {
-                    "mathematical_objects": "Hilbert spaces with context-indexed relational states",
-                    "governing_equations": ["i\hbar \partial_t |\Psi\rangle = \hat{H} |\Psi\rangle"],
-                    "comparison_with_sqm": {"agreements": "standard formalism retained", "modifications": "n/a", "extensions": "context indices"}
-                },
-                "predictions_and_verifiability": {
-                    "reproduces_sqm_predictions": "standard limits",
-                    "deviations_from_sqm": [
-                        {"prediction_name": "Context-threshold anomalies", "description": "weak deviations in extreme context coupling", "mathematical_derivation": "heuristic", "experimental_setup": "macroscopic entanglement with engineered environments"}
-                    ],
-                    "unanswered_questions": "quantify thresholds and agent criteria"
+            # 生成 num_seeds 个占位理论
+            for k in range(self.num_seeds):
+                theory = {
+                    "name": f"Network-Integrated Interpretation (CNS-Lite) - {time.strftime('%m%d_%H%M')}-S{k+1}",
+                    "metadata": {
+                        "uid": f"THEORY-{time.strftime('%Y%m%d-%H%M%S')}-S{k+1}",
+                        "schema_version": "2.1",
+                        "author": "AI Physicist",
+                        "lineage": {"method": "Network Synthesis from Contradiction", "parents": parents},
+                    },
+                    "mathematical_relation_to_sqm": "Interpretation",
+                    "summary": "A relational-perspectival, layered-ontology synthesis under minimal relaxations.",
+                    "core_principles": {
+                        "ontological_commitments": "Layered potentiality + perspectival actuality.",
+                        "epistemological_stances": "Agent-relative definiteness with intersubjective consistency.",
+                        "key_postulates": [
+                            "Unitary background; context-driven actualization.",
+                            "No-signalling via holistic relational potential."
+                        ]
+                    },
+                    "formalism": {
+                        "mathematical_objects": "Hilbert spaces with context indices",
+                        "governing_equations": ["i\\hbar \\partial_t |\\Psi\rangle = \\hat{H} |\\Psi\rangle"],
+                        "comparison_with_sqm": {"agreements": "standard", "modifications": "n/a", "extensions": "context indices"}
+                    },
+                    "predictions_and_verifiability": {
+                        "reproduces_sqm_predictions": "standard limits",
+                        "deviations_from_sqm": [
+                            {"prediction_name": "Context anomalies", "description": "weak deviations in extreme contexts", "mathematical_derivation": "heuristic", "experimental_setup": "macroscopic entanglement"}
+                        ],
+                        "unanswered_questions": "thresholds and agent criteria"
+                    }
                 }
-            }
+                theories_out.append(theory)
         else:
             hg = HypothesisGenerator(llm)
-            theory = await hg.generate_from_contradictions_list(analyses, plan)
+            for k in range(self.num_seeds):
+                # 轻微改变生成参数以增加多样性
+                try:
+                    theory = await hg.generate_from_contradictions_list(
+                        analyses, plan,
+                        generation_params={
+                            "creativity_level": 0.55 + 0.1 * (k % 2),
+                            "mathematical_rigor": 0.7,
+                            "philosophical_depth": 0.7,
+                            "emphasis_on_testability": 0.65
+                        },
+                        max_items=8 - (k % 2)
+                    )
+                    if "error" in theory:
+                        self._log_warning(f"第{k+1}个统一合成失败: {theory['error']}")
+                        continue
+                    # 保证名称唯一
+                    if "name" in theory:
+                        theory["name"] = f"{theory['name']} (Seed {k+1})"
+                    theories_out.append(theory)
+                except Exception as e:
+                    self._log_warning(f"第{k+1}个统一合成异常: {e}")
 
-        if "error" in theory:
-            self._log_warning(f"统一合成失败（返回占位理论）: {theory['error']}")
+        if not theories_out:
             return GenerationResult(
-                success=True,
-                theories=[],
-                metadata={"message": "unified synthesis failed", "synthesis_dir": str(self.synthesis_dir)},
+                success=False,
+                error_message="no theories generated",
                 output_dir=str(self.synthesis_dir)
             ).to_dict()
 
         # 保存理论并准备评估
-        safe_name = theory.get("name", "network_theory").replace(" ", "_").replace("/", "_").lower()
-        eval_file = eval_ready / f"{safe_name}.json"
-        eval_file.write_text(json.dumps(theory, ensure_ascii=False, indent=2), encoding="utf-8")
-
-        self._log_info(f"网络合成完成: {eval_file}")
+        for theory in theories_out:
+            safe_name = theory.get("name", "network_theory").replace(" ", "_").replace("/", "_").lower()
+            eval_file = eval_ready / f"{safe_name}.json"
+            eval_file.write_text(json.dumps(theory, ensure_ascii=False, indent=2), encoding="utf-8")
+            self._log_info(f"网络合成完成: {eval_file}")
 
         return GenerationResult(
             success=True,
-            theories=[theory],
+            theories=theories_out,
             metadata={
                 "synthesis_dir": str(self.synthesis_dir),
                 "eval_theories_dir": str(eval_ready),
@@ -207,4 +232,3 @@ class NetworkSynthesisAdapter(TheoryGenerationMethod):
             },
             output_dir=str(self.synthesis_dir)
         ).to_dict()
-
