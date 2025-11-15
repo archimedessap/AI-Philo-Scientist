@@ -8,6 +8,7 @@
 
 import asyncio
 import argparse
+import json
 from pathlib import Path
 from theory_generation.llm_interface import LLMInterface
 from theory_generation.unified_theory_generator import (
@@ -30,14 +31,24 @@ async def main():
                        default="unified_theory_output",
                        help="输出目录")
     parser.add_argument("--model_source", 
-                       default="google",
+                       default="openai",
                        help="LLM模型源")
     parser.add_argument("--model_name", 
-                       default="gemini-2.5-pro",
+                       default="gpt-4o-mini",
                        help="LLM模型名称")
     parser.add_argument("--demo_mode", 
                        action="store_true",
                        help="演示模式（使用模拟数据）")
+    parser.add_argument("--card_query",
+                       default=None,
+                       help="使用短卡工作流时的任务描述")
+    parser.add_argument("--card_topk",
+                       type=int,
+                       default=6,
+                       help="短卡工作流检索的卡片数量")
+    parser.add_argument("--card_only",
+                       action="store_true",
+                       help="仅运行短卡工作流，跳过旧流程")
     
     args = parser.parse_args()
     
@@ -69,20 +80,47 @@ async def main():
     # 3. 初始化统一理论生成器
     print("\n🚀 初始化统一理论生成器...")
     generator = UnifiedTheoryGenerator(llm, config)
-    
-    # 4. 初始化系统（加载文献、理论、构建概念空间）
-    await generator.initialize_unified_system()
-    
-    # 5. 演示理论生成
-    if args.demo_mode:
-        await demo_theory_generation(generator)
-    else:
-        await interactive_theory_generation(generator)
-    
+
+    card_result = None
+    if args.card_query:
+        if not generator.card_analyzer:
+            print('[WARN] Short-card workflow disabled (missing cards or schema).')
+        else:
+            card_result = await generator.generate_card_driven_interpretation(
+                query=args.card_query,
+                top_k=args.card_topk
+            )
+            card_output = Path(args.output_dir) / "card_workflow_result.json"
+            card_output.parent.mkdir(parents=True, exist_ok=True)
+            card_output.write_text(json.dumps(card_result, indent=2, ensure_ascii=False), encoding="utf-8")
+            print("\n[Card] Short-card workflow completed")
+            print(f"选取卡片: {', '.join(card_result.get('selected_cards', []))}")
+            machine = card_result.get('machine_summary', {}) or {}
+            print(f"新诠释: {machine.get('name', 'unnamed interpretation')}")
+            preview = card_result.get('writeup', '')
+            if preview:
+                print(f"写作预览: {preview[:200]}...")
+            print(f"结果已保存: {card_output}")
+            if args.card_only:
+                generator.save_unified_analysis()
+                print("\n[Card] Workflow finished")
+                print(f"📁 结果保存在: {args.output_dir}")
+                return
+
+    if not args.card_only:
+        # 4. 初始化系统（加载文献、理论、构建概念空间）
+        await generator.initialize_unified_system()
+        
+        # 5. 演示理论生成
+        if args.demo_mode:
+            await demo_theory_generation(generator)
+        else:
+            await interactive_theory_generation(generator)
+
     # 6. 保存分析结果
     generator.save_unified_analysis()
-    
-    print("\n🎉 统一理论生成完成！")
+
+    print("\n[Done] Unified generation finished")
     print(f"📁 结果保存在: {args.output_dir}")
 
 

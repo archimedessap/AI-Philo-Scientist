@@ -50,20 +50,20 @@ class HypothesisGenerator:
         temperature = 0.5 + generation_params["creativity_level"] * 0.5
         
         # 提取关键信息
-        theory1 = contradiction.get("theory1", "理论1")
-        theory2 = contradiction.get("theory2", "理论2")
+        theory1 = contradiction.get("theory1", "Theory 1")
+        theory2 = contradiction.get("theory2", "Theory 2")
         contradictions = contradiction.get("contradictions", [])
         
         # 如果没有矛盾点数据，返回错误
         if not contradictions:
-            print(f"[ERROR] 没有矛盾点数据可供生成新假说")
-            return {"error": "没有矛盾点数据"}
+            print("[ERROR] No contradiction data available for hypothesis generation.")
+            return {"error": "No contradiction data available."}
         
         # 构建提示
         prompt = self._build_generation_prompt(theory1, theory2, contradictions, generation_params)
         
         # 调用LLM生成新假说
-        print(f"[INFO] 正在基于 {theory1} 和 {theory2} 的矛盾生成新假说...")
+        print(f"[INFO] Generating a new hypothesis from contradictions between {theory1} and {theory2}...")
         response = await self.llm.query_async(
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature
@@ -74,8 +74,8 @@ class HypothesisGenerator:
             new_hypothesis = self.llm.extract_json(response)
             
             if not new_hypothesis:
-                print(f"[ERROR] 无法解析LLM响应为有效JSON")
-                return {"error": "无法解析响应", "raw_response": response}
+                print("[ERROR] Unable to parse LLM response into valid JSON.")
+                return {"error": "Failed to parse LLM response.", "raw_response": response}
             
             # 🔧 修复重名问题：为理论名称添加时间戳，确保多次运行时唯一性
             if "name" in new_hypothesis:
@@ -87,7 +87,7 @@ class HypothesisGenerator:
                 # 检查是否已经包含时间戳格式，避免重复添加
                 if not any(f"-{ts}" in original_name for ts in [timestamp[:4], timestamp[5:]]):
                     new_hypothesis["name"] = f"{original_name}-{timestamp}"
-                    print(f"[INFO] 为理论添加时间戳: {new_hypothesis['name']}")
+                    print(f"[INFO] Appended timestamp to theory name: {new_hypothesis['name']}")
             
             # 添加元数据
             # 确保metadata字段存在
@@ -118,10 +118,10 @@ class HypothesisGenerator:
             # 保存生成的假说
             self.generated_hypotheses.append(new_hypothesis)
             
-            print(f"[INFO] 成功生成新假说: {new_hypothesis.get('name', '未命名理论')}")
+            print(f"[INFO] Successfully generated hypothesis: {new_hypothesis.get('name', 'Unnamed theory')}")
             return new_hypothesis
         except Exception as e:
-            print(f"[ERROR] 生成新假说失败: {str(e)}")
+            print(f"[ERROR] Failed to generate hypothesis: {str(e)}")
             return {"error": str(e), "theories": [theory1, theory2]}
     
     def _build_generation_prompt(self, theory1: str, theory2: str, contradictions: List[Dict], 
@@ -308,7 +308,7 @@ Construct a new theory in the Schema v2.1 strictly as a single JSON object. Incl
         try:
             theory = self.llm.extract_json(response)
             if not theory:
-                return {"error": "无法解析响应", "raw_response": response}
+                return {"error": "Failed to parse LLM response.", "raw_response": response}
 
             # Stamp lineage
             theory.setdefault("metadata", {}).setdefault("lineage", {})
@@ -342,7 +342,7 @@ Construct a new theory in the Schema v2.1 strictly as a single JSON object. Incl
         timestamp = time.strftime("%m%d_%H%M", time.localtime())
         
         for i in range(variants_count):
-            print(f"[INFO] 生成假说变体 {i+1}/{variants_count}")
+            print(f"[INFO] Generating hypothesis variant {i+1}/{variants_count}")
             
             # 构建不同的生成参数，增加多样性
             params = {
@@ -363,11 +363,11 @@ Construct a new theory in the Schema v2.1 strictly as a single JSON object. Incl
                 if "name" in variant:
                     original_name = variant["name"]
                     # 如果名称中已经包含变体信息则不添加
-                    if f"(Variant {i+1})" not in original_name and f"（变种{i+1}）" not in original_name:
+                    if f"(Variant {i+1})" not in original_name:
                         # 添加时间戳和变体标识，确保全局唯一性
                         variant["name"] = f"{original_name} (Variant {i+1}-{timestamp})"
                     
-                    print(f"[INFO] 生成理论: {variant['name']}")
+                    print(f"[INFO] Generated theory variant: {variant['name']}")
                 
                 generated_variants.append(variant)
         
@@ -385,7 +385,7 @@ Construct a new theory in the Schema v2.1 strictly as a single JSON object. Incl
         
         # 保存每个假说到单独文件
         for i, hypothesis in enumerate(self.generated_hypotheses):
-            theory_name = hypothesis.get("name", f"新理论_{i+1}")
+            theory_name = hypothesis.get("name", f"new_theory_{i+1}")
             safe_name = theory_name.replace(" ", "_").replace("/", "_").lower()
             
             # 生成文件路径
@@ -394,9 +394,9 @@ Construct a new theory in the Schema v2.1 strictly as a single JSON object. Incl
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     json.dump(hypothesis, f, ensure_ascii=False, indent=2)
-                print(f"[INFO] 假说已保存到: {file_path}")
+                print(f"[INFO] Hypothesis saved to: {file_path}")
             except Exception as e:
-                print(f"[ERROR] 保存假说失败: {str(e)}")
+                print(f"[ERROR] Failed to save hypothesis: {str(e)}")
         
         # 保存所有假说到一个合并文件
         if self.generated_hypotheses:
@@ -404,6 +404,6 @@ Construct a new theory in the Schema v2.1 strictly as a single JSON object. Incl
             try:
                 with open(all_file_path, 'w', encoding='utf-8') as f:
                     json.dump(self.generated_hypotheses, f, ensure_ascii=False, indent=2)
-                print(f"[INFO] 所有假说已合并保存到: {all_file_path}")
+                print(f"[INFO] All hypotheses saved to: {all_file_path}")
             except Exception as e:
-                print(f"[ERROR] 保存合并假说失败: {str(e)}")
+                print(f"[ERROR] Failed to save combined hypotheses: {str(e)}")

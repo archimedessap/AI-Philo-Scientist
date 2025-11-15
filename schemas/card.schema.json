@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Quantum Theory Short Card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "one_line",
+    "math_relation_to_SQM",
+    "key_claims",
+    "born_rule",
+    "measurement_update",
+    "locality_note",
+    "predictions",
+    "tags"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "description": "Stable short identifier used for retrieval."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human readable theory name."
+    },
+    "one_line": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "≤40字/约120字符的一句话摘要。"
+    },
+    "math_relation_to_SQM": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "math_change",
+        "equations_summary"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "interpretation",
+            "modified_dynamics",
+            "modified_logic",
+            "retrocausal"
+          ],
+          "description": "高层数学关系类别。"
+        },
+        "math_change": {
+          "type": "boolean",
+          "description": "是否改动SQM的动力学/公设。"
+        },
+        "equations_summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 280,
+          "description": "一句话指出数学改动或保持。"
+        }
+      }
+    },
+    "key_claims": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 6,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "description": "3-6条核心主张。"
+    },
+    "born_rule": {
+      "type": "string",
+      "enum": [
+        "postulate",
+        "decision_theory",
+        "envariance",
+        "normative_bayes",
+        "other"
+      ]
+    },
+    "measurement_update": {
+      "type": "string",
+      "enum": [
+        "physical_collapse",
+        "no_collapse",
+        "belief_update"
+      ]
+    },
+    "locality_note": {
+      "type": "string",
+      "enum": [
+        "local",
+        "explicitly_nonlocal",
+        "signal_local_only"
+      ]
+    },
+    "predictions": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "description": "若可与SQM区分则列举，不可区分则留空数组。"
+    },
+    "tags": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 6,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_-]+$",
+        "minLength": 2,
+        "maxLength": 40
+      }
+    }
+  }
+}

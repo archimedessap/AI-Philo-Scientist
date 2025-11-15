@@ -18,6 +18,7 @@ from theory_validation.validation_framework import TheoryValidationFramework
 from theory_validation.validators.consistency_validator import ConsistencyValidator
 from theory_validation.validators.experiment_compatibility_validator import ExperimentCompatibilityValidator
 from theory_validation.validators.agent_evaluation_validator import AgentEvaluationValidator
+from utils.model_config_parser import parse_model_config_string
 
 def ensure_directory_exists(directory):
     """确保目录存在，如果不存在则创建"""
@@ -84,6 +85,8 @@ async def main():
     parser.add_argument("--experiments_file", type=str, 
                         default="theory_experiment/data/experiments.jsonl",
                         help="实验数据文件路径")
+    parser.add_argument("--role_eval_models", type=str, default=None,
+                        help="多模型角色评估配置，格式如 'openai:gpt-4o-mini,deepseek:deepseek-chat'")
     
     # 验证参数
     parser.add_argument("--skip_consistency", action="store_true",
@@ -150,8 +153,18 @@ async def main():
     if not args.skip_experiment:
         framework.register_validator(ExperimentCompatibilityValidator(llm, args.experiments_file))
     
+    role_model_configs = None
+    config_string = args.role_eval_models or os.environ.get("ROLE_EVAL_MODELS")
+    if config_string:
+        try:
+            role_model_configs = parse_model_config_string(config_string)
+            print(f"[INFO] 多模型角色评估配置: {role_model_configs}")
+        except ValueError as exc:
+            print(f"[WARN] 解析角色评估模型配置失败: {exc}，将使用默认模型")
+            role_model_configs = None
+
     if not args.skip_agent:
-        framework.register_validator(AgentEvaluationValidator(llm))
+        framework.register_validator(AgentEvaluationValidator(llm, multi_model_configs=role_model_configs))
     
     # 4. 执行验证
     print(f"\n[步骤3] 开始理论验证")

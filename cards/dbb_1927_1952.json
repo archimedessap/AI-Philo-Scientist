@@ -1,0 +1,31 @@
+{
+  "id": "dbb_1927_1952",
+  "name": "de Broglie-Bohm Theory",
+  "one_line": "De Broglie-Bohm theory, or pilot-wave theory, is a deterministic interpretation of quantum mechanics.",
+  "math_relation_to_SQM": {
+    "type": "modified_dynamics",
+    "math_change": true,
+    "equations_summary": "This theory extends the mathematics of SQM by adding a new dynamical law (the guidance equation) for a new ontological entity (the particle configuration Q)."
+  },
+  "key_claims": [
+    "The complete state of a system is described by two fundamental entities: the wave function Ψ and the actual configuration of particles Q.",
+    "The particles' motion is deterministically governed by a guidance equation, where their velocity is derived from the phase of the wave function.",
+    "The wave function always evolves smoothly and deterministically according to the Schrödinger equation. There is no measurement-induced collapse."
+  ],
+  "born_rule": "postulate",
+  "measurement_update": "no_collapse",
+  "locality_note": "explicitly_nonlocal",
+  "predictions": [
+    "Existence of 'Quantum Non-Equilibrium'",
+    "The theory allows for the logical possibility of initial particle distributions ρ(Q) ≠ |Ψ(Q)|². Such systems would produce statistical outcomes different...",
+    "Finding or creating a system where measurement statistics violate the Born rule predictions. For example, detecting particles in a region where Ψ is zero, or..."
+  ],
+  "tags": [
+    "realism",
+    "no-collapse",
+    "deterministic",
+    "hidden-variables",
+    "pilot-wave",
+    "non-local"
+  ]
+}

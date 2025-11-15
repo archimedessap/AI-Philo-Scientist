@@ -13,6 +13,7 @@ import asyncio
 import json
 from theory_generation.llm_interface import LLMInterface
 from theory_validation.agent_validation.theory_evaluator import TheoryEvaluator
+from utils.model_config_parser import parse_model_config_string
 from utils.manifest_manager import ManifestManager
 import glob
 
@@ -57,6 +58,8 @@ async def main():
                         help="立即提取高分理论，不等待全部评估完成")
     parser.add_argument("--manifest_path", type=str, default=None,
                         help="运行清单文件路径，用于自动回写评估分数")
+    parser.add_argument("--role_eval_models", type=str, default=None,
+                        help="多模型角色评估配置，格式如 'openai:gpt-4o-mini,deepseek:deepseek-chat'" )
     
     args = parser.parse_args()
     
@@ -75,7 +78,17 @@ async def main():
     print(f"[INFO] 当前使用的模型: {model_info['source']} - {model_info['name']}")
     
     # 创建理论评估器
-    evaluator = TheoryEvaluator(llm)
+    role_model_configs = None
+    config_string = args.role_eval_models or os.environ.get("ROLE_EVAL_MODELS")
+    if config_string:
+        try:
+            role_model_configs = parse_model_config_string(config_string)
+            print(f"[INFO] 多模型角色评估配置: {role_model_configs}")
+        except ValueError as exc:
+            print(f"[ERROR] 解析角色评估模型配置失败: {exc}")
+            return
+
+    evaluator = TheoryEvaluator(llm, multi_model_configs=role_model_configs)
     
     # 如果提供了清单路径，初始化清单管理器
     manifest_manager = None
@@ -115,17 +128,22 @@ async def main():
             # 评估单个理论
             result = await evaluator.evaluate_theory(theory)
             results.append(result)
-            
+
             # 为每个理论创建单独的评估文件
             theory_name = theory.get('name', 'unnamed').replace(' ', '_').lower()
             theory_id = theory.get('id', f'theory_{i}')
             individual_output = os.path.join(individual_results_dir, f"{theory_id}_{theory_name}_evaluation.json")
-            
+
             # 保存单个理论评估结果
             with open(individual_output, 'w', encoding='utf-8') as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
             print(f"[保存] 理论评估结果已保存至: {individual_output}")
-            
+
+            instrumentation = result.get('instrumentation_review', {})
+            if isinstance(instrumentation, dict) and instrumentation.get('average_score') is not None:
+                avg_inst = instrumentation.get('average_score', 0.0)
+                print(f"[Instrumentation] 平均得分: {avg_inst:.2f}")
+
             # 额外：创建简化版本用于实验测试(仅包含理论和评估得分)
             experiment_ready = {
                 "theory": theory,

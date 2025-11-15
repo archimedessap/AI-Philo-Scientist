@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ContradictionTable",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contradictions"],
+  "properties": {
+    "contradictions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["A", "B", "issue", "one_line"],
+        "properties": {
+          "A": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Card id or name for theory A."
+          },
+          "B": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Card id or name for theory B."
+          },
+          "issue": {
+            "type": "string",
+            "enum": [
+              "measurement",
+              "collapse",
+              "psi_status",
+              "non_locality",
+              "probability",
+              "classicality",
+              "ontology",
+              "logic",
+              "other"
+            ]
+          },
+          "one_line": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "description": "Concise contradiction summary (<=25 chars)."
+          }
+        }
+      }
+    }
+  }
+}

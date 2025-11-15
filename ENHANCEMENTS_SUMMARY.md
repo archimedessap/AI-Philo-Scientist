@@ -5,6 +5,27 @@
 
 ## 主要改进
 
+### 新增短卡 + 结构化输出流程
+**改进点：**
+- 引入 `cards/` 短卡仓库与 JSON Schema，统一记录理论概要、数学关系与预测。
+- 提供 `pipelines/build_short_cards.py`、`pipelines/build_conflicts.py`、`pipelines/synthesize_theory.py` 三段式流水线：检索 → 矛盾表 → 新诠释。
+- LLM 交互全面使用结构化输出（JSON Schema）与 Top-K 检索，降低上下文冗余。
+
+**预期效果：**
+- 理论信息轻量化，便于快速组合和扩展。
+- 自动生成“矛盾表”与“人类可读 + 机器可读”的新理论说明。
+- 后续生成步骤可复用卡片检索结果，减少 API 成本。
+
+### 多模型理论评估升级
+**改进点：**
+- TheoryEvaluator 根据 `math_relation_to_SQM` 自动匹配评估模型：与 SQM 一致的理论使用多模型角色评估，涉及动力学修改的理论额外调用 `gpt-5.0-large` 和 `gemini-2.5-pro` 完成仪器/实验审查。
+- 评估输出包含 `instrumentation_review`，记录各高阶模型的实验可行性得分、建议与风险。
+- AgentEvaluationValidator 与 `run_theory_evaluation.py` 同步展示仪器平均得分，便于排序筛选。
+
+**预期效果：**
+- 区分不同理论的验证重点：标准理论强调多视角一致性，非标准理论额外关注可实验性。
+- 评估报告的信息密度更高，为人工审核和论文撰写提供直接引用材料。
+
 ### 1. 增强概念提取器 (enhanced_concept_extractor.py)
 **改进点：**
 - **多轮提取策略**：先提取概念列表，再深入分析每个概念

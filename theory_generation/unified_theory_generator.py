@@ -29,7 +29,22 @@ from theory_generation.multi_level_innovation_generator import (
 )
 from theory_generation.innovation_framework import InnovationLevel
 from theory_generation.direct_synthesis.contradiction_analyzer import ContradictionAnalyzer
+from pipelines.retrieve_topk import CardRetriever
 from utils.theory_registry import TheoryRegistry
+
+DEFAULT_CARD_CONSTRAINTS = {
+    "hard_rules": [
+        "Respect observed quantum data and no-signalling.",
+        "Prefer minimal departures from standard quantum dynamics unless required.",
+        "Ground any new mechanisms in clear math that extends the selected cards."
+    ],
+    "nice_to_have": [
+        "Clarify the origin of the Born rule.",
+        "Explain how classical objectivity emerges.",
+        "Highlight discriminating experiments or predictions."
+    ]
+}
+
 
 
 @dataclass
@@ -43,6 +58,10 @@ class UnifiedGenerationConfig:
     # 先验理论配置
     prior_theories_dir: str = "data/theories_v2.1"
     theory_registry_dir: str = "theory_registry"
+    cards_dir: str = "cards"
+    card_schema_path: str = "schemas/card.schema.json"
+    contradiction_schema_path: str = "schemas/contradiction.schema.json"
+    new_interpretation_schema_path: str = "schemas/new_interpretation.schema.json"
     
     # 创新生成配置
     target_innovation_levels: List[InnovationLevel] = None
@@ -85,19 +104,43 @@ class UnifiedTheoryGenerator:
             # 初始化组件
             self.concept_extractor = ConceptExtractor(llm_interface)
             self.concept_embedder = ConceptEmbedder(llm_interface)
-            self.contradiction_analyzer = ContradictionAnalyzer(llm_interface)
             self.theory_registry = TheoryRegistry(config.theory_registry_dir)
-            
+
+            # 短卡工作流组件
+            self.cards_dir = Path(config.cards_dir)
+            self.card_retriever = None
+            self.card_analyzer = None
+            self.new_interpretation_schema = None
+            self.last_card_result = None
+            if self.cards_dir.exists():
+                try:
+                    self.card_retriever = CardRetriever(
+                        llm_interface,
+                        cards_dir=str(self.cards_dir),
+                        schema_path=config.card_schema_path
+                    )
+                    self.card_analyzer = ContradictionAnalyzer(
+                        llm_interface,
+                        schema_path=config.contradiction_schema_path
+                    )
+                    schema_text = Path(config.new_interpretation_schema_path).read_text(encoding='utf-8')
+                    self.new_interpretation_schema = json.loads(schema_text)
+                    self.logger.info("Short-card workflow initialized.")
+                except Exception as exc:
+                    self.logger.warning(f"Short-card workflow initialization failed: {exc}")
+            else:
+                self.logger.warning(f"Cards directory not found, short-card workflow disabled: {config.cards_dir}")
+
             # 数据存储
             self.literature_concepts = []  # 从文献提取的概念
             self.prior_theories = {}       # 先验理论库
             self.concept_embeddings = {}   # 概念嵌入向量
             self.theory_embeddings = {}    # 理论嵌入向量
             self.unified_concept_space = {}  # 统一概念空间
-            
+
             # 多级创新生成器（稍后初始化）
             self.multi_level_generator = None
-            
+
             # 创建输出目录
             Path(config.output_dir).mkdir(exist_ok=True)
             self.logger.info(f"输出目录已创建: {config.output_dir}")
@@ -373,64 +416,121 @@ class UnifiedTheoryGenerator:
             llm_interface=self.llm,
             concept_embeddings=self.concept_embeddings
         )
-        
-        # 为矛盾分析器加载先验理论数据（使用已有的实例）
-        self.contradiction_analyzer.theories = self.prior_theories.copy()
-        
+
         print(f"✅ 多级创新生成器就绪，包含 {len(self.concept_embeddings)} 个概念向量")
-        print(f"✅ 矛盾分析器就绪，包含 {len(self.contradiction_analyzer.theories)} 个先验理论")
     
     async def generate_theory_from_literature_and_priors(self, 
                                                         theory1_name: str, 
                                                         theory2_name: str,
                                                         focus_concepts: Optional[List[str]] = None) -> Dict:
-        """
-        基于文献概念和先验理论生成新理论
-        
-        Args:
-            theory1_name: 第一个先验理论名称
-            theory2_name: 第二个先验理论名称  
-            focus_concepts: 重点关注的概念列表（来自文献）
-            
-        Returns:
-            Dict: 生成的新理论
-        """
-        print(f"\n🧬 生成新理论: {theory1_name} + {theory2_name}")
-        print("=" * 60)
-        
-        # 步骤1: 分析先验理论矛盾
-        print("🔍 分析理论矛盾...")
-        contradiction = await self.contradiction_analyzer.find_contradictions(
-            theory1_name, theory2_name
-        )
-        
-        if not contradiction or "error" in contradiction:
-            print(f"❌ 无法分析矛盾: {contradiction}")
-            return {"error": "矛盾分析失败"}
-        
-        # 步骤2: 基于文献概念增强矛盾分析
-        enhanced_contradiction = self._enhance_contradiction_with_literature(
-            contradiction, focus_concepts
-        )
-        
-        # 步骤3: 配置多级创新
-        config = self._create_adaptive_config(enhanced_contradiction)
-        
-        # 步骤4: 生成新理论
-        print("🚀 生成新理论...")
-        new_theory = await self.multi_level_generator.generate_multi_level_theory(
-            contradiction=enhanced_contradiction,
-            config=config
-        )
-        
-        # 步骤5: 后处理和验证
-        if "error" not in new_theory:
-            new_theory = self._post_process_generated_theory(
-                new_theory, theory1_name, theory2_name, focus_concepts
-            )
-        
-        return new_theory
+        """Compatibility wrapper that reuses the short-card workflow."""
+        query = f"Resolve contradictions between {theory1_name} and {theory2_name}."
+        result = await self.generate_card_driven_interpretation(query=query, top_k=max(2, 4))
+        machine = result.get('machine_summary', {}) or {}
+        interpretation_name = machine.get('name') or f"{theory1_name} vs {theory2_name} reinterpretation"
+        return {
+            'name': interpretation_name,
+            'core_principles': result.get('writeup', ''),
+            'generation_metadata': {
+                'source_type': 'short_card_pipeline',
+                'source_theories': [theory1_name, theory2_name],
+                'selected_cards': result.get('selected_cards', []),
+                'retrieval_scores': result.get('retrieval_scores', {}),
+                'focus_concepts': focus_concepts or [],
+            },
+            'card_workflow': result
+        }
+
     
+    def _format_cards_for_prompt(self, cards: List[Dict]) -> str:
+        lines: List[str] = []
+        for card in cards:
+            math = card.get('math_relation_to_SQM', {})
+            block = "\n".join([
+                f"id={card.get('id')} | name={card.get('name')}",
+                f"one_line: {card.get('one_line')}",
+                f"math: type={math.get('type')} change={math.get('math_change')} -> {math.get('equations_summary')}",
+                f"key_claims: {'; '.join(card.get('key_claims', []))}",
+                f"born_rule={card.get('born_rule')} | measurement={card.get('measurement_update')} | locality={card.get('locality_note')}",
+                f"predictions: {'; '.join(card.get('predictions', [])) or 'none'}",
+            ])
+            lines.append(block)
+        return "\n\n".join(lines)
+
+    def _format_contradictions_for_prompt(self, table: Dict[str, Any]) -> str:
+        rows = [f"{item['A']} vs {item['B']} [{item['issue']}]: {item['one_line']}" for item in table.get('contradictions', [])]
+        return "\n".join(rows) if rows else "No contradictions returned."
+
+    def _build_card_machine_messages(self, cards: List[Dict], table: Dict[str, Any], constraints: Dict[str, List[str]]) -> List[Dict[str, str]]:
+        constraint_lines = ["Hard constraints:"] + [f"- {item}" for item in constraints.get('hard_rules', [])]
+        constraint_lines.append('Nice-to-have goals:')
+        constraint_lines.extend(f"- {item}" for item in constraints.get('nice_to_have', []))
+        system_prompt = (
+            "You design candidate quantum interpretations. Use the contradictions to extend theory space while respecting the constraints. "
+            "Output only JSON that matches the provided schema."
+        )
+        user_prompt = (
+            f"Selected cards:\n{self._format_cards_for_prompt(cards)}\n\n"
+            f"Contradictions:\n{self._format_contradictions_for_prompt(table)}\n\n"
+            + "\n".join(constraint_lines)
+        )
+        return [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+    def _build_card_human_messages(self, cards: List[Dict], table: Dict[str, Any], constraints: Dict[str, List[str]]) -> List[Dict[str, str]]:
+        reminders = constraints.get('hard_rules', []) + constraints.get('nice_to_have', [])
+        reminder_text = "\n- ".join(reminders) if reminders else "None"
+        system_prompt = (
+            "Write a six-section human-readable proposal for a new quantum interpretation that resolves the listed contradictions. "
+            "Each section should be one short paragraph (4-6 sentences) following this order: "
+            "(1) Core commitments, (2) Relation to SQM mathematics, (3) Measurement and Born rule, "
+            "(4) Ontology, (5) Distinct empirical or operational consequences, (6) Attitude toward Bell/Kochen-Specker/PBR."
+        )
+        user_prompt = (
+            f"Cards considered:\n{self._format_cards_for_prompt(cards)}\n\n"
+            f"Key contradictions:\n{self._format_contradictions_for_prompt(table)}\n\n"
+            f"Constraints to respect:\n- {reminder_text}"
+        )
+        return [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+    async def generate_card_driven_interpretation(self, query: str, top_k: int = 6, constraints: Optional[Dict[str, List[str]]] = None) -> Dict[str, Any]:
+        """Use short-card retrieval and contradiction analysis to synthesize a new interpretation."""
+        if not self.card_retriever or not self.card_analyzer or not self.new_interpretation_schema:
+            raise RuntimeError("Short-card workflow is not available. Ensure cards and schemas are configured.")
+        await self.card_retriever.ensure_index()
+        retrieval_results = await self.card_retriever.top_k(query, k=top_k)
+        cards = [result.card for result in retrieval_results]
+        if not cards:
+            raise ValueError("No cards retrieved for the provided query.")
+        contradiction_table = await self.card_analyzer.build_table(cards, task_hint=query)
+        constraint_bundle = constraints or DEFAULT_CARD_CONSTRAINTS
+        machine_messages = self._build_card_machine_messages(cards, contradiction_table, constraint_bundle)
+        machine_summary = await self.llm.query_structured_json(
+            messages=machine_messages,
+            schema=self.new_interpretation_schema,
+            schema_name="new_interpretation",
+            temperature=0.4,
+        )
+        if not machine_summary:
+            raise ValueError('Structured summary generation failed.')
+        human_messages = self._build_card_human_messages(cards, contradiction_table, constraint_bundle)
+        writeup = await self.llm.query_async(human_messages, temperature=0.6)
+        result = {
+            "query": query,
+            "selected_cards": [res.card_id for res in retrieval_results],
+            "retrieval_scores": {res.card_id: res.score for res in retrieval_results},
+            "contradictions": contradiction_table.get('contradictions', []),
+            "machine_summary": machine_summary,
+            "writeup": writeup,
+        }
+        self.last_card_result = result
+        return result
+
     def _enhance_contradiction_with_literature(self, 
                                              contradiction: Dict, 
                                              focus_concepts: Optional[List[str]]) -> Dict:
@@ -617,7 +717,9 @@ class UnifiedTheoryGenerator:
             'prior_theories_list': list(self.prior_theories.keys()),
             'concept_space_statistics': self._calculate_concept_space_stats()
         }
-        
+        if self.last_card_result:
+            analysis['last_card_result'] = self.last_card_result
+
         output_file = Path(self.config.output_dir) / filename
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(analysis, f, ensure_ascii=False, indent=2)

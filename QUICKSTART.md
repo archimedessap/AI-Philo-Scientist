@@ -97,6 +97,22 @@ python run_unified_theory_generation.py \
     --demo_mode
 ```
 
+### 示例 4: 短卡检索 + 新诠释合成
+
+```bash
+# 1) 生成短卡（可重复执行保持同步）
+python pipelines/build_short_cards.py
+
+# 2) 构建矛盾表
+python pipelines/build_conflicts.py "融合 Bohm 与 GRW" --k 6 --output tmp/contradictions.json
+
+# 3) 合成新理论（输出人类可读 + 结构化 JSON）
+python pipelines/synthesize_theory.py tmp/contradictions.json --output tmp/new_interpretation.json
+
+# 4) 直接运行统一入口
+python run_unified_theory_generation.py --card_query "构造兼容退相干又可检验的诠释" --card_only
+```
+
 ## 🛠️ 常用命令
 
 ### 生成理论

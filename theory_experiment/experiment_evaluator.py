@@ -12,6 +12,8 @@ import json, importlib
 from statistics import mean
 from pathlib import Path
 
+from typing import Optional, Tuple
+
 # 内联实现验证器，而不是从外部导入
 class SchemaValidator:
     """简单的理论格式验证器"""
@@ -61,77 +63,76 @@ class ExperimentEvaluator:
         raise TypeError("predictor_module must be module obj or str")
 
     # ------------------ χ² helper ------------------------------------
-    def _calculate_chi2(self, exp, pred):
-        # 1. 处理预测状态：如果预测本身表明是错误或不可预测的
-        if isinstance(pred, dict) and pred.get("status") in ["unpredictable", "error"]:
+    def _extract_effective_prediction(self, exp: dict, pred: dict) -> Optional[float]:
+        if isinstance(pred, dict) and pred.get("status") in ["unpredictable", "error", "missing_parameters"]:
             return None
 
-        effective_predicted_value = None
-
-        # 2. 从预测中确定 effective_predicted_value
-        # 情况 A: 预测是 "same_as_QM"
         if isinstance(pred, dict) and pred.get("label") == "same_as_QM":
-            # 理论的预测被认为是该实验的标准QM预测
             std_qm_value = exp.get("std_prediction", {}).get("value")
-            if std_qm_value is None:
-                # 如果实验没有定义标准QM预测，
-                # "same_as_QM" 无法评估。
-                return None 
-            effective_predicted_value = std_qm_value
-        
-        # 情况 B: 预测提供了直接的数值 "value"
-        elif isinstance(pred, dict) and "value" in pred and isinstance(pred["value"], (int, float)):
-            effective_predicted_value = pred["value"]
-        
-        # 3. 如果无法确定有效的 effective_predicted_value
+            if isinstance(std_qm_value, (int, float)):
+                return float(std_qm_value)
+            return None
+
+        if isinstance(pred, dict) and "value" in pred and isinstance(pred["value"], (int, float)):
+            return float(pred["value"])
+
+        return None
+
+    def _calculate_chi2(self, exp, pred, effective_predicted_value=None):
         if effective_predicted_value is None:
-            # 如果 pred 不是 "same_as_QM" 且没有数值 "value"，
-            # 或者 pred 是 "same_as_QM" 但实验缺少 std_prediction，则发生此情况。
+            effective_predicted_value = self._extract_effective_prediction(exp, pred)
+
+        if effective_predicted_value is None:
             return None
 
-        # 4. 将 effective_predicted_value 与 exp["measured"] 进行比较
-        measured_data = exp.get("measured") # 获取 'measured' 字典
+        measured_data = exp.get("measured")
         if not isinstance(measured_data, dict):
-            # 如果 'measured' 字段缺失或不是字典，则无法比较。
             return None
 
-        # 情形 1: 测量数据是上限
         if "upper_bound" in measured_data:
             upper_bound = measured_data["upper_bound"]
-            if not isinstance(upper_bound, (int, float)): return None # 无效的界限类型
-            # 如果预测值在上限内（含上限），则视为兼容（χ²=0）
-            # 否则，给予一个较大的惩罚性χ²值
+            if not isinstance(upper_bound, (int, float)):
+                return None
             return 0.0 if effective_predicted_value <= upper_bound else self.CHI2_THRESHOLD * 2.0
 
-        # 情形 2: 测量数据是下限
-        elif "lower_bound" in measured_data:
+        if "lower_bound" in measured_data:
             lower_bound = measured_data["lower_bound"]
-            if not isinstance(lower_bound, (int, float)): return None # 无效的界限类型
-            # 如果预测值在下限外（含下限），则视为兼容（χ²=0）
-            # 否则，给予一个较大的惩罚性χ²值
+            if not isinstance(lower_bound, (int, float)):
+                return None
             return 0.0 if effective_predicted_value >= lower_bound else self.CHI2_THRESHOLD * 2.0
 
-        # 情形 3: 测量数据是带有 sigma 的值
-        elif "value" in measured_data and "sigma" in measured_data:
+        if "value" in measured_data and "sigma" in measured_data:
             actual_value = measured_data["value"]
             sigma = measured_data["sigma"]
-            
-            # 验证测量值和 sigma 的类型
             if not isinstance(actual_value, (int, float)) or not isinstance(sigma, (int, float)):
-                return None 
-            
-            if sigma < 0: # Sigma 不能为负
+                return None
+            if sigma < 0:
                 return None
             if sigma == 0:
-                # 如果 sigma 为零，预测必须精确匹配。
                 return 0.0 if effective_predicted_value == actual_value else self.CHI2_THRESHOLD * 2.0
-            
-            # 标准卡方计算
             diff = effective_predicted_value - actual_value
-            return (diff**2) / (sigma**2)
+            return (diff ** 2) / (sigma ** 2)
 
-        # 回退：如果 'measured' 字典格式无法识别以进行比较
         return None
+
+    def _residual_metrics(self, exp: dict, effective_pred: Optional[float]) -> Tuple[Optional[float], Optional[float]]:
+        if effective_pred is None:
+            return None, None
+        measured = exp.get("measured")
+        if not isinstance(measured, dict):
+            return None, None
+        if "value" in measured and "sigma" in measured:
+            actual = measured["value"]
+            sigma = measured["sigma"]
+            if isinstance(actual, (int, float)) and isinstance(sigma, (int, float)) and sigma > 0:
+                residual = effective_pred - actual
+                z_score = residual / sigma
+                return residual, z_score
+            if isinstance(actual, (int, float)) and sigma == 0:
+                residual = effective_pred - actual
+                z_score = float("inf") if residual != 0 else 0.0
+                return residual, z_score
+        return None, None
 
     # ------------------ public API -----------------------------------
     async def evaluate_theory(self, theory_json, predictor_module):
@@ -147,24 +148,47 @@ class ExperimentEvaluator:
 
         chi2_list, pred_results = [], []
         success_cnt = 0
+        outlier_ids = []
+        failed_ids = []
 
         for exp in self.experiments:
             try:
                 pred   = pred_inst.predict(exp)
-                chi2   = self._calculate_chi2(exp, pred)
+                effective_pred = self._extract_effective_prediction(exp, pred)
+                chi2   = self._calculate_chi2(exp, pred, effective_pred)
+                residual, z_score = self._residual_metrics(exp, effective_pred)
+
+                status_value = pred.get("status") if isinstance(pred, dict) else None
 
                 result = {
                     "experiment_id": exp["id"],
                     "prediction": pred,
                     "chi2_result": chi2,
-                    "success": (chi2 is not None and chi2 < self.CHI2_THRESHOLD)
+                    "success": (chi2 is not None and chi2 < self.CHI2_THRESHOLD),
+                    "effective_prediction": effective_pred,
+                    "residual": residual,
+                    "z_score": z_score,
+                    "std_prediction": exp.get("std_prediction", {}).get("value"),
+                    "measured": exp.get("measured"),
+                    "status": status_value
                 }
                 pred_results.append(result)
 
                 if result["success"]:
                     success_cnt += 1
+                else:
+                    failed_ids.append(exp["id"])
                 if chi2 is not None:
                     chi2_list.append(chi2)
+
+                if status_value == "missing_parameters":
+                    result.setdefault("warnings", []).append(
+                        "缺少关键参数，无法给出有效预测")
+
+                if z_score is not None and abs(z_score) >= 3:
+                    result.setdefault("warnings", []).append(
+                        f"|z|={abs(z_score):.2f} 表明与实验数据存在明显张力")
+                    outlier_ids.append(exp["id"])
 
             except Exception as e:
                 pred_results.append({
@@ -173,6 +197,7 @@ class ExperimentEvaluator:
                     "chi2_result": None,
                     "success": False
                 })
+                failed_ids.append(exp["id"])
 
         # 统计
         success_rate = success_cnt / len(self.experiments)
@@ -194,5 +219,7 @@ class ExperimentEvaluator:
             "average_chi2": avg_chi2,
             "final_score": round(final_score, 2),
             "prediction_results": pred_results,
-            "evaluation_type": "experiment"
+            "evaluation_type": "experiment",
+            "failed_experiments": failed_ids,
+            "outlier_experiments": outlier_ids
         }

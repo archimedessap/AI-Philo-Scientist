@@ -1,0 +1,29 @@
+{
+  "id": "mwi_1957_everett",
+  "name": "Many-Worlds Interpretation",
+  "one_line": "The Many-Worlds Interpretation (MWI) posits that the universal wave function is objectively real and there is no wave function collapse.",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": false,
+    "equations_summary": "MWI claims to be SQM taken literally, without the ad-hoc collapse postulate. It uses the same mathematical machinery but provides a different ontological story."
+  },
+  "key_claims": [
+    "The entire universe is described by a single, all-encompassing wave function Ψ_U which is objectively real.",
+    "The universal wave function evolves deterministically at all times according to the Schrödinger equation. There is no separate, non-unitary collapse process.",
+    "During an interaction that constitutes a measurement, the wave function decoheres into stable, non-interacting branches, each representing a consistent,..."
+  ],
+  "born_rule": "normative_bayes",
+  "measurement_update": "no_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "The wave function passes through both slits. The particle, as part of the wave function, also goes through both. Upon interaction with a detector, the...",
+    "The initial state of the entangled pair is a superposition. When Alice measures her particle, the universe branches. In the 'spin-up' branch for Alice, Bob's..."
+  ],
+  "tags": [
+    "realism",
+    "no-collapse",
+    "deterministic",
+    "universal-wave-function",
+    "many-worlds"
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NewInterpretationMachineSummary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "state_space",
+    "dynamics",
+    "measurement",
+    "observables_bridge",
+    "constraints_checklist",
+    "philosophy_and_principles",
+    "testable_predictions"
+  ],
+  "properties": {
+    "name": { "type": "string" },
+    "id": { "type": "string" },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "novelty",
+        "relation_to_SQM",
+        "correspondence_limit"
+      ],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "novelty": { "type": "string", "minLength": 1 },
+        "relation_to_SQM": {
+          "type": "string",
+          "enum": [
+            "no_change",
+            "modified_dynamics",
+            "modified_measurement",
+            "modified_logic",
+            "modified_parameters"
+          ]
+        },
+        "correspondence_limit": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string" },
+        "lineage": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "state_space": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["object", "space", "definition"],
+      "properties": {
+        "object": {
+          "type": "string",
+          "enum": ["ket", "density_matrix", "other"]
+        },
+        "space": {
+          "type": "string",
+          "enum": ["Hilbert", "rigged_Hilbert", "other"]
+        },
+        "definition": { "type": "string", "minLength": 1 }
+      }
+    },
+    "dynamics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "equation",
+        "is_open_system",
+        "cp_tp_guarantee",
+        "symmetry",
+        "conserved_quantities"
+      ],
+      "properties": {
+        "equation": { "type": "string", "minLength": 1 },
+        "is_open_system": { "type": "boolean" },
+        "cp_tp_guarantee": {
+          "type": "string",
+          "enum": ["GKLS", "Kraus", "not_applicable", "explanation"]
+        },
+        "symmetry": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "conserved_quantities": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "commentary": { "type": "string" }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interpretation_role",
+        "model",
+        "operators_or_effects",
+        "probability_rule",
+        "update_rule"
+      ],
+      "properties": {
+        "interpretation_role": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ontology", "epistemology", "attitude_to_no_go"],
+          "properties": {
+            "ontology": { "type": "string" },
+            "epistemology": { "type": "string" },
+            "attitude_to_no_go": { "type": "string" }
+          }
+        },
+        "model": {
+          "type": "string",
+          "enum": ["POVM", "instrument", "projective", "other"]
+        },
+        "operators_or_effects": {
+          "type": ["string", "array"],
+          "items": { "type": "string" }
+        },
+        "probability_rule": { "type": "string", "minLength": 1 },
+        "update_rule": { "type": "string", "minLength": 1 }
+      }
+    },
+    "observables_bridge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "how_variables_map_to_readouts",
+        "devices_or_protocols",
+        "classical_record_emergence"
+      ],
+      "properties": {
+        "how_variables_map_to_readouts": { "type": "string" },
+        "devices_or_protocols": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "classical_record_emergence": { "type": "string" }
+      }
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "unit", "scale", "role"],
+        "properties": {
+          "name": { "type": "string" },
+          "unit": { "type": "string" },
+          "scale": { "type": "string" },
+          "role": { "type": "string" },
+          "prior_or_constraint": { "type": "string" },
+          "value": { "type": ["number", "null"] }
+        }
+      }
+    },
+    "constraints_checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "no_faster_than_light",
+        "probabilities_nonnegative_normalized",
+        "gleason_consistency_or_override",
+        "reduces_to_SQM_in_limit"
+      ],
+      "properties": {
+        "no_faster_than_light": { "type": "boolean" },
+        "probabilities_nonnegative_normalized": { "type": "boolean" },
+        "gleason_consistency_or_override": { "type": "string" },
+        "reduces_to_SQM_in_limit": { "type": "boolean" },
+        "energy_accounting": { "type": "string" },
+        "causality_comment": { "type": "string" }
+      }
+    },
+    "philosophy_and_principles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "core_principles",
+        "ontology",
+        "measurement_postulate",
+        "epistemology",
+        "attitude_to_classicality",
+        "attitude_to_no_go_theorems"
+      ],
+      "properties": {
+        "core_principles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "ontology": { "type": "string" },
+        "measurement_postulate": { "type": "string" },
+        "epistemology": { "type": "string" },
+        "attitude_to_classicality": { "type": "string" },
+        "attitude_to_no_go_theorems": { "type": "string" }
+      }
+    },
+    "testable_predictions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["setup", "signal", "difference_from_SQM"],
+        "properties": {
+          "setup": { "type": "string" },
+          "signal": { "type": "string" },
+          "difference_from_SQM": { "type": "string" }
+        }
+      }
+    }
+  }
+}

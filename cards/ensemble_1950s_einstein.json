@@ -1,0 +1,28 @@
+{
+  "id": "ensemble_1950s_einstein",
+  "name": "Ensemble Interpretation",
+  "one_line": "The Ensemble Interpretation, or Statistical Interpretation, asserts that the wave function Ψ does not apply to an individual quantum system but only to an 'ensemble' of many...",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": false,
+    "equations_summary": "It uses the full mathematical formalism of SQM but restricts its domain of applicability to statistical ensembles, denying its relevance to individual events."
+  },
+  "key_claims": [
+    "The quantum state (wave function) is a mathematical description of a conceptual ensemble of identically prepared systems, not a description of a single system.",
+    "Quantum probabilities are standard statistical probabilities, representing the frequency of obtaining a certain measurement result over the ensemble.",
+    "Individual particles are real and always possess definite (though perhaps unknown) properties. Quantum mechanics is simply incomplete as a description of a..."
+  ],
+  "born_rule": "postulate",
+  "measurement_update": "no_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "For the ensemble of particles, the interference pattern is the predicted statistical distribution of final positions. The interpretation refuses to answer...",
+    "The non-local correlation is a statistical correlation between the properties of particles in the entangled ensemble. The interpretation does not provide a..."
+  ],
+  "tags": [
+    "statistical",
+    "anti-realism",
+    "no-collapse",
+    "hidden-variables-friendly"
+  ]
+}

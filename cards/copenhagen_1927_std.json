@@ -1,0 +1,29 @@
+{
+  "id": "copenhagen_1927_std",
+  "name": "Copenhagen Interpretation",
+  "one_line": "The Copenhagen interpretation is the orthodox view of quantum mechanics, asserting that quantum systems are described by a wave function which provides probabilities for...",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": false,
+    "equations_summary": "This is the 'standard' interpretation, so its mathematics *are* the mathematics of Standard Quantum Mechanics. It provides the philosophical framework for the standard textbook formulation."
+  },
+  "key_claims": [
+    "The wave function Ψ provides a complete probabilistic description of a quantum system.",
+    "Upon measurement by a classical apparatus, the wave function undergoes an instantaneous, non-unitary, and probabilistic collapse to an eigenstate...",
+    "Certain pairs of properties (e.g., position and momentum) are complementary and cannot be simultaneously known or have definite values. The experimental..."
+  ],
+  "born_rule": "postulate",
+  "measurement_update": "physical_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "The wave function passes through both slits, creating an interference pattern. When a 'which-path' measurement is made, the wave function collapses, and the...",
+    "The non-local correlations are accepted as a feature of quantum mechanics, but a detailed explanation is often avoided by emphasizing that no information can..."
+  ],
+  "tags": [
+    "instrumentalism",
+    "wave-function-collapse",
+    "complementarity",
+    "probabilistic",
+    "orthodox"
+  ]
+}

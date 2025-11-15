@@ -1,0 +1,29 @@
+{
+  "id": "ch_1984_griffiths",
+  "name": "Consistent Histories",
+  "one_line": "The Consistent Histories approach reformulates quantum mechanics in terms of 'histories,' which are sequences of properties at different points in time.",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": false,
+    "equations_summary": "Uses the standard mathematical machinery of SQM but reorganizes it into a logical framework based on histories and projection operators. It aims to make the probabilistic structure of SQM more explicit."
+  },
+  "key_claims": [
+    "The fundamental objects of description are 'histories,' defined as time-ordered sequences of quantum properties (projection operators).",
+    "Probabilities can only be assigned to a set of histories if they are 'consistent,' meaning there is negligible interference between different histories in...",
+    "All physical reasoning must be conducted within a single, self-consistent framework (a consistent set of histories). It is forbidden to combine results from..."
+  ],
+  "born_rule": "postulate",
+  "measurement_update": "no_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "A framework describing 'which-path' information is inconsistent with a framework describing the interference pattern. One can use the 'which-path' framework...",
+    "A framework can be constructed to show the perfect correlations between Alice's and Bob's measurement outcomes. The non-locality is a feature of the logical..."
+  ],
+  "tags": [
+    "no-collapse",
+    "probabilistic",
+    "logical-framework",
+    "histories",
+    "decoherence"
+  ]
+}

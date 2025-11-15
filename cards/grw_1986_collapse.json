@@ -1,0 +1,30 @@
+{
+  "id": "grw_1986_collapse",
+  "name": "Objective Collapse Theory (GRW)",
+  "one_line": "Objective Collapse theories, exemplified by the GRW model, propose that wave function collapse is a real, physical process that happens spontaneously and randomly for all...",
+  "math_relation_to_SQM": {
+    "type": "modified_dynamics",
+    "math_change": true,
+    "equations_summary": "This theory modifies the Schrödinger equation by adding a non-linear and stochastic term, resulting in a new universal dynamical equation."
+  },
+  "key_claims": [
+    "There is only one universal dynamical law that governs all physical systems, microscopic and macroscopic. This law is a stochastic modification of the...",
+    "Every elementary particle has a tiny, constant probability per unit time of spontaneously having its wave function multiplied by a Gaussian function,...",
+    "For a composite system of many particles, the collapse rate of the system as a whole is the sum of the rates of its constituents. This means macroscopic..."
+  ],
+  "born_rule": "postulate",
+  "measurement_update": "physical_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "Violation of Energy Conservation",
+    "The stochastic collapse process involves a random 'kick' to the wave function's momentum, which is not unitary and does not conserve energy. This leads to a...",
+    "Measuring a slight, spontaneous heating of any piece of matter, even if perfectly isolated in a vacuum. This could be detected as anomalous Brownian motion..."
+  ],
+  "tags": [
+    "realism",
+    "stochastic-collapse",
+    "non-deterministic",
+    "modified-dynamics",
+    "macro-realism"
+  ]
+}

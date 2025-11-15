@@ -9,12 +9,14 @@
 
 import os
 import json
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
+
+from utils.model_config_parser import parse_model_config_string
 
 class AgentEvaluationValidator:
     """从多角色专家视角评估理论"""
     
-    def __init__(self, llm_interface):
+    def __init__(self, llm_interface, multi_model_configs: Optional[List[Dict[str, str]]] = None):
         """
         初始化多角色评估验证器
         
@@ -22,11 +24,20 @@ class AgentEvaluationValidator:
             llm_interface: LLM接口实例
         """
         self.llm = llm_interface
-        
+        self.multi_model_configs = multi_model_configs
+        if self.multi_model_configs is None:
+            config_string = os.environ.get("ROLE_EVAL_MODELS")
+            if config_string:
+                try:
+                    self.multi_model_configs = parse_model_config_string(config_string)
+                except ValueError as exc:
+                    print(f"[WARN] 解析 ROLE_EVAL_MODELS 失败，将使用默认模型: {exc}")
+                    self.multi_model_configs = None
+
         # 尝试导入已有的理论评估器
         try:
             from theory_validation.agent_validation.theory_evaluator import TheoryEvaluator
-            self.theory_evaluator = TheoryEvaluator(llm_interface)
+            self.theory_evaluator = TheoryEvaluator(llm_interface, multi_model_configs=self.multi_model_configs)
             print(f"[INFO] 已成功加载多角色理论评估器")
             self.use_existing_evaluator = True
         except ImportError:
@@ -146,15 +157,24 @@ class AgentEvaluationValidator:
         # 计算平均分
         avg_score = (physicist_score + philosopher_score + mathematician_score) / 3
         
+        instrumentation_review = original_result.get("instrumentation_review", {})
+        instrument_score = instrumentation_review.get("average_score")
+
         # 合并优势和弱点
         strengths = []
         weaknesses = []
         recommendations = []
-        
+        questions = []
+        detailed_comments = []
+
         for eval_data in [physicist_eval, philosopher_eval, mathematician_eval]:
             strengths.extend(eval_data.get("strengths", []))
             weaknesses.extend(eval_data.get("weaknesses", []))
-        
+            questions.extend(eval_data.get("questions", []))
+            comment = eval_data.get("detailed_comments")
+            if comment:
+                detailed_comments.append(comment)
+
         # 从summary提取建议
         summary = original_result.get("summary", {})
         if "improvement_directions" in summary:
@@ -164,34 +184,70 @@ class AgentEvaluationValidator:
                 recommendations.append(summary["improvement_directions"])
         
         # 构建统一格式
+        if instrumentation_review.get("reviews"):
+            for review in instrumentation_review.get("reviews", []):
+                readiness = review.get("instrument_readiness")
+                if readiness:
+                    recommendations.append(f"[Instrumentation] {readiness}")
+                risk = review.get("risks")
+                if risk:
+                    recommendations.append(f"[Risk] {risk}")
+
+        recommendations = list(dict.fromkeys(recommendations))
+
+        dimension_scores = {
+            "physical_soundness": physicist_score,
+            "philosophical_coherence": philosopher_score,
+            "mathematical_rigor": mathematician_score
+        }
+        aggregate_scores = [physicist_score, philosopher_score, mathematician_score]
+        if isinstance(instrument_score, (int, float)):
+            dimension_scores["instrumentation"] = instrument_score
+            aggregate_scores.append(instrument_score)
+
+        overall_average = sum(aggregate_scores) / len(aggregate_scores) if aggregate_scores else 0.0
+
+        instrumentation_details = instrumentation_review.get("reviews", []) if isinstance(instrumentation_review, dict) else []
+
         return {
-            "overall_score": avg_score,
-            "dimension_scores": {
-                "physical_soundness": physicist_score,
-                "philosophical_coherence": philosopher_score,
-                "mathematical_rigor": mathematician_score
-            },
+            "overall_score": overall_average,
+            "dimension_scores": dimension_scores,
             "expert_evaluations": {
                 "physicist": {
                     "score": physicist_score,
                     "strengths": physicist_eval.get("strengths", []),
-                    "weaknesses": physicist_eval.get("weaknesses", [])
+                    "weaknesses": physicist_eval.get("weaknesses", []),
+                    "questions": physicist_eval.get("questions", []),
+                    "detailed_comments": physicist_eval.get("detailed_comments", ""),
+                    "improvement_suggestions": physicist_eval.get("improvement_suggestions", []),
+                    "model_breakdown": physicist_eval.get("model_breakdown", [])
                 },
                 "philosopher": {
                     "score": philosopher_score,
                     "strengths": philosopher_eval.get("strengths", []),
-                    "weaknesses": philosopher_eval.get("weaknesses", [])
+                    "weaknesses": philosopher_eval.get("weaknesses", []),
+                    "questions": philosopher_eval.get("questions", []),
+                    "detailed_comments": philosopher_eval.get("detailed_comments", ""),
+                    "improvement_suggestions": philosopher_eval.get("improvement_suggestions", []),
+                    "model_breakdown": philosopher_eval.get("model_breakdown", [])
                 },
                 "mathematician": {
                     "score": mathematician_score,
                     "strengths": mathematician_eval.get("strengths", []),
-                    "weaknesses": mathematician_eval.get("weaknesses", [])
+                    "weaknesses": mathematician_eval.get("weaknesses", []),
+                    "questions": mathematician_eval.get("questions", []),
+                    "detailed_comments": mathematician_eval.get("detailed_comments", ""),
+                    "improvement_suggestions": mathematician_eval.get("improvement_suggestions", []),
+                    "model_breakdown": mathematician_eval.get("model_breakdown", [])
                 }
             },
             "overall_assessment": summary.get("potential_value", ""),
-            "strengths": list(set(strengths)),  # 去重
-            "weaknesses": list(set(weaknesses)),  # 去重
-            "recommendations": recommendations
+            "strengths": list(dict.fromkeys(strengths)),
+            "weaknesses": list(dict.fromkeys(weaknesses)),
+            "questions": list(dict.fromkeys(questions)),
+            "detailed_comments": "\n\n".join(detailed_comments) if detailed_comments else "",
+            "recommendations": recommendations,
+            "instrumentation_review": instrumentation_details
         }
     
     async def _internal_evaluation(self, theory: Dict) -> Dict:
