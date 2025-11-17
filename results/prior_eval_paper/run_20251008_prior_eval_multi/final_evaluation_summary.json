@@ -1,0 +1,65 @@
+[
+  {
+    "theory_name": "Consistent Histories",
+    "file_path": "data/theories_v2.1/consistent_histories.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.0,
+    "experiments_count": 4
+  },
+  {
+    "theory_name": "Ensemble Interpretation",
+    "file_path": "data/theories_v2.1/ensemble_interpretation.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.0,
+    "experiments_count": 4
+  },
+  {
+    "theory_name": "Many-Worlds Interpretation",
+    "file_path": "data/theories_v2.1/many_worlds_interpretation.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.0,
+    "experiments_count": 4
+  },
+  {
+    "theory_name": "Modal Interpretations",
+    "file_path": "data/theories_v2.1/modal_interpretations.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.0,
+    "experiments_count": 4
+  },
+  {
+    "theory_name": "Objective Collapse Theory (GRW)",
+    "file_path": "data/theories_v2.1/objective_collapse_theory_grw.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.15055935652168007,
+    "experiments_count": 4
+  },
+  {
+    "theory_name": "Quantum Bayesianism (QBism)",
+    "file_path": "data/theories_v2.1/quantum_bayesianism.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.0,
+    "experiments_count": 4
+  },
+  {
+    "theory_name": "Relational Quantum Mechanics (RQM)",
+    "file_path": "data/theories_v2.1/relational_quantum_mechanics.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.0,
+    "experiments_count": 4
+  },
+  {
+    "theory_name": "Spacetime State Realism (SSR)",
+    "file_path": "data/theories_v2.1/spacetime_state_realism.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.1505593554061262,
+    "experiments_count": 4
+  },
+  {
+    "theory_name": "de Broglie-Bohm Theory",
+    "file_path": "data/theories_v2.1/de_broglie_bohm_theory.json",
+    "success_rate": 1.0,
+    "average_chi2": 0.15055935652168007,
+    "experiments_count": 4
+  }
+]

@@ -63,11 +63,23 @@ data/*
 
 # 输出文件
 output/
-results/
+output_*/
+results/*
 *.png
 *.jpg
 *.pdf
 *.svg
+
+# 本地评估产物
+evaluation_results/
+theory_visuals_multi/
+
+# 论文需要保留的图表与结果
+!results/prior_eval_paper/
+!results/prior_eval_paper/**
+!results/prior_eval_paper/**/*.json
+!results/README.md
+!paper/figs/*.png
 
 # 局部特有的忽略文件，每个开发者可以自定义
 .gitignore.local 
