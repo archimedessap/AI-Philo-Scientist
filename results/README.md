@@ -1,6 +1,6 @@
 # Paper-ready Evaluation Assets
 
-This folder tracks only the lightweight evaluation summaries that are cited in the paper. Raw run folders under `evaluation_results/` or `theory_visuals_multi/` stay locally to avoid bloating the repo.
+This folder tracks only the lightweight evaluation summaries that are cited in the paper. Raw run folders under `evaluation_results/` or `theory_visuals_multi/` stay locally to avoid bloating the repo. A one-page quicklook for reviewers is in `results/overview.md` (with pipeline SVG and top-ranked theories).
 
 ## Contents
 
