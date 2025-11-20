@@ -1,0 +1,29 @@
+{
+  "id": "rqm_1996_rovelli",
+  "name": "Relational Quantum Mechanics (RQM)",
+  "one_line": "Relational Quantum Mechanics (RQM) asserts that the state of a quantum system is observer-dependent.",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": false,
+    "equations_summary": "RQM uses the standard mathematical formalism of SQM but reinterprets its meaning. The state vector |Ψ⟩ is not an absolute description of a system, but a book-keeping device for the correlations between that system and an observer."
+  },
+  "key_claims": [
+    "The state of a system S is always relative to an observer O. It is meaningless to speak of the absolute state of S.",
+    "Any physical system can be an 'observer'. There is no fundamental distinction between observer and observed.",
+    "All physical facts are established through interactions. A system acquires properties relative to another system only when they interact."
+  ],
+  "born_rule": "postulate",
+  "measurement_update": "no_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "Relative to the screen (the observer), the electron's position becomes definite upon interaction. Before that, relative to the experimenter, the electron is...",
+    "Alice's measurement establishes a fact relative to her. Bob's measurement establishes a fact relative to him. There is no super-observer for whom both facts..."
+  ],
+  "tags": [
+    "relational",
+    "informational",
+    "no-collapse",
+    "anti-realism",
+    "perspectival"
+  ]
+}

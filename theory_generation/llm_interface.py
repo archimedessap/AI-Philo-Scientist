@@ -16,6 +16,7 @@ import os
 import json
 import re
 import time
+from pathlib import Path
 try:
     import openai  # Optional at import time; may be unavailable in offline/envs
 except Exception:
@@ -36,6 +37,9 @@ except Exception:
 # 加载.env文件中的环境变量
 load_dotenv()
 
+RESPONSES_MODEL_PREFIXES = ("gpt-5",)
+
+
 class LLMInterface:
     """LLM接口类"""
     
@@ -53,7 +57,8 @@ class LLMInterface:
         self.model_name = model_name
         self.request_interval = request_interval
         self.last_request_time = 0
-        
+        self.default_max_output_tokens = 1024
+
         # 从环境变量获取API密钥
         self.api_key_openai = os.environ.get("OPENAI_API_KEY")
         self.api_key_deepseek = os.environ.get("DEEPSEEK_API_KEY")
@@ -76,6 +81,48 @@ class LLMInterface:
             "model_source": "openai",
             "model_name": "gpt-3.5-turbo"
         }
+
+    @staticmethod
+    def _is_responses_model(model_source: str, model_name: str) -> bool:
+        return model_source.lower() == "openai" and model_name.lower().startswith(RESPONSES_MODEL_PREFIXES)
+
+    @staticmethod
+    def _model_requires_default_temperature(model_name: str) -> bool:
+        return model_name.lower().startswith(RESPONSES_MODEL_PREFIXES)
+
+    @staticmethod
+    def _convert_messages_to_responses_input(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        converted: List[Dict[str, Any]] = []
+        for message in messages:
+            role = message.get("role", "user")
+            content = message.get("content", "")
+            parts: List[Dict[str, Any]] = []
+            if isinstance(content, list):
+                for item in content:
+                    if isinstance(item, dict) and item.get("type") == "text":
+                        parts.append({"type": "input_text", "text": item.get("text", "")})
+                    elif isinstance(item, str):
+                        parts.append({"type": "input_text", "text": item})
+                    else:
+                        parts.append({"type": "input_text", "text": json.dumps(item, ensure_ascii=False)})
+            elif isinstance(content, str):
+                parts.append({"type": "input_text", "text": content})
+            else:
+                parts.append({"type": "input_text", "text": json.dumps(content, ensure_ascii=False)})
+            converted.append({"role": role, "content": parts})
+        return converted
+
+    @staticmethod
+    def _collect_response_output_text(response: Any) -> str:
+        output_text = getattr(response, "output_text", "") or ""
+        if output_text:
+            return output_text
+        chunks: List[str] = []
+        for item in getattr(response, "output", []) or []:
+            for part in getattr(item, "content", []) or []:
+                if getattr(part, "type", None) == "output_text":
+                    chunks.append(part.text)
+        return "".join(chunks)
     
     def _initialize_client(self):
         """根据模型来源初始化客户端"""
@@ -152,7 +199,10 @@ class LLMInterface:
         # 使用提供的参数，如果未提供则使用默认值
         source = model_source if model_source else self.model_source
         name = model_name if model_name else self.model_name
-        
+
+        if self._model_requires_default_temperature(name):
+            temperature = None
+
         # 等待速率限制
         await self._wait_for_rate_limit()
         
@@ -164,6 +214,22 @@ class LLMInterface:
             try:
                 print(f"[INFO] (尝试 {attempt}) 调用API: {source}/{name}")
 
+                if self._is_responses_model(source, name) and source.lower() == 'openai':
+                    if openai is None:
+                        raise ImportError("openai package not installed; cannot call responses endpoint")
+                    if not self.openai_client:
+                        raise ValueError(f"{source} 客户端未初始化。")
+                    responses_input = self._convert_messages_to_responses_input(messages)
+                    kwargs: Dict[str, Any] = {
+                        "model": name,
+                        "input": responses_input,
+                        "max_output_tokens": self.default_max_output_tokens,
+                    }
+                    if temperature is not None and not self._model_requires_default_temperature(name):
+                        kwargs["temperature"] = temperature
+                    response = await self.openai_client.responses.create(**kwargs)
+                    return self._collect_response_output_text(response)
+
                 if source.lower() in ['openai', 'deepseek', 'xai']:
                     if openai is None:
                         raise ImportError("openai package not installed; cannot call chat.completions")
@@ -174,10 +240,10 @@ class LLMInterface:
                         "model": name,
                         "messages": messages
                     }
-                    if not (source.lower() == 'openai' and name.lower().startswith('gpt-5')):
+                    if not self._model_requires_default_temperature(name):
                         create_kwargs["temperature"] = temperature
                     else:
-                        if abs(temperature - 1.0) > 1e-6:
+                        if temperature is not None and abs(temperature - 1.0) > 1e-6:
                             print(f"[INFO] 模型 {name} 不支持自定义 temperature，已使用默认值 1.0")
                     response = await self.openai_client.chat.completions.create(**create_kwargs)
                     return response.choices[0].message.content
@@ -187,15 +253,36 @@ class LLMInterface:
                         raise ImportError("google-generativeai package not installed; cannot call Gemini")
                     if not self.genai_model:
                         raise ValueError("Google Gemini 模型未初始化。")
-                    # Gemini API 使用不同的消息格式
-                    gemini_messages = [m['content'] for m in messages if m['role'] == 'user']
-                    response = await self.genai_model.generate_content_async(
-                        gemini_messages,
-                        generation_config=genai.types.GenerationConfig(
-                            temperature=temperature
-                        )
-                    )
-                    return response.text
+                    # Gemini: 合并 system/user 消息，确保系统指令不丢失
+                    parts = []
+                    for m in messages:
+                        role = m.get('role', 'user')
+                        content = m.get('content', '')
+                        if isinstance(content, list):
+                            # 简化：仅拼接文本子项
+                            text_chunks = []
+                            for item in content:
+                                if isinstance(item, dict) and item.get('type') == 'text':
+                                    text_chunks.append(item.get('text', ''))
+                                elif isinstance(item, str):
+                                    text_chunks.append(item)
+                                else:
+                                    text_chunks.append(json.dumps(item, ensure_ascii=False))
+                            content_text = "\n".join(text_chunks)
+                        else:
+                            content_text = str(content)
+                        parts.append(f"{role.upper()}:\n{content_text}")
+
+                    prompt_text = "\n\n".join(parts)
+                    try:
+                        gen_config = genai.types.GenerationConfig(temperature=temperature)
+                    except Exception:
+                        gen_config = None
+                    if gen_config is not None:
+                        response = await self.genai_model.generate_content_async(prompt_text, generation_config=gen_config)
+                    else:
+                        response = await self.genai_model.generate_content_async(prompt_text)
+                    return getattr(response, 'text', None) or ''
                 
             except Exception as e:
                 print(f"[WARN] 第 {attempt} 次调用失败: {e}")
@@ -343,7 +430,7 @@ class LLMInterface:
                     return json.loads(json_str)
                 except json.JSONDecodeError as e:
                     print(f"[WARN] 直接JSON解析失败: {e}")
-                    
+
                     # 尝试修复常见的JSON格式问题
                     fixed_json = self._fix_common_json_issues(json_str)
                     if fixed_json:
@@ -351,6 +438,14 @@ class LLMInterface:
                             return json.loads(fixed_json)
                         except json.JSONDecodeError:
                             print(f"[WARN] 修复后的JSON仍然无法解析")
+
+                    # 尝试只解析首个合法JSON对象
+                    try:
+                        decoder = json.JSONDecoder()
+                        obj, _ = decoder.raw_decode(json_str)
+                        return obj
+                    except Exception:
+                        pass
                             
         except Exception as e:
             print(f"[WARN] JSON提取过程出错: {e}")
@@ -373,8 +468,145 @@ class LLMInterface:
             pass
         
         print(f"[WARN] 无法从文本中提取有效的JSON: {text[:150]}...")
+        try:
+            debug_path = Path("logs/last_json_failure.txt")
+            debug_path.parent.mkdir(parents=True, exist_ok=True)
+            debug_path.write_text(text, encoding="utf-8")
+            print(f"[INFO] 原始文本已写入 {debug_path}")
+        except Exception as debug_exc:
+            print(f"[WARN] 写入调试文件失败: {debug_exc}")
         return None
     
+
+    async def query_structured_json(
+        self,
+        messages: List[Dict[str, Any]],
+        schema: Dict[str, Any],
+        temperature: float = 0.0,
+        schema_name: str = "structured_output",
+        model_source: Optional[str] = None,
+        model_name: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """Request a structured JSON response matching the provided schema."""
+        target_source = model_source or self.model_source
+        target_name = model_name or self.model_name
+        original_source = self.model_source
+        original_name = self.model_name
+        restore_needed = False
+        try:
+            # 优先使用 OpenAI/DeepSeek/XAI 的原生 JSON Schema 能力
+            if target_source.lower() in {'openai', 'deepseek', 'xai'} and self.openai_client:
+                if target_source != self.model_source or target_name != self.model_name:
+                    self.set_model(target_source, target_name)
+                    restore_needed = bool(model_source)
+                create_kwargs = {
+                    "model": self.model_name,
+                    "messages": messages,
+                    "response_format": {
+                        'type': 'json_schema',
+                        'json_schema': {
+                            'name': schema_name,
+                            'schema': schema
+                        }
+                    }
+                }
+                if not self._model_requires_default_temperature(target_name):
+                    create_kwargs["temperature"] = temperature
+                response = await self.openai_client.chat.completions.create(**create_kwargs)
+                content = response.choices[0].message.content
+                if content:
+                    try:
+                        parsed = json.loads(content)
+                        if restore_needed:
+                            try:
+                                self.set_model(original_source, original_name)
+                            finally:
+                                restore_needed = False
+                        return parsed
+                    except json.JSONDecodeError as exc:
+                        print(f"[WARN] Structured response decode failed: {exc}")
+                        try:
+                            debug_path = Path("logs/last_structured_response.txt")
+                            debug_path.parent.mkdir(parents=True, exist_ok=True)
+                            debug_path.write_text(content, encoding="utf-8")
+                            print(f"[INFO] 原始结构化响应已写入 {debug_path}")
+                        except Exception as debug_exc:
+                            print(f"[WARN] 写入结构化响应调试文件失败: {debug_exc}")
+            # Google Gemini: 尝试使用 JSON MIME 强约束
+            elif target_source.lower() == 'google' and self.genai_model is not None and genai is not None:
+                # 合并 system+user 消息，提升遵循度
+                parts = []
+                for m in messages:
+                    role = m.get('role', 'user')
+                    content = m.get('content', '')
+                    if isinstance(content, list):
+                        text_chunks = []
+                        for item in content:
+                            if isinstance(item, dict) and item.get('type') == 'text':
+                                text_chunks.append(item.get('text', ''))
+                            elif isinstance(item, str):
+                                text_chunks.append(item)
+                            else:
+                                text_chunks.append(json.dumps(item, ensure_ascii=False))
+                        content_text = "\n".join(text_chunks)
+                    else:
+                        content_text = str(content)
+                    parts.append(f"{role.upper()}:\n{content_text}")
+                prompt_text = "\n\n".join(parts)
+
+                response_text = None
+                try:
+                    # 优先设置 JSON MIME（新版本库支持）
+                    gen_config = genai.types.GenerationConfig(
+                        temperature=temperature,
+                        response_mime_type="application/json"
+                    )
+                    response = await self.genai_model.generate_content_async(prompt_text, generation_config=gen_config)
+                    response_text = getattr(response, 'text', None) or ''
+                except Exception as exc:
+                    print(f"[WARN] Gemini JSON-mime generation failed, fallback to plain: {exc}")
+                    response = await self.genai_model.generate_content_async(prompt_text)
+                    response_text = getattr(response, 'text', None) or ''
+
+                if response_text:
+                    try:
+                        debug_path = Path("logs/last_structured_response.txt")
+                        debug_path.parent.mkdir(parents=True, exist_ok=True)
+                        debug_path.write_text(response_text, encoding="utf-8")
+                        print(f"[INFO] 原始结构化响应已写入 {debug_path}")
+                    except Exception as debug_exc:
+                        print(f"[WARN] 写入结构化响应调试文件失败: {debug_exc}")
+                parsed = self.extract_json(response_text)
+                if restore_needed:
+                    try:
+                        self.set_model(original_source, original_name)
+                    except Exception as restore_exc:
+                        print(f"[WARN] Unable to restore original model after structured call: {restore_exc}")
+                return parsed
+        except Exception as exc:
+            print(f"[WARN] Structured request failed, using plain completion: {exc}")
+        response_text = await self.query_async(
+            messages,
+            temperature=temperature,
+            model_source=model_source,
+            model_name=model_name
+        )
+        if response_text:
+            try:
+                debug_path = Path("logs/last_structured_response.txt")
+                debug_path.parent.mkdir(parents=True, exist_ok=True)
+                debug_path.write_text(response_text, encoding="utf-8")
+                print(f"[INFO] 原始结构化响应已写入 {debug_path}")
+            except Exception as debug_exc:
+                print(f"[WARN] 写入结构化响应调试文件失败: {debug_exc}")
+        structured = self.extract_json(response_text)
+        if restore_needed:
+            try:
+                self.set_model(original_source, original_name)
+            except Exception as restore_exc:
+                print(f"[WARN] Unable to restore original model after structured call: {restore_exc}")
+        return structured
+
     def _fix_common_json_issues(self, json_str: str) -> Optional[str]:
         """尝试修复常见的JSON格式问题"""
         
@@ -397,15 +629,8 @@ class LLMInterface:
         # 将单个反斜杠（不在转义序列中）替换为双反斜杠
         json_str = re.sub(r'(?<!\\)\\(?!\\)', r'\\\\', json_str)
 
-        # 4. 修复使用单引号的问题
-        json_str = json_str.replace("'", '"')
-        
-        # 5. 移除尾随逗号 (在对象和数组中)
+        # 4. 移除尾随逗号 (在对象和数组中)
         json_str = re.sub(r',\s*([}\]])', r'\1', json_str)
-        
-        # 6. 修复未转义的双引号（在一个值的内部）
-        # 这很复杂，但我们可以尝试修复最常见的情况
-        json_str = re.sub(r'(?<![:{\[,])"(?![:}\],])', r'\\"', json_str)
 
         return json_str.strip()
     

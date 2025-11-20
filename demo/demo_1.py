@@ -12,6 +12,7 @@ from theory_generation.llm_interface import LLMInterface
 # Instrument correction is optional; import lazily when needed to allow offline runs
 # 导入新的角色评估模块
 from demo.auto_role_evaluation import run_role_evaluation_for_theories
+from utils.model_config_parser import parse_model_config_string
 
 def load_theories_from_sources(theories_path: str, schema_version: str = "2.1") -> dict:
     """
@@ -269,7 +270,19 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
         cleaned_response = cleaned_response[7:-3].strip()
     elif cleaned_response.startswith("```") and cleaned_response.endswith("```"):
         cleaned_response = cleaned_response[3:-3].strip()
-    
+
+    # 新增兜底1：直接用正则在整段文本中提取数值（允许多行JSON、带LaTeX的无效转义）
+    # 匹配形如 "value": 1.23 或 "value": -2.8e-1
+    if value is None:
+        try:
+            import re as _re
+            _m_all = list(_re.finditer(r'"value"\s*:\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)', cleaned_response))
+            if _m_all:
+                value = float(_m_all[-1].group(1))
+                print(f"\n预测值(正则提取): {value}\n")
+        except Exception as _e:
+            pass
+
     # 尝试按行解析JSON对象
     for line in cleaned_response.splitlines():
         line = line.strip()
@@ -292,6 +305,53 @@ async def evaluate_theory_experiment(theory, setup_exp, measured_data, llm, args
                 print(f"[WARN] 无法解析或转换行: {line}")
                 print(f"[WARN] 错误: {e}")
                 continue
+
+    # 新增兜底2：平衡大括号提取多个JSON对象，逐个尝试解析并抓取value
+    if value is None:
+        try:
+            def _extract_all_json(text: str):
+                objs = []
+                start = text.find('{')
+                while start != -1:
+                    brace = 0
+                    in_str = False
+                    esc = False
+                    for i, ch in enumerate(text[start:], start):
+                        if esc:
+                            esc = False
+                            continue
+                        if ch == '\\':
+                            esc = True
+                            continue
+                        if ch == '"':
+                            in_str = not in_str
+                        if not in_str:
+                            if ch == '{':
+                                brace += 1
+                            elif ch == '}':
+                                brace -= 1
+                                if brace == 0:
+                                    objs.append(text[start:i+1])
+                                    start = text.find('{', i+1)
+                                    break
+                    else:
+                        break
+                return objs
+
+            for frag in _extract_all_json(cleaned_response):
+                try:
+                    obj = json.loads(frag)
+                except Exception:
+                    continue
+                if isinstance(obj, dict) and "value" in obj and obj["value"] is not None:
+                    try:
+                        value = float(obj["value"])
+                        print(f"\n预测值(平衡提取): {value}\n")
+                        break
+                    except Exception:
+                        continue
+        except Exception:
+            pass
     
     # 获取实验测量值
     # exp_target 已经在前面定义过了
@@ -530,6 +590,12 @@ async def main():
     main_group.add_argument("--schema_version", type=str, default="any", help="The schema version of the theories to be loaded ('any' to load all).")
     main_group.add_argument("--max_theories", type=int, default=None, help="Maximum number of theories to evaluate.")
     main_group.add_argument("--max_experiments", type=int, default=None, help="Maximum number of experiments to run for each theory.")
+    main_group.add_argument(
+        "--skip_experiments",
+        nargs="*",
+        default=None,
+        help="Experiment IDs to skip entirely (e.g., fullerene_decoherence_hornberger2003).",
+    )
     main_group.add_argument("--chi2_threshold", type=float, default=4.0, help="Chi-squared threshold for determining prediction success.")
     main_group.add_argument("--use_instrument_correction", action='store_true', default=True, help="Enable instrument correction model (default: enabled).")
     main_group.add_argument("--disable_instrument_correction", action='store_true', help="Disable instrument correction model.")
@@ -547,6 +613,12 @@ async def main():
     role_eval_group.add_argument("--role_success_threshold", type=float, default=0.75, help="Success rate threshold for a theory to be passed to role evaluation.")
     role_eval_group.add_argument("--role_model_source", type=str, default="openai", choices=["openai", "deepseek", "google"], help="LLM provider for role evaluation.")
     role_eval_group.add_argument("--role_model_name", type=str, default="gpt-4o-mini", help="Specific model name for role evaluation.")
+    role_eval_group.add_argument(
+        "--role_eval_models",
+        type=str,
+        default=None,
+        help="Comma-separated list like 'openai:gpt-4o-mini,google:gemini-2.5-flash' to evaluate roles with multiple models.",
+    )
     
     args = parser.parse_args()
     
@@ -591,6 +663,16 @@ async def main():
     if not experiments:
         print("[ERROR] No experiments loaded. Exiting.")
         return
+
+    if args.skip_experiments:
+        skip_set = set(args.skip_experiments)
+        experiments = {k: v for k, v in experiments.items() if k not in skip_set}
+        instrument_setups = {k: v for k, v in instrument_setups.items() if k not in skip_set}
+        measured_data = {k: v for k, v in measured_data.items() if k not in skip_set}
+        print(f"[INFO] Skipping experiments: {sorted(skip_set)}")
+        if not experiments:
+            print("[ERROR] All experiments were skipped. Exiting.")
+            return
         
     # 限制实验数量
     if args.max_experiments is not None and args.max_experiments > 0:
@@ -718,12 +800,14 @@ async def main():
                     # 修复：创建一个只包含理论数据的字典，以匹配角色评估脚本的接口
                     definitions_for_role_eval = {name: data for name, (data, path) in theories.items()}
                     # 调用角色评估模块
+                    role_model_configs = parse_model_config_string(args.role_eval_models) if args.role_eval_models else None
                     await run_role_evaluation_for_theories(
                         high_success_theories=high_success_theories,
-                        all_theories_definitions=definitions_for_role_eval, # 使用修复后的字典
-                        output_dir=run_output_dir, # 在同一运行目录下输出
+                        all_theories_definitions=definitions_for_role_eval,
+                        output_dir=run_output_dir,
                         model_source=args.role_model_source,
-                        model_name=args.role_model_name
+                        model_name=args.role_model_name,
+                        model_configs=role_model_configs,
                     )
             else:
                 print(f"\n[INFO] 没有理论达到 {args.role_success_threshold*100:.0f}% 的成功率阈值，跳过角色评估。")

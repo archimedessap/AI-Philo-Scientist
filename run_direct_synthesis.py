@@ -19,6 +19,11 @@ from pathlib import Path
 from theory_generation.llm_interface import LLMInterface
 from theory_generation.direct_synthesis.contradiction_analyzer import ContradictionAnalyzer
 from theory_generation.direct_synthesis.hypothesis_generator import HypothesisGenerator
+from theory_generation.short_card_generator import (
+    ShortCardGenerationConfig,
+    convert_to_legacy_schema,
+    generate_short_card_theory,
+)
 
 def ensure_directory_exists(directory):
     """确保目录存在，如果不存在则创建"""
@@ -46,6 +51,15 @@ def load_theories_from_directory(theories_dir):
     
     return theories
 
+def slugify(value: str) -> str:
+    import re
+
+    value = value.lower().strip()
+    value = re.sub(r"[^a-z0-9]+", "_", value)
+    value = re.sub(r"_+", "_", value).strip("_")
+    return value or "theory"
+
+
 async def main():
     parser = argparse.ArgumentParser(description="理论直接合成程序")
     
@@ -56,7 +70,12 @@ async def main():
     parser.add_argument("--model_name", type=str, default="gpt-4o-mini",
                         help="模型名称")
     
-    # 输入参数
+    # 生成模式
+    parser.add_argument("--generation_method", type=str, default="direct",
+                        choices=["direct", "short_card"],
+                        help="理论生成方法：direct（传统矛盾对）或 short_card（短卡联合分析）")
+
+    # 输入参数（direct 模式）
     parser.add_argument("--theories_dir", type=str, 
                         default="data/theories_v2.1",
                         help="理论文件目录")
@@ -76,31 +95,116 @@ async def main():
     # 输出参数
     parser.add_argument("--output_dir", type=str, default="data/synthesized_theories",
                         help="输出目录")
-    
+
+    # 短卡模式参数
+    parser.add_argument("--cards_dir", type=str, default="cards", help="短卡目录")
+    parser.add_argument("--card_schema", type=str, default="schemas/card.schema.json", help="短卡Schema路径")
+    parser.add_argument("--contradiction_schema", type=str, default="schemas/contradiction.schema.json", help="矛盾表Schema路径")
+    parser.add_argument("--new_interpretation_schema", type=str, default="schemas/new_interpretation.schema.json", help="新诠释结构化输出Schema")
+    parser.add_argument("--short_card_constraints", type=str, default=None, help="短卡模式约束文件JSON")
+    parser.add_argument("--short_card_contradictions", type=str, default=None, help="预先生成的矛盾表JSON路径，提供后将跳过LLM矛盾分析")
+    parser.add_argument("--short_card_query", type=str, default="短卡联合分析生成新理论", help="短卡模式的任务描述")
+    parser.add_argument("--short_card_task_hint", type=str, default="", help="短卡模式额外提示")
+    parser.add_argument("--short_card_topk", type=int, default=-1, help="短卡模式使用的卡片数量，-1 表示全部")
+    parser.add_argument("--short_card_machine_temperature", type=float, default=0.4, help="短卡模式结构化输出温度")
+    parser.add_argument("--short_card_human_temperature", type=float, default=0.6, help="短卡模式人类文本输出温度")
+    parser.add_argument("--short_card_human_model_source", type=str, default=None, help="短卡模式人类写作模型来源")
+    parser.add_argument("--short_card_human_model_name", type=str, default=None, help="短卡模式人类写作模型名称")
+    parser.add_argument("--num_theories", type=int, default=1, help="要生成的新理论数量（短卡模式适用）")
+
     args = parser.parse_args()
     
     # 确保输出目录存在
     synthesis_dir = os.path.join(args.output_dir, f"synthesis_{time.strftime('%Y%m%d_%H%M%S')}")
     ensure_directory_exists(synthesis_dir)
     
-    # 初始化LLM接口
+    if args.generation_method == "short_card":
+        config = ShortCardGenerationConfig(
+            query=args.short_card_query,
+            task_hint=args.short_card_task_hint,
+            cards_dir=Path(args.cards_dir),
+            card_schema=Path(args.card_schema),
+            contradiction_schema=Path(args.contradiction_schema),
+            new_schema=Path(args.new_interpretation_schema),
+            constraints_path=Path(args.short_card_constraints) if args.short_card_constraints else None,
+            topk=args.short_card_topk,
+            machine_model_source=args.model_source,
+            machine_model_name=args.model_name,
+            human_model_source=args.short_card_human_model_source,
+            human_model_name=args.short_card_human_model_name,
+            machine_temperature=args.short_card_machine_temperature,
+            human_temperature=args.short_card_human_temperature,
+            precomputed_contradictions_path=Path(args.short_card_contradictions) if args.short_card_contradictions else None,
+        )
+
+        if args.num_theories < 1:
+            raise ValueError("--num_theories 必须为正整数")
+
+        short_dir = os.path.join(synthesis_dir, "short_card_rag")
+        ensure_directory_exists(short_dir)
+        eval_ready_dir = os.path.join(synthesis_dir, "eval_ready_theories")
+        ensure_directory_exists(eval_ready_dir)
+
+        synthesized_theories = []
+
+        for idx in range(args.num_theories):
+            result = await generate_short_card_theory(config)
+            legacy_theory, machine_summary = convert_to_legacy_schema(result)
+
+            suffix = "" if args.num_theories == 1 else f"_{idx + 1}"
+
+            contradictions_path = os.path.join(short_dir, f"contradictions{suffix or ''}.json")
+            with open(contradictions_path, "w", encoding="utf-8") as f:
+                json.dump(result.get("contradictions", {}), f, ensure_ascii=False, indent=2)
+
+            raw_path = os.path.join(short_dir, f"raw_new_interpretation{suffix or ''}.json")
+            with open(raw_path, "w", encoding="utf-8") as f:
+                json.dump({
+                    "machine_summary": machine_summary,
+                    "writeup": result.get("writeup"),
+                    "selected_cards": result.get("selected_card_ids", [])
+                }, f, ensure_ascii=False, indent=2)
+
+            base_slug = slugify(legacy_theory['name'])
+            slug_candidate = base_slug
+            counter = 1
+            while os.path.exists(os.path.join(eval_ready_dir, f"{slug_candidate}.json")):
+                slug_candidate = f"{base_slug}_{counter}"
+                counter += 1
+
+            eval_ready_path = os.path.join(eval_ready_dir, f"{slug_candidate}.json")
+            with open(eval_ready_path, "w", encoding="utf-8") as f:
+                json.dump(legacy_theory, f, ensure_ascii=False, indent=2)
+
+            synthesized_theories.append(legacy_theory)
+
+            print(f"[INFO] 成功生成短卡驱动理论({idx + 1}/{args.num_theories}): {legacy_theory['name']}")
+            print(f"[INFO] 标准格式文件: {eval_ready_path}")
+
+        with open(os.path.join(synthesis_dir, "all_synthesized_theories.json"), "w", encoding="utf-8") as f:
+            json.dump(synthesized_theories, f, ensure_ascii=False, indent=2)
+
+        print("标准格式的评估理论文件已保存到: {}".format(eval_ready_dir))
+        return
+
+    # 初始化LLM接口（direct 模式）
     llm = LLMInterface(
         model_source=args.model_source,
         model_name=args.model_name,
         request_interval=1.0
     )
-    
+
     # 显示当前使用的模型信息
     model_info = llm.get_current_model_info()
     print(f"[INFO] 当前使用的模型: {model_info['source']} - {model_info['name']}")
-    
+
     # 1. 加载理论数据
     print(f"\n[步骤1] 从 {args.theories_dir} 加载理论数据")
     analyzer = ContradictionAnalyzer(llm)
-    
+
     load_schema_version = None if args.schema_version.lower() == 'any' else args.schema_version
     analyzer.load_theories(args.theories_dir, schema_version=load_schema_version)
-    
+
     if not analyzer.theories:
         print("[ERROR] 未加载到理论数据，程序终止")
         return

@@ -258,13 +258,28 @@ class EvolutionOrchestrator:
         """注册新理论到 manifest"""
         for theory_file in theory_files:
             try:
-                with open(theory_file, 'r', encoding='utf-8') as f:
-                    theory_data = json.load(f)
-                
-                theory_id = manifest_tools.register_theory_in_manifest(
-                    self.manifest, theory_data, theory_file, generation=generation
-                )
-                print(f"[REGISTER] 注册理论: {theory_data.get('name', 'Unknown')} -> {theory_id}")
+                file_path = Path(theory_file)
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    payload = json.load(f)
+
+                def _register(entry: dict):
+                    if not isinstance(entry, dict):
+                        return
+                    name = entry.get('name') or entry.get('theory_name')
+                    if not name:
+                        return
+                    theory_id = manifest_tools.register_theory_in_manifest(
+                        self.manifest, entry, file_path, generation=generation
+                    )
+                    print(f"[REGISTER] 注册理论: {name} -> {theory_id}")
+
+                if isinstance(payload, list):
+                    for item in payload:
+                        _register(item)
+                elif isinstance(payload, dict):
+                    _register(payload)
+                else:
+                    print(f"[WARN] 理论文件 {file_path} 格式不支持，跳过。")
                 
             except Exception as e:
                 print(f"[WARN] 无法注册理论文件 {theory_file}: {e}")

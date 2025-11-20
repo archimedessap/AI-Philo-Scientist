@@ -1,0 +1,29 @@
+{
+  "id": "ti_1986_cramer",
+  "name": "Transactional Interpretation (TI)",
+  "one_line": "The Transactional Interpretation views a quantum event as the result of a 'transaction' between an emitter and an absorber.",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": false,
+    "equations_summary": "TI uses the standard wave mechanics of SQM but provides a physical story for the mathematical formalism, particularly for the Born rule |Ψ|². It gives a real, physical meaning to the advanced solutions of relativistic wave equations, which are usually discarded."
+  },
+  "key_claims": [
+    "Any quantum emission involves both a retarded wave (Ψ) moving forward in time and an advanced wave (Ψ*) moving backward in time.",
+    "A quantum event (e.g., photon absorption) is finalized through a 'handshake' between the offer wave from the emitter and the confirmation wave from the...",
+    "The formation of a transaction is a global, atemporal process that stands outside of the usual temporal sequence of events."
+  ],
+  "born_rule": "postulate",
+  "measurement_update": "no_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "The emitter sends an offer wave through both slits. The screen acts as a collection of potential absorbers. A transaction is formed between the emitter and...",
+    "The emitter of the entangled pair sends out offer waves. Alice and Bob are potential absorbers. A transaction forms across spacetime, linking the emitter,..."
+  ],
+  "tags": [
+    "time-symmetry",
+    "retrocausality",
+    "no-collapse",
+    "realism",
+    "wave-realism"
+  ]
+}

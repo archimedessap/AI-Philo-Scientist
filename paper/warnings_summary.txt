@@ -1,4 +1,0 @@
-# LaTeX Warnings Summary
-2025年 9月 5日 星期五 14时07分37秒 CST
-
-751:Overfull \hbox (32.18417pt too wide) in paragraph at lines 91--92

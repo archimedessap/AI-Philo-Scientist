@@ -65,6 +65,73 @@ class GlobalTheoryRegistry:
         """生成理论唯一ID"""
         content = f"{theory_name}_{source}_{datetime.now().isoformat()}"
         return hashlib.md5(content.encode()).hexdigest()[:16]
+
+    def register_scored_theory(
+        self,
+        *,
+        run_id: str,
+        run_path: str,
+        theory_name: str,
+        theory_file: Path,
+        evaluation_payload: Dict[str, Any],
+        composite_score: float,
+        success_rate: float,
+        source_type: str = "evolved",
+        generation_model_source: Optional[str] = None,
+        generation_model_name: Optional[str] = None,
+    ) -> Optional[str]:
+        """将指定理论注册到全局理论库。"""
+
+        if not theory_file.exists():
+            raise FileNotFoundError(f"理论文件不存在: {theory_file}")
+
+        index = self._load_index()
+
+        for info in index["theories"].values():
+            if info.get("run_id") == run_id and info.get("theory_name") == theory_name:
+                return None
+
+        theory_id = self._generate_theory_id(theory_name, run_id)
+        target_theory_path = self.theories_dir / f"{theory_id}.json"
+        shutil.copy2(theory_file, target_theory_path)
+
+        evaluation_payload = dict(evaluation_payload)
+        evaluation_payload.setdefault("run_id", run_id)
+        evaluation_payload.setdefault("theory_name", theory_name)
+        evaluation_payload["registered_at"] = datetime.now().isoformat()
+
+        eval_path = self.evaluations_dir / f"{theory_id}_eval.json"
+        with open(eval_path, 'w', encoding='utf-8') as f:
+            json.dump(evaluation_payload, f, ensure_ascii=False, indent=2)
+
+        index["theories"][theory_id] = {
+            "theory_id": theory_id,
+            "theory_name": theory_name,
+            "source_type": source_type,
+            "run_id": run_id,
+            "theory_file": str(target_theory_path),
+            "evaluation_file": str(eval_path),
+            "composite_score": composite_score,
+            "success_rate": success_rate,
+            "generation_model_source": generation_model_source,
+            "generation_model_name": generation_model_name,
+            "generation_method": evaluation_payload.get("generation_method"),
+            "registered_at": datetime.now().isoformat()
+        }
+
+        run_entry = index["runs"].setdefault(run_id, {
+            "run_id": run_id,
+            "run_path": run_path,
+            "max_generation": 0,
+            "theories_count": 0,
+            "registered_at": datetime.now().isoformat()
+        })
+        run_entry["run_path"] = run_path
+        run_entry["theories_count"] = run_entry.get("theories_count", 0) + 1
+
+        self._update_statistics(index)
+        self._save_index(index)
+        return theory_id
     
     def register_prior_theories(self, theories_dir: str) -> int:
         """

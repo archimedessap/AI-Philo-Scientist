@@ -1,0 +1,29 @@
+{
+  "id": "ssr_2013_wallace_timpson",
+  "name": "Spacetime State Realism (SSR)",
+  "one_line": "Spacetime State Realism is a modern development of the Many-Worlds Interpretation.",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": true,
+    "equations_summary": "SSR is a specific ontological proposal for the Many-Worlds Interpretation. It uses the exact same mathematics but provides a different answer to the question 'What is the wave function about?'."
+  },
+  "key_claims": [
+    "The fundamental 'stuff' of the world exists in 4D spacetime, not in an abstract high-dimensional configuration space.",
+    "The quantum state is a tool that describes the behavior of the real stuff in spacetime. The state itself is not the fundamental ontology.",
+    "The branching structure of MWI is an emergent, large-scale feature of the dynamics of the spacetime fields, made stable by decoherence."
+  ],
+  "born_rule": "normative_bayes",
+  "measurement_update": "no_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "SSR aims to reproduce all standard predictions by showing that within any given branch of the spacetime field, the results will be consistent with the Born...",
+    "SSR is often argued to be more compatible with general relativity, providing a more natural framework for quantum cosmology where one can talk about the..."
+  ],
+  "tags": [
+    "realism",
+    "no-collapse",
+    "many-worlds-variant",
+    "spacetime-ontology",
+    "field-ontology"
+  ]
+}

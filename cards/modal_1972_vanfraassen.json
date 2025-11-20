@@ -1,0 +1,28 @@
+{
+  "id": "modal_1972_vanfraassen",
+  "name": "Modal Interpretations",
+  "one_line": "Modal interpretations propose a distinction between a system's 'dynamical state' (the wave function Ψ), which describes its possible properties, and its 'value state', which...",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": false,
+    "equations_summary": "Modal interpretations use the standard SQM formalism but supplement it with a rule to map the quantum state to a set of definite classical properties. They provide a 'hidden variable' theory for properties, not particles."
+  },
+  "key_claims": [
+    "A system is described by two states: the dynamical state (Ψ), which evolves unitarily and determines what *can* be, and the value state, which specifies what...",
+    "The dynamical state Ψ always evolves according to the Schrödinger equation. The 'measurement problem' is dissolved because measurements simply reveal the...",
+    "There is a specific rule, based on the mathematical form of the wave function (e.g., the Schmidt decomposition for bipartite systems), that selects which..."
+  ],
+  "born_rule": "postulate",
+  "measurement_update": "no_collapse",
+  "locality_note": "signal_local_only",
+  "predictions": [
+    "The wave function passes through both slits. The property-ascription rule determines which properties are definite. If the setup allows for path detection,...",
+    "The non-local correlation is encoded in the property-ascription rule, which depends on the total state of the entangled pair. When Alice performs a..."
+  ],
+  "tags": [
+    "no-collapse",
+    "property-realism",
+    "perspectival-properties",
+    "superposition"
+  ]
+}

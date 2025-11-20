@@ -55,6 +55,8 @@ data/*
 *.csv
 *.xlsx
 *.json
+!cards/*.json
+!schemas/*.json
 !requirements.txt
 !README.md
 !config/*.yaml

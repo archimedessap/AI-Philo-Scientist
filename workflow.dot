@@ -1,0 +1,80 @@
+digraph AI_Philo_Scientist {
+    rankdir=TB;
+    splines=ortho;
+    node [shape=box, style="filled,rounded", fontname="Helvetica", fontsize=12, margin=0.2];
+    edge [fontname="Helvetica", fontsize=10];
+
+    // Colors
+    bgcolor="white";
+    
+    // Subgraphs for structure
+    subgraph cluster_inputs {
+        label="Inputs";
+        style=dashed;
+        color="#ced4da";
+        
+        PriorTheories [label="Prior Theories\n(Knowledge Base)", fillcolor="#e7f5ff", color="#0d6efd"];
+        LLMEngine [label="LLM Engine\n(Cognitive Core)", fillcolor="#f3f0ff", color="#6f42c1"];
+    }
+
+    subgraph cluster_phase1 {
+        label="Phase 1: Theory Generation";
+        style=rounded;
+        color="#0d6efd";
+        bgcolor="#f8f9fa";
+        
+        Contradiction [label="Contradiction Analysis\n(Direct Synthesis)", fillcolor="white"];
+        ConceptSpace [label="Concept Space Analysis\n(Unified Method)", fillcolor="white"];
+        Synthesis [label="Theory Synthesis Engine\n(Formalization)", fillcolor="#fff4e6", color="#fd7e14"];
+    }
+
+    subgraph cluster_phase2 {
+        label="Phase 2: Multi-Level Evaluation";
+        style=rounded;
+        color="#198754";
+        bgcolor="#f8f9fa";
+        
+        ExpValidation [label="Experimental Validation\n(Bell, Double-slit)", fillcolor="white"];
+        RoleEvaluation [label="Role-Based Evaluation\n(Physicist, Philosopher)", fillcolor="white"];
+        Scoring [label="Score Aggregation\n(Weighted Metric)", fillcolor="#fff4e6", color="#fd7e14"];
+    }
+
+    subgraph cluster_phase3 {
+        label="Phase 3: Evolution & Feedback";
+        style=rounded;
+        color="#198754";
+        bgcolor="#f8f9fa";
+        
+        Selection [label="Natural Selection\n(Survival of Fittest)", fillcolor="white"];
+        Refinement [label="Refinement & Mutation\n(Evolutionary Operators)", fillcolor="white"];
+        NextGen [label="Next Generation\n(Iteration N+1)", fillcolor="#d1e7dd"];
+    }
+
+    FinalTheory [label="FINAL WINNER THEORY\n(e.g., PRQM Score: 0.907)", shape=note, fillcolor="#d4edda", color="#155724", penwidth=2, fontsize=14];
+
+    // Edges
+    PriorTheories -> Contradiction;
+    PriorTheories -> ConceptSpace;
+    LLMEngine -> Contradiction;
+    LLMEngine -> ConceptSpace;
+
+    Contradiction -> Synthesis;
+    ConceptSpace -> Synthesis;
+
+    Synthesis -> ExpValidation;
+    Synthesis -> RoleEvaluation;
+
+    ExpValidation -> Scoring;
+    RoleEvaluation -> Scoring;
+
+    Scoring -> Selection;
+    Selection -> Refinement;
+    Refinement -> NextGen;
+
+    // Feedback Loop
+    NextGen -> Contradiction [color="#dc3545", style=dashed, label="Feedback", penwidth=2, constraint=false];
+    NextGen -> ConceptSpace [color="#dc3545", style=dashed, penwidth=2, constraint=false];
+
+    // Final Output
+    Selection -> FinalTheory [penwidth=2];
+}

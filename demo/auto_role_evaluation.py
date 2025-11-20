@@ -12,7 +12,7 @@ import sys
 import json
 import argparse
 import asyncio
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 # 添加路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -25,7 +25,8 @@ async def run_role_evaluation_for_theories(
     all_theories_definitions: Dict[str, Any],
     output_dir: str,
     model_source: str = "deepseek",
-    model_name: str = "deepseek-chat"
+    model_name: str = "deepseek-chat",
+    model_configs: Optional[List[Dict[str, str]]] = None,
 ):
     """
     对给定的高成功率理论列表进行角色评估。
@@ -43,12 +44,22 @@ async def run_role_evaluation_for_theories(
     print("🚀 开始进行多角色评估...")
     print("="*50)
     print(f"[INFO] 收到 {len(high_success_theories)} 个理论进行角色评估。")
-    print(f"[INFO] 使用模型: {model_source}/{model_name}")
-    
+    if model_configs:
+        model_desc = ", ".join(f"{cfg['model_source']}/{cfg['model_name']}" for cfg in model_configs)
+        print(f"[INFO] 使用模型集合: {model_desc}")
+    else:
+        print(f"[INFO] 使用模型: {model_source}/{model_name}")
+
     # 1. 初始化LLM和角色评估器
     try:
-        llm = LLMInterface(model_name=model_name, model_source=model_source)
-        role_evaluator = TheoryEvaluator(llm)
+        primary_source = model_source
+        primary_name = model_name
+        if model_configs:
+            primary_source = model_configs[0].get("model_source", model_source)
+            primary_name = model_configs[0].get("model_name", model_name)
+
+        llm = LLMInterface(model_name=primary_name, model_source=primary_source)
+        role_evaluator = TheoryEvaluator(llm, multi_model_configs=model_configs)
         print(f"[INFO] 已初始化角色评估器")
     except Exception as e:
         print(f"[ERROR] 初始化角色评估器失败: {str(e)}")

@@ -1,0 +1,29 @@
+{
+  "id": "qbism_2010_fuchs",
+  "name": "Quantum Bayesianism (QBism)",
+  "one_line": "QBism argues that quantum mechanics is not a direct description of an objective reality, but rather a normative theory that any rational agent should use to update their...",
+  "math_relation_to_SQM": {
+    "type": "interpretation",
+    "math_change": false,
+    "equations_summary": "QBism uses the standard mathematics of SQM, but reinterprets every element in terms of an agent's subjective beliefs. It particularly focuses on a formulation using Symmetric Informationally Complete POVMs (SIC-POVMs)."
+  },
+  "key_claims": [
+    "All probabilities, including those in quantum mechanics, are subjective degrees of belief held by an agent. They do not represent objective features of the...",
+    "Quantum mechanics is a 'single-user' theory. Its formulas are tools for a single agent to navigate their world. The wave function is specific to the agent...",
+    "The outcome of a measurement is a personal experience for the agent. The world presents a source of novelty and unpredictability that the agent responds to."
+  ],
+  "born_rule": "normative_bayes",
+  "measurement_update": "belief_update",
+  "locality_note": "local",
+  "predictions": [
+    "The wave function is the agent's tool to bet on where they will detect the particle. The interference pattern reflects the agent's belief that they have no...",
+    "There is no 'spooky action at a distance' because there is no objective state to be acted upon. When Alice measures her particle, she updates her beliefs..."
+  ],
+  "tags": [
+    "anti-realism",
+    "subjective-probability",
+    "informational",
+    "local",
+    "single-agent"
+  ]
+}

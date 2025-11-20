@@ -24,6 +24,7 @@ import glob
 from pathlib import Path
 import subprocess
 import os
+from typing import Dict
 
 # NEW: Import manifest tools
 try:
@@ -104,6 +105,9 @@ def main():
     max_iterations = args.max_iters or getattr(args, 'max-iters', None) or args.max_iterations
     improvement_threshold = args.min_improvement or getattr(args, 'min-improve', None) or args.improvement_threshold
     output_dir = args.output_dir or getattr(args, 'output-dir', None)
+    manifest_mode_theory_ids = []
+    manifest_mode_slug_map: Dict[str, str] = {}
+    manifest_path_obj: Path | None = None
     
     # 根据调用模式确定输入和输出
     if args.run_dir and args.target_generation is not None:
@@ -229,6 +233,69 @@ def main():
             summary_data = json.load(f)
         top_n = getattr(args, 'top-n', None) or args.top_n or len(summary_data)
         
+    elif args.manifest_path and args.theory_ids:
+        if not MANIFEST_AVAILABLE:
+            print("[ERROR] manifest模式需要manifest_tools")
+            return
+        manifest_path_obj = Path(args.manifest_path).resolve()
+        if not manifest_path_obj.exists():
+            print(f"[ERROR] 未找到manifest文件: {manifest_path_obj}")
+            return
+        if not output_dir:
+            print("[ERROR] manifest模式需要指定 --output_dir")
+            return
+
+        ensure_directory_exists(output_dir)
+        temp_dir = Path(output_dir) / "manifest_mode_inputs"
+        theories_dir = temp_dir / "theories"
+        ensure_directory_exists(theories_dir)
+
+        manifest = manifest_tools.load_manifest(manifest_path_obj)
+
+        theory_ids = [tid.strip() for tid in args.theory_ids.split(",") if tid.strip()]
+        if not theory_ids:
+            print("[ERROR] 未提供有效的理论ID")
+            return
+
+        summary_entries = []
+        for theory_id in theory_ids:
+            theory_info = manifest.get("theories", {}).get(theory_id)
+            if not theory_info:
+                print(f"[WARN] manifest中未找到理论ID: {theory_id}")
+                continue
+
+            src_path = Path(theory_info.get("file_path", "")).resolve()
+            if not src_path.exists():
+                print(f"[WARN] 理论文件不存在，跳过 {theory_info.get('theory_name', theory_id)} -> {src_path}")
+                continue
+
+            dest_path = theories_dir / src_path.name
+            shutil.copy(src_path, dest_path)
+
+            summary_entries.append({
+                "theory_name": theory_info.get("theory_name", src_path.stem),
+                "file_path": str(dest_path),
+                "success_rate": theory_info.get("score", 0.8),
+                "composite_score": theory_info.get("score", 0.8),
+                "parent_id": theory_id,
+            })
+
+        if not summary_entries:
+            print("[WARN] 未找到可精炼的理论，跳过精炼阶段")
+            return
+
+        summary_file_path = temp_dir / "summary.json"
+        with open(summary_file_path, "w", encoding="utf-8") as fh:
+            json.dump(summary_entries, fh, ensure_ascii=False, indent=2)
+
+        summary_file = str(summary_file_path)
+        theories_root = str(theories_dir)
+        top_n = len(summary_entries)
+        manifest_mode_theory_ids = [entry["parent_id"] for entry in summary_entries]
+        manifest_mode_slug_map = {
+            Path(entry["file_path"]).stem.lower(): entry["parent_id"] for entry in summary_entries
+        }
+        
     else:
         print("[ERROR] 必须指定运行模式的参数")
         print("支持的模式：")
@@ -287,6 +354,50 @@ def main():
                 
                 manifest_tools.save_manifest(manifest, manifest_path)
                 print(f"[INFO] 精炼结果已注册到manifest")
+        elif manifest_path_obj and manifest_mode_theory_ids and MANIFEST_AVAILABLE:
+            print("[INFO] 注册manifest模式精炼结果...")
+            depth_runs_dir = Path(refinement_output) / "depth_runs"
+            if depth_runs_dir.exists():
+                improved_files = list(depth_runs_dir.rglob("improved_*.json"))
+                if not improved_files:
+                    print("[WARN] 未找到精炼输出文件 improved_*.json")
+                manifest = manifest_tools.load_manifest(manifest_path_obj)
+
+                parent_map = {tid: manifest["theories"][tid] for tid in manifest_mode_theory_ids if tid in manifest["theories"]}
+
+                for improved_file in improved_files:
+                    try:
+                        with open(improved_file, "r", encoding="utf-8") as fh:
+                            theory_data = json.load(fh)
+
+                        # 从目录结构推测父ID（若可）
+                        parent_id = None
+                        parts_lower = [part.lower() for part in Path(improved_file).parts]
+                        for slug, pid in manifest_mode_slug_map.items():
+                            if any(slug in part for part in parts_lower):
+                                parent_id = pid
+                                break
+                        if not parent_id and manifest_mode_theory_ids:
+                            parent_id = manifest_mode_theory_ids[0]
+
+                        if not parent_id:
+                            print(f"[WARN] 无法确定精炼理论父ID，跳过 {improved_file}")
+                            continue
+
+                        theory_id = manifest_tools.register_refined_variant(
+                            manifest,
+                            parent_id,
+                            theory_data,
+                            Path(improved_file),
+                            Path(refinement_output),
+                        )
+                        theory_name = theory_data.get("name", "Unknown")
+                        print(f"  ✅ 精炼理论: {theory_name} -> {theory_id}")
+                    except Exception as exc:
+                        print(f"  ❌ 无法注册精炼理论 {improved_file}: {exc}")
+
+                manifest_tools.save_manifest(manifest, manifest_path_obj)
+                print("[INFO] manifest已更新精炼结果")
             
     else:
         print(f"[ERROR] 精炼失败，返回码: {result}")

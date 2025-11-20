@@ -2,6 +2,10 @@
 
 这是一个通用的哲学-科学跨学科理论生成与探索框架，利用高维语义Embedding空间与大语言模型（LLM）能力，能灵活选用各种不同的理论生成方法，在科学-哲学交叉领域探索和生成新的理论。
 
+## 核心工作流 (Project Workflow)
+
+![AI-Philo-Scientist Workflow](project_workflow_detailed.svg)
+
 ## 项目结构
 UniversalTheoryGen/
 │
@@ -52,6 +56,15 @@ UniversalTheoryGen/
 │
 └── README.md                       # 本文档
 
+## 短卡工作流（Short Card Pipeline）
+- 理论知识以“短卡”形式存放在 `cards/` 目录，格式遵循 `schemas/card.schema.json`。
+- 快速生成短卡：`python pipelines/build_short_cards.py --sources data/theories_v2.1`
+- RAG 检索：`python -m pipelines.retrieve_topk "如何融合塌缩与导引方程" --k 6`
+- 构建矛盾表：`python pipelines/build_conflicts.py "objective collapse 与 pilot-wave 的折中" --output tmp/contradictions.json`
+- 合成新诠释：`python pipelines/synthesize_theory.py tmp/contradictions.json --output tmp/new_interpretation.json`
+- 该流程默认使用结构化输出(JSON Schema)和 Top-K 检索，避免一次性塞入全部理论。
+- 也可在旧版全流程中直接使用：`python run_direct_synthesis.py --generation_method short_card --short_card_topk 50 ...`；若希望一次跑完整评估，可配合 `run_full_cycle.py --generation_method short_card`。
+
 ## 论文编译（paper）
 - 依赖：LaTeX 发行版（TeX Live / MacTeX）与 `latexmk`。
 - 快速构建：
@@ -68,3 +81,10 @@ UniversalTheoryGen/
 - 生成图表并编译 PDF：`make paper`
 - 快速编译（静默）：`make fast`
 - 清理构建产物：`make clean`
+
+## 多模型理论评估
+- 默认评估器会根据理论的 `math_relation_to_SQM` 自动选择模型组合：
+  - 与标准量子力学兼容的理论：优先沿用调用方的主模型，并补充一次 `openai:gpt-4o-mini` 复核。
+- 修改 SQM 的理论：在角色评估基础上额外加入 `openai:gpt-4o-mini` 与 `google:gemini-2.5-flash` 的仪器/实验可行性审查，并与角色评分做加权平均。
+- 可通过 `ROLE_EVAL_MODELS` 或 `--role_eval_models` 手动覆盖，格式如 `openai:gpt-4o-mini,deepseek:deepseek-chat`。
+- 评估结果会保存 `instrumentation_review` 字段，包含各模型对实验可行性的反馈与得分。
