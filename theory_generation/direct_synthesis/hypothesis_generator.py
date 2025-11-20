@@ -172,7 +172,13 @@ As a theoretical physicist and philosopher of science, your task is to invent a 
 {contradictions_text}
 
 # INSTRUCTIONS
-Based on the analysis, construct a new theory. Your output **MUST** be a single, valid JSON object that strictly adheres to the "Quantum Theory Schema v2.1" provided below.
+Based on the analysis, construct a new theory. Your output **MUST** satisfy all of the following without exception:
+1. **Return exactly one JSON object** (no Markdown fences, no prose before/after).
+2. The JSON must be syntactically valid (all braces/brackets closed, strings quoted, no trailing commas).
+3. Every field required by the "Quantum Theory Schema v2.1" must be present, even if you need to use placeholder text like `"TBD"` for short notes.
+4. Do not include explanations, comments, or code blocks—only the JSON object.
+
+Failing any of the above is unacceptable; treat the schema as a contract.
 
 ## Quantum Theory Schema v2.1
 

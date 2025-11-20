@@ -12,7 +12,7 @@ import hashlib
 import os
 from pathlib import Path
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, Union, Callable
+from typing import Any, Dict, Optional, Union, Callable, List
 from dataclasses import dataclass, asdict
 
 from utils.logging_config import get_logger

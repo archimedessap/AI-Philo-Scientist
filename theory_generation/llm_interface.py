@@ -632,6 +632,21 @@ class LLMInterface:
         # 4. 移除尾随逗号 (在对象和数组中)
         json_str = re.sub(r',\s*([}\]])', r'\1', json_str)
 
+        # 5. 尝试平衡大括号/中括号数量
+        def _balance_symbols(text: str, open_sym: str, close_sym: str) -> str:
+            balance = 0
+            for ch in text:
+                if ch == open_sym:
+                    balance += 1
+                elif ch == close_sym:
+                    balance = max(balance - 1, 0)
+            if balance > 0:
+                text += close_sym * balance
+            return text
+
+        json_str = _balance_symbols(json_str, '{', '}')
+        json_str = _balance_symbols(json_str, '[', ']')
+
         return json_str.strip()
     
     def _extract_balanced_json(self, text: str) -> Optional[str]:
