@@ -68,6 +68,8 @@ results/
 *.jpg
 *.pdf
 *.svg
+!project_workflow_detailed.svg
+
 
 # 局部特有的忽略文件，每个开发者可以自定义
 .gitignore.local 
